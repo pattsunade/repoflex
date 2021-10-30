@@ -33,11 +33,23 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.electronico.repoflex"
+      "package": "com.electronico.repoflex",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "",
+    // "plugins": [
+    //   [
+    //     "expo-notifications",
+    //     {
+    //       "icon": "-",
+    //       "color": "#ffffff",
+    //       "sounds": "-",
+    //       "mode": "production"
+    //     }
+    //   ]
+    // ]
   }
 }

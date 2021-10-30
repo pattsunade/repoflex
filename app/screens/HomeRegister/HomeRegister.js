@@ -7,7 +7,6 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
-import OneSignal from 'react-native-onesignal';
 
 export default function Home () {
   const navigation = useNavigation();
@@ -15,19 +14,19 @@ export default function Home () {
   const [matrix, setMatrix] = useState(0);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   let documents;
-  OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
-    console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
-    let notification = notificationReceivedEvent.getNotification();
-    console.log("notification: ", notification);
-    const data = notification.additionalData;
-    console.log("additionalData: ", data);
-    if ("mtx" in data){
-      console.log("viene mtx!");
-      AsyncStorage.setItem('@mtx',data.mtx);
-      getMatrix();
-    }
-    notificationReceivedEvent.complete(notification);
-  });
+  // OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
+  //   console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
+  //   let notification = notificationReceivedEvent.getNotification();
+  //   console.log("notification: ", notification);
+  //   const data = notification.additionalData;
+  //   console.log("additionalData: ", data);
+  //   if ("mtx" in data){
+  //     console.log("viene mtx!");
+  //     AsyncStorage.setItem('@mtx',data.mtx);
+  //     getMatrix();
+  //   }
+  //   notificationReceivedEvent.complete(notification);
+  // });
   async function signOut()
   { await AsyncStorage.multiRemove(['@ott','@mtx','@stp']);
     navigation.navigate("login");

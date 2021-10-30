@@ -33,6 +33,7 @@ export default function Navigation() {
     function getOtt(){
       let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp']).then((ans) =>
       { let mtx;
+        console.log(ans);
         setOtt(ans[0][1]);
         setStp(ans[2][1]);
         if (ans[1][1] != null)

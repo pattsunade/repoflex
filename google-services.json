@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1088228350634",
+    "project_id": "repoflex-aa7d5",
+    "storage_bucket": "repoflex-aa7d5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088228350634:android:59dc98ec58948952e94ed3",
+        "android_client_info": {
+          "package_name": "com.zolbit.repoflex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088228350634-onbo2kn287q5skh5c18sr2mvb63gjeas.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJ9ZTmOFYucOIQfoZqyOraXXk2PvtJcs4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088228350634-onbo2kn287q5skh5c18sr2mvb63gjeas.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

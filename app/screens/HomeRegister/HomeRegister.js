@@ -1,0 +1,845 @@
+import React, {useState,useEffect,useRef} from "react";
+import {StyleSheet,Text,View,ScrollView,TouchableOpacity,AppState} from 'react-native';
+import * as Progress from 'react-native-progress';
+import { Button, Divider,Icon } from "react-native-elements";
+import * as firebase from "firebase";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackEndConnect from "../../utils/BackEndConnect";
+import Toast from 'react-native-toast-message';
+import OneSignal from 'react-native-onesignal';
+
+export default function Home () {
+  const navigation = useNavigation();
+  const appState = useRef(AppState.currentState);
+  const [matrix, setMatrix] = useState(0);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  let documents;
+  OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
+    console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
+    let notification = notificationReceivedEvent.getNotification();
+    console.log("notification: ", notification);
+    const data = notification.additionalData;
+    console.log("additionalData: ", data);
+    if ("mtx" in data){
+      console.log("viene mtx!");
+      AsyncStorage.setItem('@mtx',data.mtx);
+      getMatrix();
+    }
+    notificationReceivedEvent.complete(notification);
+  });
+  async function signOut()
+  { await AsyncStorage.multiRemove(['@ott','@mtx','@stp']);
+    navigation.navigate("login");
+  }
+  // useEffect(() =>
+  // { const subscription = AppState.addEventListener("change", nextAppState => {
+  //     if ( appState.current.match(/inactive|background/) &&
+  //       nextAppState === "active") 
+  //     { BackEndConnect("POST","matrx").then((ans)=>{
+  //       console.log(ans);
+  //     })
+  //       console.log("App has come to the foreground!");
+  //     }
+  //     appState.current = nextAppState;
+  //     setAppStateVisible(appState.current);
+  //     console.log("AppState", appState.current);
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    getMatrix();
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      getMatrix();
+    });
+    console.log("Me llamaron!");
+    return willFocusSubscription;
+  },[]);
+
+  async function getMatrix() {
+    var mtx = await AsyncStorage.getItem('@mtx');
+    var stp = await AsyncStorage.getItem('@stp');
+    console.log(mtx);
+    console.log(stp);
+    setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
+  }
+  console.log("Matrix",matrix);
+  if (matrix < 67){
+    return(
+      <ScrollView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.title} >Avance de mi registro</Text>
+          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{matrix} %</Text>
+        </View>
+        <View style={styles.viewContainer2}>
+          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <TouchableOpacity style={styles.customBtn} onPress={() => 
+            matrix < 33 ? navigation.navigate("documentselfie"): 
+            matrix < 44 ? navigation.navigate("documentfront"):
+            matrix < 56 ? navigation.navigate("documentreverse"):
+            navigation.navigate("documentcertificate")   
+          }>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft1}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Documentación</Text>
+                <Text style={styles.customBtnTextContent} >Necesitamos saber más de ti. Primero Completa tus datos, luego validaremos tu identidad.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Debes completar los pasos anteriores."
+                }
+              });
+            }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+                <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft3}
+                  size={35}
+                />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Revisión de la Postulación</Text>
+                <Text style={styles.customBtnTextContent} >Nosotros nos encargamos de este paso. Estamos revisando tu solicitud de registro y verificando tu identidad.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Debes completar los pasos anteriores."
+                }
+              });
+            }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft3}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Entrenamiento</Text>
+                <Text style={styles.customBtnTextContent} >El curso en linea te tomara 15 minutos. Te enseñaremos todo lo que debes saber para realizar las tareas y generar dinero extra.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Debes completar los pasos anteriores."
+                }
+              });
+            }
+          }>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft3}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Firma de Contrato Digital</Text>
+                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estás de acuerdo con las condiciones de trabajo y formas de pago.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Debes completar los pasos anteriores."
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+                <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft3}
+                  size={35}
+                />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Pantalla final</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <Text style={styles.subtitle}> Pasos Completados</Text>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft2}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Información Personal</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Button
+            title="Cerrar sesión"
+            buttonStyle={styles.btnCloseSession}
+            titleStyle={styles.CloseSessionText}
+            onPress= {signOut}
+          />
+        </View>
+        <Divider style= {styles.divider}/>
+        <View style={styles.viewZolbit}>
+          <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
+        </View>
+      </ScrollView>
+    )
+  }
+  else if (matrix <= 67){
+    return(
+      <ScrollView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.title} >Avance de mi registro</Text>
+          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{matrix} %</Text>
+        </View>
+        <View style={styles.viewContainer2}>
+          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {}} >
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft1}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Revisión de la Postulación</Text>
+                <Text style={styles.customBtnTextContent} >Nosotros nos encargamos de este paso. estamos revisando tu solicitud de registro y verificando tu identidad.</Text>
+              </View>
+            </View>
+          </View>  
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+              Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Te informaremos cuando puedas continuar."
+                }
+              });
+          }} >
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft3}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Entrenamiento</Text>
+                <Text style={styles.customBtnTextContent} >El curso en linea te tomara 15 minutos. Te ensenaremos todo lo que debes saber para realizar las tareas y generar dinero extra.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Te informaremos cuando puedas continuar."
+                }
+              });
+          }} >
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft3}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Firma de Contrato Digital</Text>
+                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. Elige la firma que te representes.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Te informaremos cuando puedas continuar."
+                }
+              });
+          }} >
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft3}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Pantalla final</Text>
+             </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <Text style={styles.subtitle}> Pasos Completados</Text>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {}} >
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft2}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Información Personal</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+                }
+              });
+          }}>
+            <View style={styles.wrapper}>
+              <View style={styles.container}>
+                <View>
+                <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft2}
+                  size={35}
+                />
+                </View>
+                <View>
+                  <Text style={styles.customBtnText}>Documentación</Text>
+                  <Text style={styles.customBtnTextContent} >Hemos recibido tus documentos, porfavor continua con el resto de los pasos.</Text>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+      </View>
+      <View>
+      <Button
+        title="Cerrar sesión"
+        buttonStyle={styles.btnCloseSession}
+        titleStyle={styles.CloseSessionText}
+        onPress= {signOut}
+      />
+      </View>
+      <Divider style={styles.divider}/>
+      <View style={styles.viewZolbit}>
+        <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
+      </View>
+    </ScrollView>
+  )
+  }
+  else if (matrix <= 78){
+    return(
+      <ScrollView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.title} >Avance de mi registro</Text>
+          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{matrix} %</Text>
+        </View>
+        <View style={styles.viewContainer2}>
+          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <TouchableOpacity style={styles.customBtn} onPress={() => navigation.navigate("training")} >
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+                <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft1}
+                  size={35}
+                />
+                </View>
+                <View>
+                  <Text style={styles.customBtnText}>Entrenamiento</Text>
+                  <Text style={styles.customBtnTextContent} >El curso en línea te tomara 15 minutos. Te enseñaremos todo lo que debes saber para realizar las tareas y generar dinero extra.</Text>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Debes completar los pasos anteriores."
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+                <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft3}
+                  size={35}
+                />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Firma de Contrato Digital</Text>
+                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. Elige la firma que te representes.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Debes completar los pasos anteriores."
+                }
+              });
+          }}>
+            <View style={styles.wrapper}>
+              <View style={styles.container}>
+                <View>
+                <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft3}
+                  size={35}
+                />
+                </View>
+                <View>
+                  <Text style={styles.customBtnText}>Pantalla final</Text>
+               </View>
+            </View>
+            </View>
+            </TouchableOpacity>
+            <Text style={styles.subtitle}> Pasos Completados</Text>
+            <TouchableOpacity style={styles.customBtn} onPress={() => {}} >
+            <View style={styles.wrapper}>
+              <View style={styles.container}>
+                <View>
+                <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft2}
+                  size={35}
+                />
+                </View>
+                <View >
+                  <Text style={styles.customBtnText}>Información Personal</Text>
+                </View>
+              </View>
+            </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.customBtn} onPress={() => {
+          Toast.show(
+            { type: 'error',
+              props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+              }
+            });
+        }}>
+        <View style={styles.wrapper}>
+          <View style={styles.container}>
+            <View>
+            <Icon
+              type="material-community"
+              name="circle"
+              iconStyle={styles.iconLeft2}
+              size={35}
+            />
+            </View>
+            <View>
+              <Text style={styles.customBtnText}>Documentación</Text>
+              <Text style={styles.customBtnTextContent} >Hemos recibido tus documentos, porfavor continua con el resto de los pasos.</Text>
+            </View>
+          </View>
+        </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.customBtn} onPress={() => {
+          Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+                }
+              });
+        }}>
+        <View style={styles.wrapper}>
+          <View style={styles.container}>
+            <View>
+            <Icon
+              type="material-community"
+              name="circle"
+              iconStyle={styles.iconLeft2}
+              size={35}
+            />
+            </View>
+            <View>
+              <Text style={styles.customBtnText}>Revisión de la Postulación</Text>
+              <Text style={styles.customBtnTextContent}>¡Ya has sido aprovado para ganar dinero extra con repoflex!</Text>
+            </View>
+          </View>
+        </View>
+        </TouchableOpacity>
+        </View>
+        <View>
+        <Button
+          title="Cerrar sesión"
+          buttonStyle={styles.btnCloseSession}
+          titleStyle={styles.CloseSessionText}
+          onPress= {signOut}
+        />
+        </View>
+        <Divider style={styles.divider}/>
+        <View style={styles.viewZolbit}>
+          <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
+        </View>
+      </ScrollView>
+    )
+  }
+  else if (matrix <= 89){
+    return(
+      <ScrollView>
+        <View style={styles.viewContainer}>
+          <Text style={styles.title} >Avance de mi registro</Text>
+          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{matrix} %</Text>
+        </View>
+        <View style={styles.viewContainer2}>
+          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <TouchableOpacity style={styles.customBtn} onPress={() => navigation.navigate("firm")} >
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft1}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Firma de Contrato Digital</Text>
+                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. Elige la firma que te representes.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Debes completar los pasos anteriores."
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft3}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Pantalla final</Text>
+             </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <Text style={styles.subtitle}> Pasos Completados</Text>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                  type="material-community"
+                  name="circle"
+                  iconStyle={styles.iconLeft2}
+                  size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Información Personal</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft2}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Documentación</Text>
+                <Text style={styles.customBtnTextContent} >Hemos recibido tus documentos, porfavor continua con el resto de los pasos.</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft2}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Revisión de la Postulación</Text>
+                <Text style={styles.customBtnTextContent}>¡Ya has sido aprovado para ganar dinero extra con repoflex!</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.customBtn} onPress={() => {
+            Toast.show(
+              { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: "Ya completaste este paso!"
+                }
+              });
+          }}>
+          <View style={styles.wrapper}>
+            <View style={styles.container}>
+              <View>
+              <Icon
+                type="material-community"
+                name="circle"
+                iconStyle={styles.iconLeft2}
+                size={35}
+              />
+              </View>
+              <View>
+                <Text style={styles.customBtnText}>Entrenamiento</Text>
+                <Text style={styles.customBtnTextContent}>Ya has aprobado el entrenamiento, ¡Felicidades!</Text>
+              </View>
+            </View>
+          </View>
+          </TouchableOpacity>
+        </View>
+        <View>
+        <Button
+          title="Cerrar sesión"
+          buttonStyle={styles.btnCloseSession}
+          titleStyle={styles.CloseSessionText}
+          onPress= {signOut}
+        />
+        </View>
+        <Divider style={styles.divider}/>
+        <View style={styles.viewZolbit}>
+          <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
+        </View>
+      </ScrollView>
+    )
+  }
+else {
+  return(
+    <View>
+      <View>
+        <Button
+          title="Cerrar sesión"
+          buttonStyle={styles.btnCloseSession}
+          titleStyle={styles.CloseSessionText}
+          onPress= {signOut}
+        />
+      </View>
+      <Divider style={styles.divider}/>
+      <View style={styles.viewZolbit}>
+        <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
+      </View>
+    </View>
+    )
+  }
+}
+const styles = StyleSheet.create({
+  viewContainer:{
+    marginRight:40,
+    marginLeft:40,
+    marginTop:15,
+    marginBottom:5,
+    justifyContent:"center",
+    alignItems:"center",
+  },
+  viewContainer2:{
+    marginRight:30,
+    marginLeft:30,
+    marginTop:10,
+  },
+  title:{
+    fontWeight:"bold",
+    paddingBottom:5,
+    marginTop:10,
+    marginBottom:10,
+    fontSize:25,
+    //color: "#6B35E2",
+    justifyContent:"center"
+  },
+  title2:{
+    fontWeight:"bold",
+    paddingBottom:5,
+    marginTop:10,
+    marginBottom:10,
+    fontSize:18,
+    color:"#6B35E2",
+    justifyContent:"center"
+  },
+  subtitle: {
+    paddingBottom:10,
+    paddingTop:30,
+    fontSize:20,
+  },
+  btnCloseSession:{
+    marginTop:30,
+    borderRadius:0,
+    backgroundColor:"#fff",
+    borderTopWidth: 1,
+    borderTopColor:"#e3e3e3",
+    borderBottomWidth: 1,
+    borderBottomColor:"#e3e3e3",
+    paddingTop: 10,
+    paddingBottom:10,
+    marginBottom:20,
+  },
+  CloseSessionText:{
+    color:"#6B35E2",
+  },
+  divider:{
+    backgroundColor:"#6B35E2",
+    marginHorizontal:40,
+    marginTop:10,
+  },
+  textRegister:{
+    flex: 1,
+    alignItems:"center",
+    justifyContent:"center",
+    marginBottom:20,
+  },
+  customBtnText:{
+    fontSize: 20,
+    fontWeight: "400",
+    marginVertical:5,
+  },
+  customBtnTextContent:{
+    marginBottom:5,
+    textAlign:"justify",
+    marginRight:60,
+  },
+  customBtn:{
+    backgroundColor:"#fff",
+    paddingHorizontal:30,
+    paddingVertical:5,
+    borderRadius:30,
+    marginTop:5 ,
+    marginBottom:5
+  },
+  container:{
+    flex:.5,
+    flexDirection:'row',
+    justifyContent:'flex-start',
+    alignItems:"center"
+  },
+  wrapper:{
+    flex:1,
+  },
+  iconLeft1:{
+    color: "#6B35E2",
+    marginRight: 15,
+  },
+  iconLeft2:{
+    color:"#6B35E2",
+    marginRight:15,
+  },
+  iconLeft3:{
+    color:"#DEDCF2",
+    marginRight:15,
+  },
+  viewZolbit:{
+    marginRight:40,
+    marginLeft:40,
+    marginTop:15,
+    marginBottom:5,
+    justifyContent:"center",
+    alignItems:"center",
+  },
+  textZolbit: {
+    fontWeight:"bold",
+  }
+});

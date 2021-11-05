@@ -1,42 +1,71 @@
 import React, {useState,useEffect,useRef} from "react";
 import {StyleSheet,Text,View,ScrollView,TouchableOpacity,AppState} from 'react-native';
 import * as Progress from 'react-native-progress';
+import * as TaskManager from 'expo-task-manager';
 import { Button, Divider,Icon } from "react-native-elements";
 import * as firebase from "firebase";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
+import Loading from "../../components/Loading";
+import * as Notifications from 'expo-notifications';
 
 export default function Home () {
   const navigation = useNavigation();
   const appState = useRef(AppState.currentState);
+  const [loading, setLoading] = useState(true);
   const [matrix, setMatrix] = useState(0);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   let documents;
-  // OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
-  //   console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
-  //   let notification = notificationReceivedEvent.getNotification();
-  //   console.log("notification: ", notification);
-  //   const data = notification.additionalData;
-  //   console.log("additionalData: ", data);
-  //   if ("mtx" in data){
-  //     console.log("viene mtx!");
-  //     AsyncStorage.setItem('@mtx',data.mtx);
-  //     getMatrix();
-  //   }
-  //   notificationReceivedEvent.complete(notification);
-  // });
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(notification => {
+      let mtx = notification.request.content.data.mtx;
+      if (mtx != null)
+      { AsyncStorage.setItem('@mtx',mtx);
+        getMatrix();
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+  const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+    console.log('Received a notification in the background!');
+    mtxObj = JSON.parse(data.notification.data.body);
+    AsyncStorage.setItem('@mtx',mtxObj.mtx);
+    getMatrix();
+  });
+
+  Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+  
   async function signOut()
   { await AsyncStorage.multiRemove(['@ott','@mtx','@stp']);
-    navigation.navigate("login");
+    navigation.reset(
+    { index: 0,
+      routes: [
+        {
+          name: 'login',
+        }
+      ],
+    });
   }
+
+  useEffect(() => {
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      getMatrix();
+      console.log("llamaron al focus");
+    });
+    console.log("Me llamaron!");
+    return willFocusSubscription;
+  },[navigation]);
+
   // useEffect(() =>
   // { const subscription = AppState.addEventListener("change", nextAppState => {
   //     if ( appState.current.match(/inactive|background/) &&
   //       nextAppState === "active") 
   //     { BackEndConnect("POST","matrx").then((ans)=>{
-  //       console.log(ans);
+  //       getMatrix();
   //     })
   //       console.log("App has come to the foreground!");
   //     }
@@ -44,26 +73,29 @@ export default function Home () {
   //     setAppStateVisible(appState.current);
   //     console.log("AppState", appState.current);
   //   });
+  //   // return () => subscription.remove();
   // }, []);
 
-  useEffect(() => {
-    getMatrix();
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      getMatrix();
-    });
-    console.log("Me llamaron!");
-    return willFocusSubscription;
-  },[]);
-
   async function getMatrix() {
-    var mtx = await AsyncStorage.getItem('@mtx');
-    var stp = await AsyncStorage.getItem('@stp');
-    console.log(mtx);
-    console.log(stp);
-    setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
+    let stp = await AsyncStorage.getItem('@stp');
+    if(loading)
+    { BackEndConnect("POST","matrx").then((ans)=>{
+        var mtx = ans.hdr.mtx;
+        setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
+        setLoading(false);
+      })
+    }
+    else
+    { let mtx = await AsyncStorage.getItem('@mtx');
+      setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
+    }
+    console.log("Llamaron a getmatrix");
   }
   console.log("Matrix",matrix);
-  if (matrix < 67){
+  if (loading)
+  { return <Loading isVisible={true} text="Cargando..." />
+  }
+  else if (matrix < 67){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
@@ -842,3 +874,19 @@ const styles = StyleSheet.create({
     fontWeight:"bold",
   }
 });
+
+
+
+  // OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
+  //   console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
+  //   let notification = notificationReceivedEvent.getNotification();
+  //   console.log("notification: ", notification);
+  //   const data = notification.additionalData;
+  //   console.log("additionalData: ", data);
+  //   if ("mtx" in data){
+  //     console.log("viene mtx!");
+  //     AsyncStorage.setItem('@mtx',data.mtx);
+  //     getMatrix();
+  //   }
+  //   notificationReceivedEvent.complete(notification);
+  // });

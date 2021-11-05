@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1088228350634:android:59dc98ec58948952e94ed3",
+        "mobilesdk_app_id": "1:1088228350634:android:863b48e6132e7445e94ed3",
         "android_client_info": {
-          "package_name": "com.zolbit.repoflex"
+          "package_name": "com.electronico.repoflex"
         }
       },
       "oauth_client": [

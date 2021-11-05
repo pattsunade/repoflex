@@ -1,10 +1,11 @@
-import React, { useState,useCallback } from "react";
+import React, { useState,useCallback,useEffect } from "react";
 import {StyleSheet,View,ActivityIndicator,Text} from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import HomeApp from "../../components/Home/HomeApp";
 import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
+import * as Notifications from 'expo-notifications';
 import * as Location from 'expo-location';
 
 export default function Register() {
@@ -21,6 +22,7 @@ export default function Register() {
   const [rank, setRank] = useState();
   const [work, setWork] = useState();
   const [loading, setLoading] = useState(true);
+
   function formato(lati,longi)
   { return{
       lat: lati,
@@ -72,12 +74,21 @@ export default function Register() {
             setWork(response.ans.work);
             setLoading(false);
           })
-        .catch(() => 
-          { Toast.show(
-            { type: 'error',
-              props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente'
-            }
+        .catch((ans) => 
+          { console.log(ans);
+            navigation.reset(
+            { index: 0,
+              routes: [
+                {
+                  name: 'login',
+                }
+              ],
             });
+            // Toast.show(
+            // { type: 'error',
+            //   props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor inicia sesión nuevamente'
+            // }
+            // });
           }
         );
       })();

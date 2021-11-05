@@ -44,24 +44,7 @@ export default function Navigation() {
         setTid(parseInt(ans[4][1]));
         setTaskData(JSON.parse(ans[5][1]));
         setCompleted(parseInt(ans[6][1]));
-        if (mtx==6)
-        { BackEndConnect("POST","matrx").then((ans)=>{
-            if ((ans.hdr.mtx.match(/1/g) || []).length==7)
-            { AsyncStorage.setItem('@mtx',ans.hdr.mtx).then(()=>
-              { setLoading(false);
-              });
-            }
-            else
-            { setLoading(false);
-            }
-          }).catch((ans)=>
-          { console.log("error->",ans);
-            AsyncStorage.multiRemove(['@ott','@mtx','@stp']);
-          })
-        }
-        else
-        { setLoading(false);
-        }
+        setLoading(false);
       });
     }
     getOtt();
@@ -101,6 +84,7 @@ export default function Navigation() {
                 name="home"
                 component={HomeStack}
                 options={{ title: "Home", headerShown: false }}
+                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
               />
               <RootStack.Screen
                 name="login"

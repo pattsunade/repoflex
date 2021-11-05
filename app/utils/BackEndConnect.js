@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
 
 export default function BackEndConnect(method=null, req=null, body=null){
   const ip = "http://104.237.140.131";
@@ -73,8 +75,15 @@ export default function BackEndConnect(method=null, req=null, body=null){
     else {
       txi = parseInt(txi) + 1;
     }
-    var phid = await AsyncStorage.getItem('@phid');
-    ret2 = await Connect(method, req, body, prevOtt, txi, phid).then(async (ans1) =>
+    const expoPushToken = await Notifications.getExpoPushTokenAsync({
+      experienceId: '@electronico/repoflex',
+    });
+    console.log(expoPushToken);
+    console.log(expoPushToken.data);
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    console.log(finalStatus);
+    ret2 = await Connect(method, req, body, prevOtt, txi, expoPushToken.data).then(async (ans1) =>
     { 
       if (ans1 == false)
       { Promise.reject("Problema json");

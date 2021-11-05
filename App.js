@@ -3,6 +3,7 @@ import {LogBox, View, Text} from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast,{BaseToast} from 'react-native-toast-message';
 import Navigation from "./app/navigations/NavigationAuth";
+import * as Notifications from 'expo-notifications';
 
 LogBox.ignoreAllLogs();
 
@@ -23,16 +24,26 @@ const toastConfig = {
 };
 
 export default function App() {
-  // OneSignal.setLogLevel(6, 0);
-  // OneSignal.setAppId("dac70ae0-ce08-4ec7-b722-540f81c6da38");
-  // OneSignal.setNotificationOpenedHandler(notification => {
-  //   console.log("OneSignal: notification opened:", notification.notification.additionalData);
-  //   if ("mtx" in notification.notification.additionalData){
-  //     console.log("mtx-->",notification.notification.additionalData.mtx.toString());
-  //     AsyncStorage.setItem('@mtx',notification.notification.additionalData.mtx.toString());
-  //   }
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+      }),
+  });
+  // Notifications.scheduleNotificationAsync({
+  //   content: {
+  //     title: "Time's up!",
+  //     body: 'Change sides!',
+  //   },
+  //   trigger: {
+  //     seconds: 5,
+  //   },
+  // }).then((ans)=>{
+  //   console.log(ans);
+  // }).catch((e)=>{
+  //   console.log(e);
   // });
-  const phId = AsyncStorage.setItem('@phid',"null");
   return(
     <>
       <Navigation/>

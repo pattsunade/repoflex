@@ -27,8 +27,11 @@
         "WRITE_EXTERNAL_STORAGE",
         "LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
-      ],
+        "ACCESS_FINE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "NOTIFICATIONS",
+        "USER_FACING_NOTIFICATIONS"
+     ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -40,16 +43,16 @@
       "favicon": "./assets/favicon.png"
     },
     "description": "",
-    // "plugins": [
-    //   [
-    //     "expo-notifications",
-    //     {
-    //       "icon": "-",
-    //       "color": "#ffffff",
-    //       "sounds": "-",
-    //       "mode": "production"
-    //     }
-    //   ]
-    // ]
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "-",
+          "color": "#ffffff",
+          "sounds": "-",
+          "mode": "production"
+        }
+      ]
+    ]
   }
 }

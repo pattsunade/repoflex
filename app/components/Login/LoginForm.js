@@ -18,13 +18,15 @@ export default function LoginForm(props)
     setFormData({ ...formData, [type]: e.nativeEvent.text });
   };
   const onSubmit = () =>
-  { formData.email = formData.email.replace(/\s/g,'').toLowerCase();
+  { setLoading(true);
+    formData.email = formData.email.replace(/\s/g,'').toLowerCase();
     if (isEmpty(formData.email) || isEmpty(formData.password)) 
     { Toast.show(
       { type: 'error',
         props: {onPress: () => {}, text1: 'Error', text2: "Verifica los campos ingresados."
         }
       });
+      setLoading(false);
     }
     else if (!validateEmail(formData.email))
     { Toast.show(
@@ -32,9 +34,11 @@ export default function LoginForm(props)
         props: {onPress: () => {}, text1: 'Error', text2: "El email ingresado no es correcto."
         }
       });
+      setLoading(false);
     }
     else
-    { BackEndConnect("POST","auten",formato(formData)).then(async (response) => 
+    { 
+      BackEndConnect("POST","auten",formato(formData)).then(async (response) => 
       { if (response.ans.stx === "wk")
           { Toast.show(
             { type: 'error',
@@ -111,14 +115,18 @@ export default function LoginForm(props)
         }
       />
       <RecoverPassword/>
-      <Button
+      {!loading ? (<Button
         title="Iniciar sesión"
         containerStyle={styles.btnContainerLogin}
         buttonStyle={styles.btnLogin}
         onPress={onSubmit}
-      />  
+        />):(<Button
+        title="Iniciar sesión"
+        containerStyle={styles.btnContainerLogin}
+        buttonStyle={styles.btnLogin2}
+      />)
+      }
       <CreateAccount/> 
-      {/*<EmailVerification />*/}
       <Loading isVisible={loading} text="Iniciando sesión"/>
     </View>
   );
@@ -197,6 +205,10 @@ const styles = StyleSheet.create({
   },
   btnLogin: {
     backgroundColor: "#6B35E2",
+    borderRadius: 50,
+  },
+  btnLogin2: {
+    backgroundColor: "#cccccc",
     borderRadius: 50,
   },
   errorStyle:{

@@ -98,18 +98,18 @@ export default function BackEndConnect(method=null, req=null, body=null){
         if('stp' in ans1.ans)
         { await AsyncStorage.setItem('@stp',ans1.ans.stp.toString());   
         }
-        if(ans1.ans.stx == 'nk')
-        { Toast.show({
-            type: 'error',
-            props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '+ans1.ans.msg
-            },
-            autohide: false
-          });
-          Promise.reject("Problema tx");
-        }
-        else
-        { return ans1;
-        }
+        // if(ans1.ans.stx == 'nk')
+        // { console.log("entre aca");
+        //   Toast.show({
+        //     type: 'error',
+        //     props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '+ans1.ans.msg
+        //     },
+        //     autohide: false
+        //   });
+        //   AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']);
+        //   Promise.reject("Problema tx");
+        // }
+        return ans1;
       }
     });
     return ret2

@@ -4,6 +4,7 @@ import Landing from "../screens/LogIn/Landing";
 import Login from "../screens/LogIn/Login";
 import Register from "../screens/LogIn/Register";
 import RecoverPassword from "../screens/LogIn/RecoverPassword";
+import NewPassword from "../screens/LogIn/NewPassword";
 import EmailVerification from "../screens/LogIn/EmailVerification";
 import EmailVerificationA from "../screens/LogIn/EmailVerificationA";
 
@@ -41,6 +42,12 @@ export default function LogInStack(){
         name="emailverificationA"
         component={EmailVerificationA}
         options={{title: "Verificar Email"}}
+        //options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="newPassword"
+        component={NewPassword}
+        options={{title: "Modificar contrasña"}}
         //options={{headerShown: false}}
       />
     </Stack.Navigator>

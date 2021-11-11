@@ -54,7 +54,8 @@ export default function RegisterForm(props) {
     )
   }
   const onSubmit = () => 
-  { formData.usr = formData.usr.replace(/\s/g,'').toLowerCase();
+  { setLoading(true);
+    formData.usr = formData.usr.replace(/\s/g,'').toLowerCase();
     if (isEmpty(formData.rut) || isEmpty(formData.ndoc) || isEmpty(formData.name)
         || isEmpty(formData.snam) || isEmpty(formData.usr) || isEmpty(formData.psw)
         || isEmpty(formData.repeatPassword) || isEmpty(formData.addr) || !isInteger(formData.comu)
@@ -65,14 +66,16 @@ export default function RegisterForm(props) {
         props: {onPress: () => {}, text1: 'Error', text2: 'Hay campos vacíos.'
         }
       })
+      setLoading(false);
     }
     else if (!rutCorrect || !ndocCorrect || !nameCorrect || !snamCorrect || !usrCorrect
-      || !repeatPassCorrect || !addrCorrect || !acnuCorrect)
+      || !repeatPassCorrect || !addrCorrect || !acnuCorrect || usrCorrect == 2 || passCorrect == 1)
     { Toast.show(
       { type: 'error',
         props: {onPress: () => {}, text1: 'Error', text2: 'Revisa los campos erroneos.'
         }
       })
+      setLoading(false);
     }
     else
     { BackEndConnect("POST","reg01",formato(formData)
@@ -89,9 +92,11 @@ export default function RegisterForm(props) {
             correo:formData.usr
             });
           }
+          setLoading(false);
         }
       ).catch((ans)=>
-        { console.log(ans);
+        { setLoading(false);
+          console.log(ans);
         }
       );
     }
@@ -144,8 +149,8 @@ export default function RegisterForm(props) {
       }
     }
     else
-    { if(type=='pass')
-      { if(e.nativeEvent.text.length<=6 || e.nativeEvent.text.length<=32)
+    { if(type=='psw')
+      { if(e.nativeEvent.text.length<6 || e.nativeEvent.text.length>15)
         { setPassCorrect(1);
         }
         else if(e.nativeEvent.text.length==0)
@@ -339,7 +344,7 @@ export default function RegisterForm(props) {
           password={true}
           secureTextEntry={showPassword ? false : true}
           onEndEditing={(e) => onEnd(e, "psw")}
-          maxLength={32}  
+          maxLength={15}
         />
         <Icon
           type="material-community"
@@ -348,8 +353,8 @@ export default function RegisterForm(props) {
           onPress={() => setShowPassword(!showPassword)}
         />
       </View>
-      { passCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}Su contraseña debe ser menor a 32 caracteres.</Text>):
+      { passCorrect == 1 ?
+        (<Text style={styles.textDescriptionError}>{" "}Su contraseña debe ser mayor a 5 y menor a 16 caracteres.</Text>):
         (<></>)
       }
       <Text style={styles.textDescription}>{" "}Repetir Contraseña</Text>

@@ -8,9 +8,11 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import Modal from "../Modal";
 import InfoDocumentReverse from "../HomeRegister/InfoImages/InfoDocumentReverse";
 import BackEndConnect from "../../utils/BackEndConnect";
+import Loading from "../Loading";
 
 export default function DocumentReverse (props) {
     const { toastRef, setIsLoading, navigation} = props;
+    const [loading, setLoading] = useState(false);
     const [image, setImage] = useState("");
     const [imageDocumentReverse, setImageDocumentReverse] = useState("");
     const [formData, setFormData] = useState(defaultFormValue());
@@ -74,9 +76,13 @@ export default function DocumentReverse (props) {
         if(!image){
             toastRef.current.show("Debe subir todas las imagenes",3000);
         }
-        else {
-            sendimage();
-            navigation.navigate("documentcertificate");
+        else{
+            setLoading(true);
+            sendimage().then(() => {
+                navigation.navigate("documentcertificate");
+                setLoading(false);
+                }
+            );
         }
     };
     return(
@@ -88,7 +94,7 @@ export default function DocumentReverse (props) {
                     <View style={styles.container}>
                         <View>
                             <Button
-                                title={ !image ? "Sube tu archivo aquí" : "Cambiar Foto"}
+                                title={ !image ? "Toma tu foto aquí" : "Cambiar Foto"}
                                 containerStyle={styles.btnContainer}
                                 buttonStyle={ !image ? styles.btn : styles.btnCheck}
                                 onPress={upload}
@@ -120,6 +126,7 @@ export default function DocumentReverse (props) {
                 <View style={styles.viewZolbit}>
                     <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
                 </View>
+                <Loading isVisible={loading} text="Subiendo imagen"/>
             </View>
         </ScrollView>
     )

@@ -16,7 +16,13 @@ export default function HomeApp(props) {
   const RI = String(rank).charAt(4);
   async function signOut()
   { await AsyncStorage.removeItem('@ott');
-    navigation.navigate("login");
+    navigation.reset(
+    { index: 0,
+      routes: [
+        { name: 'login',
+        }
+      ],
+    });
   }
   return (
     <View>
@@ -82,7 +88,7 @@ export default function HomeApp(props) {
         >
           <Icon name="view-list" color="#6B35E2"/>
           <ListItem.Content>
-            <ListItem.Title containerStyle={styles.menuItem}>Disponibles</ListItem.Title>
+            <ListItem.Title style={styles.menuItem}>Disponibles</ListItem.Title>
           </ListItem.Content>
           <ListItem.Content>
             <ListItem.Title style={styles.numberItem}>{avai}</ListItem.Title>
@@ -97,7 +103,7 @@ export default function HomeApp(props) {
         >
           <Icon name="view-list" color="#6B35E2"/>
           <ListItem.Content>
-            <ListItem.Title containerStyle={styles.menuItem}>Asignadas</ListItem.Title>
+            <ListItem.Title style={styles.menuItem}>Asignadas</ListItem.Title>
           </ListItem.Content>
           <ListItem.Content>
             <ListItem.Title style={styles.numberItem}>{asgn}</ListItem.Title>
@@ -112,7 +118,7 @@ export default function HomeApp(props) {
         >
           <Icon name="view-list" color="#6B35E2"/>
           <ListItem.Content>
-            <ListItem.Title containerStyle={styles.menuItem}>En proceso</ListItem.Title>
+            <ListItem.Title style={styles.menuItem}>En proceso</ListItem.Title>
           </ListItem.Content>
           <ListItem.Content>
             <ListItem.Title style={styles.numberItem}>{proc}</ListItem.Title>
@@ -127,7 +133,7 @@ export default function HomeApp(props) {
         >
           <Icon name="view-list" color="#6B35E2"/>
           <ListItem.Content>
-            <ListItem.Title containerStyle={styles.menuItem}>Terminadas</ListItem.Title>
+            <ListItem.Title style={styles.menuItem}>Terminadas</ListItem.Title>
           </ListItem.Content>
           <ListItem.Content>
             <ListItem.Title style={styles.numberItem}>{fini}</ListItem.Title>
@@ -142,7 +148,7 @@ export default function HomeApp(props) {
         >
           <Icon name="view-list" color="#6B35E2"/>
           <ListItem.Content>
-            <ListItem.Title containerStyle={styles.menuItem}>En Revisión</ListItem.Title>
+            <ListItem.Title style={styles.menuItem}>En Revisión</ListItem.Title>
           </ListItem.Content>
           <ListItem.Content>
             <ListItem.Title style={styles.numberItem}>{chck}</ListItem.Title>
@@ -157,7 +163,7 @@ export default function HomeApp(props) {
         >
           <Icon name="view-list" color="#6B35E2"/>
             <ListItem.Content>
-              <ListItem.Title containerStyle={styles.menuItem}>Aceptadas</ListItem.Title>
+              <ListItem.Title style={styles.menuItem}>Aceptadas</ListItem.Title>
             </ListItem.Content>
             <ListItem.Content>
               <ListItem.Title style={styles.numberItem}>{acce}</ListItem.Title>
@@ -302,6 +308,11 @@ const styles = StyleSheet.create(
   numberItem:
   { fontWeight: "bold", 
     left:60,
+    fontSize:15,
+  },
+  menuItem:
+  { fontWeight: "bold",
+    textAlign: "left",
     fontSize:15,
   },
   circleViewRZ:

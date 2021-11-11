@@ -1,21 +1,23 @@
 import React, { useRef } from "react";
 import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
 import { Divider } from "react-native-elements";
-import RecoverPasswordForm from "../../components/Login/RecoverPasswordForm";
 
-export default function RecoverPassword() {
+import NewPasswordForm from "../../components/Login/NewPasswordForm";
+
+export default function NewPassword({route,navigation}) {
+  const { correo } = route.params;
   return (
     <ScrollView>
-      <Text style={styles.texttitle}>Ingresa tu correo para comenzar con el proceso de recuperación de contraseña:</Text>
+      <Text style={styles.texttitle}>Ingresa el código que recibiste, junto con tu nueva contraseña.</Text>
       <View style={styles.viewContainer} >
-        <RecoverPasswordForm/>
+        <NewPasswordForm correo={correo}/>
       </View>
       <Divider style= {styles.divider} />
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>    
       </View>
     </ScrollView>
-    )
+  )
 }
 
 const styles = StyleSheet.create({

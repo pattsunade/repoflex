@@ -37,19 +37,20 @@ export default function LoginForm(props)
       setLoading(false);
     }
     else
-    { 
-      BackEndConnect("POST","auten",formato(formData)).then(async (response) => 
+    { BackEndConnect("POST","auten",formato(formData)).then(async (response) => 
       { if (response.ans.stx === "wk")
           { Toast.show(
             { type: 'error',
               props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
               }
             });
+            setLoading(false);
           }
         else if (response.ans.stx === "uk")
         { navigation.navigate("emailverificationA",
           { correo:formData.email
           });
+          setLoading(false);
         }
         else
         { let matrix = response.hdr.mtx;
@@ -74,10 +75,12 @@ export default function LoginForm(props)
               ],
             });
           }
+          setLoading(false);
         }
       })
       .catch((response) => 
-      { console.log(response);
+      { setLoading(false);
+        console.log(response);
       });
     }
   };
@@ -116,15 +119,15 @@ export default function LoginForm(props)
       />
       <RecoverPassword/>
       {!loading ? (<Button
-        title="Iniciar sesión"
-        containerStyle={styles.btnContainerLogin}
-        buttonStyle={styles.btnLogin}
-        onPress={onSubmit}
+          title="Iniciar sesión"
+          containerStyle={styles.btnContainerLogin}
+          buttonStyle={styles.btnLogin}
+          onPress={onSubmit}
         />):(<Button
-        title="Iniciar sesión"
-        containerStyle={styles.btnContainerLogin}
-        buttonStyle={styles.btnLogin2}
-      />)
+          title="Iniciar sesión"
+          containerStyle={styles.btnContainerLogin}
+          buttonStyle={styles.btnLogin2}
+        />)
       }
       <CreateAccount/> 
       <Loading isVisible={loading} text="Iniciando sesión"/>

@@ -7,8 +7,13 @@ export default function UserGuest() {
   const navigation = useNavigation();
   return(
     <ScrollView centerContent={true} style={styles.viewBody} >
+      <Image 
+        source={require("../../../assets/img/zolbitLogo.png")}
+        resizeMode="contain"
+        style={styles.logo}
+      />
       <Text style={styles.title}>Repoflex App</Text>
-      <Text styles={styles.description}>
+      <Text style={styles.description}>
         ¡Bienvenido a Repoflex!{"\n"}
         Un producto de Zolbit para el retail.
       </Text>
@@ -35,13 +40,14 @@ const styles = StyleSheet.create({
     },
     title:{
         fontWeight: "bold",
-        fontSize: 19,
+        fontSize: 25,
         marginBottom: 50,
         marginTop:100,
         textAlign: "center",
     },
     description:{
-        marginBottom: 20,
+        marginBottom: 5,
+        fontSize: 18,
         textAlign:"center",
     },
     btnStyle:{
@@ -55,4 +61,9 @@ const styles = StyleSheet.create({
     btnContainer:{
         width: "70%",
     },
+    logo:{
+        width: "100%",
+        height: 150,
+        marginTop: 70,
+    }
 });

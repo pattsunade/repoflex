@@ -21,7 +21,7 @@ export default function ListTaskAvailable(props){
 function Tarea(props){ 
   const navigation = useNavigation();
   const {lista} = props;
-  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre} = lista.item;
+  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = lista.item;
   const goTask = () =>
   { console.log("go tarea");
   }
@@ -29,23 +29,9 @@ function Tarea(props){
     <TouchableOpacity style={styles.TouchTask} onPress={goTask}>
       <View style={styles.viewTareas}>
         <View style={styles.circleViewRZ}>
-        { typ === 1 ?
-          ( <Text style={styles.circleText}>TA</Text>
-          ):typ === 2 ?
-          ( <Text style={styles.circleText}>TR</Text>
-          ):
-          (<Text style={styles.circleText}>TI</Text>
-          )
-        }
+          <Text style={styles.circleText}>{sig}</Text>
         </View>
-        { typ === 1 ? 
-          ( <Text style={styles.textTypeTask}>Auditoria</Text>
-          ):typ === 2 ?
-          ( <Text style={styles.textTypeTask}>Reposición</Text>
-          ):
-          (<Text style={styles.textTypeTask}>Implementación</Text>
-          )
-        }
+        <Text style={styles.textTypeTask}>{typ}</Text>
       </View>
       <View style={styles.viewTareas}>
         <Text style={styles.textTitleTask}>{tit}</Text>
@@ -82,7 +68,8 @@ function Tarea(props){
               tim:tim,
               nqu:nqu,
               npi:npi,
-              nre:nre
+              nre:nre,
+              sig:sig
             })}
           />
         </View>

@@ -335,7 +335,7 @@ export default function Home () {
               </View>
               <View>
                 <Text style={styles.customBtnText}>Firma de Contrato Digital</Text>
-                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. Elige la firma que te representes.</Text>
+                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. </Text>
               </View>
             </View>
           </View>
@@ -468,7 +468,7 @@ export default function Home () {
               </View>
               <View>
                 <Text style={styles.customBtnText}>Firma de Contrato Digital</Text>
-                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. Elige la firma que te representes.</Text>
+                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago.</Text>
               </View>
             </View>
           </View>
@@ -557,7 +557,7 @@ export default function Home () {
             </View>
             <View>
               <Text style={styles.customBtnText}>Revisión de la Postulación</Text>
-              <Text style={styles.customBtnTextContent}>¡Ya has sido aprovado para ganar dinero extra con repoflex!</Text>
+              <Text style={styles.customBtnTextContent}>¡Ya has sido aprobado para ganar dinero extra con repoflex!</Text>
             </View>
           </View>
         </View>
@@ -601,7 +601,7 @@ export default function Home () {
               </View>
               <View>
                 <Text style={styles.customBtnText}>Firma de Contrato Digital</Text>
-                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. Elige la firma que te representes.</Text>
+                <Text style={styles.customBtnTextContent} >Lee y acepta nuestro contrato si estas de acuerdo con las condiciones de trabajo y formas de pago. </Text>
               </View>
             </View>
           </View>
@@ -696,7 +696,7 @@ export default function Home () {
               </View>
               <View>
                 <Text style={styles.customBtnText}>Revisión de la Postulación</Text>
-                <Text style={styles.customBtnTextContent}>¡Ya has sido aprovado para ganar dinero extra con repoflex!</Text>
+                <Text style={styles.customBtnTextContent}>¡Ya has sido aprobado para ganar dinero extra con repoflex!</Text>
               </View>
             </View>
           </View>

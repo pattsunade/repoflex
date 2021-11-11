@@ -125,18 +125,18 @@ export default function Register() {
   );
 }
 const styles = StyleSheet.create({
-    logo: {
-        width: "100%",
-        height: 150,
-        marginTop: 20,
-    },
-    viewForm: {
-        marginRight: 40,
-        marginLeft: 40,
-    },
-    loaderTask: {
-      marginTop:100,
-      marginBottom: 10,
-      alignItems: "center",
-    },
+  logo: {
+    width: "100%",
+    height: 150,
+    marginTop: 20
+  },
+  viewForm: {
+    marginRight: 40,
+    marginLeft: 40
+  },
+  loaderTask: {
+    marginTop:100,
+    marginBottom: 10,
+    alignItems: "center"
+  }
 });

@@ -2,16 +2,16 @@ import React, { useState,useRef,useCallback } from "react";
 import { StyleSheet, View} from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Toast from "react-native-easy-toast";
 import RegisterForm from "../../components/Login/RegisterForm";
 import BackEndConnect from "../../utils/BackEndConnect"
+import Loading from "../../components/Loading";
 
 export default function Register() {
-  const toastRef = useRef();
   const [cities, setCities] = useState([]);
   const [banks, setBanks] = useState([]);
   const [countrys, setCountrys] = useState([]);
   const [accountType, setAccountType] = useState([]);
+  const [loading, setLoading] = useState(true);
   useFocusEffect(
     useCallback(() => {
       const resultCities = [];
@@ -39,15 +39,16 @@ export default function Register() {
         setBanks(resultBanks);
         setCountrys(resultcontrys);
         setAccountType(resultAccountType);
+        setLoading(false);
         });
       }, [])
     );
     return(
       <KeyboardAwareScrollView>  
         <View style={styles.viewForm}>
-          <RegisterForm toastRef={toastRef} cities={cities} banks={banks} countrys={countrys} accountType={accountType}/>
+          <RegisterForm cities={cities} banks={banks} countrys={countrys} accountType={accountType}/>
         </View>
-        <Toast ref={toastRef} position="center" opacity={0.9} />
+        <Loading isVisible={loading} text="Cargando"/>
       </KeyboardAwareScrollView>
     );
 }

@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-easy-toast";
 import { Video } from 'expo-av';
 import BackEndConnect from "../../utils/BackEndConnect";
+import Loading from "../../components/Loading";
 
 const { width, height } = Dimensions.get('window');
 
@@ -14,8 +15,10 @@ export default function Training () {
     const [formData, setFormData] = useState(defaultFormValue());
     const [testUri, setTestUri] = useState("");
     const [course,setCourse] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true)
         async function getData() {
             const uri = await BackEndConnect("POST","cours").then((ans)=>
             {
@@ -25,6 +28,7 @@ export default function Training () {
             .catch((ans) => {
                 console.log(ans);
             });
+            setLoading(false);
         }
         getData();
     },[])
@@ -101,6 +105,7 @@ export default function Training () {
             <View style={styles.viewZolbit}>
                     <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
             </View>
+            <Loading isVisible={loading} text="Cargando..."/>
             <Toast ref={toastRef} position="center" opacity={0.9} />
         </ScrollView>
     )

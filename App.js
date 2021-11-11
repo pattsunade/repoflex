@@ -18,7 +18,16 @@ const toastConfig = {
       text2={props.text2}
     />
   ),
-  success: () => {},
+  success: ({props, ...rest}) => (
+    <BaseToast
+      {...rest}
+      style={{ borderLeftColor: 'green' }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      leadingIcon={require("./assets/ok-24.png")}
+      text1={props.text1}
+      text2={props.text2}
+    />
+  ),
   info: () => {},
   any_custom_type: () => {}
 };

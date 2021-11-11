@@ -5,116 +5,77 @@ import { Divider, Button, Image } from 'react-native-elements';
 import { useNavigation } from "@react-navigation/native";
 
 export default function ListTaskAssigned(props) {
-    const navigation = useNavigation();
-    const {data} = props;
-    console.log("data-->",data);
-    return (
-        <View>
-            <FlatList 
-                data={data}
-                renderItem={(data) => <Tarea lista={data} />}
-                keyExtractor={(item, index) => index.toString()}
-            />
-        </View>
-    )
+  const navigation = useNavigation();
+  const {data} = props;
+  console.log("data-->",data);
+  return (
+    <View>
+      <FlatList 
+          data={data}
+          renderItem={(data) => <Tarea lista={data} />}
+          keyExtractor={(item, index) => index.toString()}
+      />
+    </View>
+  )
 }
 function Tarea(props){
-    const navigation = useNavigation();
-    const {lista} = props;
-    const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre} = lista.item;
-
-    const goTask = () =>{
-        console.log("go tarea");
-    }
-
-    return(
-        <TouchableOpacity style={styles.TouchTask} onPress={goTask} >
-            <View style={styles.viewTareas}>
-                <View style={styles.circleViewRZ}>
-                { typ === 1 ? (
-                    <Text style={styles.circleText}>TA</Text>
-                ):typ === 2 ?(
-                    <Text style={styles.circleText}>TR</Text>
-                ):(
-                    <Text style={styles.circleText}>TI</Text>
-                )
-                }     
-                </View>
-                { typ === 1 ? (
-                    <Text style={styles.textTypeTask}>Auditoria</Text>
-                ):typ === 2 ?(
-                    <Text style={styles.textTypeTask}>Reposición</Text>
-                ):(
-                    <Text style={styles.textTypeTask}>Implementación</Text>
-                ) 
-                }
-            </View>
-            <View style={styles.viewTareas}>
-                <Text style={styles.textTitleTask}>{tit}</Text>
-                
-            </View>
-            <View>
-                <Text style={styles.idText}>id:{tid}</Text>
-            </View>
-            <Divider style= {styles.divider} />
-            <View style={styles.viewTareasTexto}>
-                <View>
-                <Text style={styles.textTask}>Lugar:</Text>
-                </View>
-                <Text style={styles.textRTask}>{pla}</Text>
-            </View>
-            <View style={styles.viewTareasTexto}>
-                <View>
-                <Text style={styles.textTask2}>A pagar:</Text>
-                </View>
-                <Text style={styles.textRTask}>$ {amo}</Text>
-            </View>
-             
-            <View style={styles.viewTareasTexto}>
-                {/*<View>
-                    <Button
-                        title="Ver más"
-                        containerStyle={styles.btnContainer}
-                        buttonStyle={styles.btn}
-                        onPress={() => navigation.navigate("taskdetail",{
-                            tit:tit,
-                            typ:typ,
-                            tid:tid,
-                            pla:pla,
-                            amo:amo,
-                            det:det,
-                            tim:tim,
-                            nqu:nqu,
-                            npi:npi,
-                            nre:nre
-                        })}
-                    />
-                </View>*/}
-                <View>
-                <Button
-                        title="Ver más"
-                        containerStyle={styles.btnContainer2}
-                        buttonStyle={styles.btn2}
-                        onPress={() => navigation.navigate("assigneddetail",{
-                            tit:tit,
-                            typ:typ,
-                            tid:tid,
-                            pla:pla,
-                            amo:amo,
-                            det:det,
-                            tim:tim,
-                            nqu:nqu,
-                            npi:npi,
-                            nre:nre
-                        })}
-                    />
-                </View>
-                
-            </View>
-            
-        </TouchableOpacity>
-
-    );
+  const navigation = useNavigation();
+  const {lista} = props;
+  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = lista.item;
+  const goTask = () =>{
+    console.log("go tarea");
+  }
+  return(
+    <TouchableOpacity style={styles.TouchTask} onPress={goTask} >
+      <View style={styles.viewTareas}>
+        <View style={styles.circleViewRZ}>
+          <Text style={styles.circleText}>{sig}</Text>
+        </View>
+        <Text style={styles.textTypeTask}>{typ}</Text>
+      </View>
+      <View style={styles.viewTareas}>
+        <Text style={styles.textTitleTask}>{tit}</Text>  
+      </View>
+      <View>
+        <Text style={styles.idText}>id:{tid}</Text>
+      </View>
+      <Divider style= {styles.divider} />
+      <View style={styles.viewTareasTexto}>
+        <View>
+          <Text style={styles.textTask}>Lugar:</Text>
+        </View>
+        <Text style={styles.textRTask}>{pla}</Text>
+      </View>
+      <View style={styles.viewTareasTexto}>
+        <View>
+          <Text style={styles.textTask2}>A pagar:</Text>
+        </View>
+        <Text style={styles.textRTask}>$ {amo}</Text>
+      </View>
+      <View style={styles.viewTareasTexto}>
+        <View>
+          <Button
+            title="Ver más"
+            containerStyle={styles.btnContainer2}
+            buttonStyle={styles.btn2}
+            onPress={() => navigation.navigate("assigneddetail",{
+              tit:tit,
+              typ:typ,
+              tid:tid,
+              pla:pla,
+              amo:amo,
+              det:det,
+              tim:tim,
+              nqu:nqu,
+              npi:npi,
+              nre:nre,
+              sig:sig
+            })}
+          />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({

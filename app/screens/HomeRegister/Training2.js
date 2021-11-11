@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import TrainingQuestions from "../../components/HomeRegister/TrainingQuestions";
 import BackEndConnect from "../../utils/BackEndConnect"
+import Loading from "../../components/Loading";
 
 const { width, height } = Dimensions.get('window');
 
@@ -13,14 +14,17 @@ export default function Training2 () {
     const navigation = useNavigation();
     const [questions, setQuestion] = useState([]);
     const [tid, setTid] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
+            setLoading(true);
             BackEndConnect("POST","quest").then(async (response) => {
                 var questions = response.ans.test;
                 var tid = response.ans.tid;
                 setQuestion(questions);
                 setTid(tid);
+                setLoading(false);
             })
             .catch((ans) =>
         { console.log(ans);
@@ -40,6 +44,7 @@ export default function Training2 () {
               }
             ],
             })
+          setLoading(false);
           }
         );
         }, [])
@@ -55,6 +60,7 @@ export default function Training2 () {
             <View style={styles.viewZolbit}>
                     <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
             </View>
+            <Loading isVisible={loading} text="Cargando preguntas"/>
         </ScrollView>
     )
 }

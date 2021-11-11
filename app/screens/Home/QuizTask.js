@@ -13,24 +13,24 @@ export default function QuizTask ({route,navigation}) {
   const toastRef = useRef(); 
   const navigations = useNavigation();
   return(
-  <ScrollView>
-    <View>
-      <QuizTaskRun 
-        toastRef={toastRef}
-        navigation={navigation}
-        questions={questions}
-        tid={tid}
-        completed={completed}
-      />
-    </View>
-    <Divider style= {styles.divider}/>
-    <View style={styles.viewZolbit}>
-      <Text>Un producto de 
-        <Text style={styles.textZolbit}>Zolbit</Text>
-      </Text>    
-    </View>
-    <Toast ref={toastRef} position="center" opacity={0.9} />
-  </ScrollView>
+    <ScrollView>
+      <View>
+        <QuizTaskRun 
+          toastRef={toastRef}
+          navigation={navigation}
+          questions={questions}
+          tid={tid}
+          completed={completed}
+        />
+      </View>
+      <Divider style= {styles.divider}/>
+      <View style={styles.viewZolbit}>
+        <Text>Un producto de 
+          <Text style={styles.textZolbit}>Zolbit</Text>
+        </Text>    
+      </View>
+      <Toast ref={toastRef} position="center" opacity={0.9} />
+    </ScrollView>
   )
 }
 

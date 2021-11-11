@@ -30,11 +30,17 @@ export default function Task ({route}) {
   { BackEndConnect("POST","abort",formato()).then(async (response) => 
     { if(response.ans.stx!="ok")
       { Toast.show(
-        {
-          type: 'error',
+        { type: 'error',
           props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
           },
           autohide: false
+        });
+        navigation.reset({
+          index: 0,
+          routes: 
+          [ { name: 'login',
+            }
+          ],
         });
       }
       AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>{
@@ -126,86 +132,81 @@ export default function Task ({route}) {
   }
 }
 const styles = StyleSheet.create({
-    viewContainer:{
-        marginRight: 40,
-        marginLeft: 40,
-        marginTop: 15,
-        marginBottom:5,
-        justifyContent: "center",
-        alignItems: "center",
-    
-    },
-    viewContainer2:{
-        marginRight: 30,
-        marginLeft: 30,
-        marginTop: 50,
-        
-    },
-    texttitle: {
-        marginTop:50,
-        marginBottom:50,
-        marginHorizontal:20,
-        fontSize: 17,
-        textAlign:"justify"
-    },
-    textRegister:{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",  
-    },
-    btnRegister:{
-        color: "#6B35E2",
-        fontWeight: "bold",
-    },
-    divider:{
-        backgroundColor: "#6B35E2",
-        margin: 40,
-    },
-    viewZolbit:{
-        justifyContent: "center",
-        alignItems: "center",
-        
-    },
-    textZolbit: {
-        fontWeight: "bold",
-    },
-    customBtnText: {
-        fontSize: 20,
-        fontWeight: "400",
-        marginVertical:5,
-    },
-    customBtnTextContent: {
-        marginBottom:100,
-        textAlign: "justify",
-        
-        },
-    customBtn: {
-        backgroundColor: "#fff",
-        paddingHorizontal: 30,
-        paddingVertical: 5,
-        borderRadius: 10,
-        marginTop:5 ,
-        marginBottom:5
-    },
-    container: {
-        flex: .5,
-        flexDirection: 'row',
-        justifyContent: 'flex-start', //replace with flex-end or center
-        alignItems:"center"
-    },
-    wrapper: {
-        flex: 1,
-    
-    },
+  viewContainer:{
+    marginRight: 40,
+    marginLeft: 40,
+    marginTop: 15,
+    marginBottom:5,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  viewContainer2:{
+    marginRight: 30,
+    marginLeft: 30,
+    marginTop: 50  
+  },
+  texttitle: {
+    marginTop:50,
+    marginBottom:50,
+    marginHorizontal:20,
+    fontSize: 17,
+    textAlign:"justify"
+  },
+  textRegister:{
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  btnRegister:{
+    color: "#6B35E2",
+    fontWeight: "bold"
+  },
+  divider:{
+    backgroundColor: "#6B35E2",
+    margin: 40
+  },
+  viewZolbit:{
+    justifyContent: "center",
+    alignItems: "center", 
+  },
+  textZolbit: {
+    fontWeight: "bold",
+  },
+  customBtnText: {
+    fontSize: 20,
+    fontWeight: "400",
+    marginVertical:5
+  },
+  customBtnTextContent: {
+    marginBottom:100,
+    textAlign: "justify"
+  },
+  customBtn: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    borderRadius: 10,
+    marginTop:5,
+    marginBottom:5
+  },
+  container: {
+    flex: .5,
+    flexDirection: 'row',
+    justifyContent: 'flex-start', //replace with flex-end or center
+    alignItems:"center"
+  },
+  wrapper: {
+    flex: 1,
+  },
   btnContainer: {
-      marginTop: 20,
-      width: "95%",
-      marginLeft: 10,
-    },
+    marginTop: 20,
+    width: "95%",
+    marginLeft: 10,
+  },
   btn: {
-      backgroundColor: "#6B35E2",
-      borderRadius: 50,
-    },
+    backgroundColor: "#6B35E2",
+    borderRadius: 50,
+  },
   loaderTask:{
     marginTop:100,
     marginBottom:10,

@@ -7,11 +7,13 @@ import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
 import Modal from "../Modal";
 import InfoSelfie from "../HomeRegister/InfoImages/InfoSelfie";
+import Loading from "../Loading";
 import BackEndConnect from "../../utils/BackEndConnect";
 
 export default function DocumentSelfie (props) {
     const { toastRef, setIsLoading, navigation} = props;
     const [imageSelfie, setImageSelfie] = useState("");
+    const [loading, setLoading] = useState(false);
     const [imageDocumentSelfie, setImageDocumentSelfie] = useState("");
     const [formData, setFormData] = useState(defaultFormValue());
     const [isVisibleInfoSelfie, setIsVisibleInfoSelfie] = useState(false);
@@ -72,9 +74,13 @@ export default function DocumentSelfie (props) {
     const uploadDocuments = () =>{
         if(!imageSelfie){
             toastRef.current.show("Debe subir su Selfie para Continuar",3000);
-        } else {
-            sendimage()
-            navigation.navigate("documentfront");
+        } else{
+            setLoading(true);
+            sendimage().then(() => {
+                navigation.navigate("documentfront");
+                setLoading(false);
+                }
+            );
         }
     };
     return(
@@ -86,7 +92,7 @@ export default function DocumentSelfie (props) {
                     <View style={styles.container}>
                         <View>
                             <Button
-                                title={ !imageSelfie ? "Sube tu archivo aquí" : "Cambiar Foto"}
+                                title={ !imageSelfie ? "Toma tu foto aquí" : "Cambiar Foto"}
                                 containerStyle={styles.btnContainer}
                                 buttonStyle={ !imageSelfie ? styles.btn : styles.btnCheck}
                                 onPress={uploadSelfie}
@@ -118,6 +124,7 @@ export default function DocumentSelfie (props) {
                 <View style={styles.viewZolbit}>
                     <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
                 </View>
+                <Loading isVisible={loading} text="Subiendo imagen"/>
             </View>
         </ScrollView>
     )

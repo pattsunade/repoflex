@@ -1,5 +1,5 @@
 import React, { useRef,useState } from "react";
-import { StyleSheet,StatusBar, Text, View, ScrollView, TextInput,TouchableOpacity ,Dimensions,SafeAreaView} from 'react-native';
+import { StyleSheet,StatusBar, Text, View, ScrollView, TextInput,TouchableOpacity ,Dimensions,SafeAreaView, Image} from 'react-native';
 import { Input, Divider, Icon, Button, CheckBox } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { Rating, AirbnbRating } from 'react-native-ratings';
@@ -94,7 +94,7 @@ export default function QuizTaskRun (props) {
       [{ resize: { width:640 , height:480  } }],
       { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
     );
-    setImage(manipResult.base64);
+    // setImage(manipResult.base64);
     onChangePic(manipResult.base64,"file");
   };
   const upload = async () =>
@@ -107,7 +107,7 @@ export default function QuizTaskRun (props) {
         props: {onPress: () => {}, text1: 'Error', text2: "Debes dar permiso para acceder a la cámara."
         }
       });
-    } 
+    }
     else
     { const result = await ImagePicker.launchCameraAsync(
       { allowsEditing:true,
@@ -125,6 +125,7 @@ export default function QuizTaskRun (props) {
       }
       else 
       { compress(result.uri);
+        setImage(result.uri);
       }
     }
   };
@@ -321,7 +322,12 @@ export default function QuizTaskRun (props) {
                 containerStyle={styles.btnContainerPic}
                 buttonStyle={ !image ? styles.btnPic : styles.btnCheck}
                 onPress={()=>upload()}
-              />            
+              />
+              <Image
+                  source={image ? {uri:image} : require("../../../assets/no-image.png")}
+                  resizeMode="contain"
+                  style={styles.logo}
+                />         
               <Button 
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
@@ -407,6 +413,11 @@ const styles = StyleSheet.create(
     justifyContent: "center",
     alignItems: "center"
   },
+  logo:{
+        width:"100%",
+        height:150,
+        marginTop:10
+    },
   viewContainer2:
   { marginRight: 30,
     marginLeft: 30,

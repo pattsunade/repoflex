@@ -26,20 +26,21 @@ export default function TaskQuestion (props) {
   // console.log("Completed en TaskQuestion-->",completed);
   function endTask()
   { BackEndConnect("POST","taska",formato(formData)).then((ans) =>
-      { if (ans.ans.stx === "ok")
-        { AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']);
-          navigation.reset({
-            index: 0,
+    { if (ans.ans.stx === "ok")
+      { AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
+        { navigation.reset(
+          { index: 0,
             routes: 
             [ { name: 'home',
               }
             ],
           });
-        }
-        else
-        { console.log("Algo salio mal en taska");
-        }
-      });
+        });
+      }
+      else
+      { console.log("Algo salio mal en taska");
+      }
+    });
   }
   function formato(data) {
     return {
@@ -52,16 +53,16 @@ export default function TaskQuestion (props) {
     { 
       if (formData.length==0)
       { 
-        // console.log("entre en 1");
+        console.log("entre en 1");
         setFormData([...formData,taskData]);
         AsyncStorage.setItem('@taskData',JSON.stringify(taskData));
         console.log("ofrmdata-->",formData);
       }
-      else
+      else if (per<100)
       { const temp = [...formData,taskData];
         // console.log("temp-->",temp);
         AsyncStorage.setItem('@taskData',JSON.stringify(temp)); 
-        // console.log("entre en 2");
+        console.log("entre en 2");
         setFormData(temp);
         // console.log("ofrmdata-->",formData);
       }

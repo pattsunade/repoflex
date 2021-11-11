@@ -9,9 +9,9 @@ import BackEndConnect from "../../utils/BackEndConnect";
 
 export default function DetailTask({route,navigation}) 
 { const toastRef = useRef();
-  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre} = route.params;
-  function formato() {
-    return{
+  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = route.params;
+  function formato()
+  { return{
       tid: tid,
     };
   }
@@ -51,22 +51,9 @@ export default function DetailTask({route,navigation})
         <TouchableOpacity style={styles.TouchTask}>
           <View style={styles.viewTareas}>
             <View style={styles.circleViewRZ}>
-            { typ === 1 ? 
-              ( <Text style={styles.circleText}>TA</Text>
-              ):typ === 2 ?
-              ( <Text style={styles.circleText}>TR</Text>
-              ):( <Text style={styles.circleText}>TI</Text>
-              )
-            }
+              <Text style={styles.circleText}>{sig}</Text>
             </View>
-            { typ === 1 ? 
-              ( <Text style={styles.textTypeTask}>Auditoria</Text>
-              ):typ === 2 ?
-              ( <Text style={styles.textTypeTask}>Reposición</Text>
-              ):
-              ( <Text style={styles.textTypeTask}>Implementación</Text>
-              )
-            }
+            <Text style={styles.textTypeTask}>{typ}</Text>
           </View>
           <View style={styles.viewTareas}>
             <Text style={styles.textTitleTask}>{tit}</Text>

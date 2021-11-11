@@ -7,7 +7,14 @@ export default function EndRegister () {
     const navigation = useNavigation();
     async function signOut()
     { await AsyncStorage.removeItem('@ott');
-        navigation.navigate("login");
+        navigation.reset(
+            { index: 0,
+              routes: [
+                {
+                  name: 'login',
+                }
+              ],
+            });
     }
     return (
         <ScrollView>

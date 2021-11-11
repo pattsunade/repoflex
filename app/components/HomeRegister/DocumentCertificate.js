@@ -8,10 +8,12 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import Modal from "../Modal";
 import InfoCertificate from "../HomeRegister/InfoImages/InfoCertificate";
 import BackEndConnect from "../../utils/BackEndConnect";
+import Loading from "../Loading";
 
 export default function DocumentCertificate (props) {
     const { toastRef, setIsLoading, navigation} = props;
     const [image, setImage] = useState("");
+    const [loading, setLoading] = useState(false);
     const [documentCertificate, setDocumentCertificate] = useState("");
     const [formData, setFormData] = useState(defaultFormValue());
     const [isVisibleInfoCertificate, setIsVisibleInfoCertificate] = useState(false);
@@ -73,8 +75,10 @@ export default function DocumentCertificate (props) {
             toastRef.current.show("Debe subir el certificado para continuar",1500);
         } 
         else{
+            setLoading(true);
             sendimage().then(() => {
                 navigation.navigate("homeregister");
+                setLoading(false);
                 }
             );
         }
@@ -120,6 +124,7 @@ export default function DocumentCertificate (props) {
                 <View style={styles.viewZolbit}>
                     <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
                 </View>
+                <Loading isVisible={loading} text="Subiendo imagen"/>
             </View>
         </ScrollView>
     )

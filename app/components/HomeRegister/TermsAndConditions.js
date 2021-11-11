@@ -23,8 +23,14 @@ export default function TermsAndConditions (props) {
                     onPress: () => {
                         BackEndConnect("POST","accep").then(async (ans) => {
                             if (ans.ans.stx === "ok"){
-                                navigation.navigate("endregister")
-                              //navigations.navigate("badtraining")
+                                navigation.reset(
+                                { index: 0,
+                                  routes: [
+                                    {
+                                      name: 'endregister',
+                                    }
+                                  ],
+                                });
                             }
                             else{
                                 console.log("Algo salio mal");

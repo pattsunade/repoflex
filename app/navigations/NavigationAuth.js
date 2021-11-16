@@ -5,7 +5,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LogInStack from "./LogInStack";
 import HomeStack from "./HomeStack";
-import HomeRegisterStack from "./HomeRegisterStack"
+import HomeRegisterStack from "./HomeRegisterStack";
+import TaskStack from "./TaskStack";
 import Loading from "../components/Loading";
 import BackEndConnect from '../utils/BackEndConnect';
 import Toast from 'react-native-toast-message';
@@ -65,12 +66,17 @@ export default function Navigation() {
                 name="home"
                 component={HomeStack}
                 options={{ title: "Home", headerShown: false }}
-                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
               />
               <RootStack.Screen 
                 name="homeregister"
                 component={HomeRegisterStack}
                 options={{ title: "Home", headerShown: false }}
+              />
+              <RootStack.Screen 
+                name="task"
+                component={TaskStack}
+                options={{ title: "Task", headerShown: false }}
+                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
               />
             </>
           ): stp>matrix ?
@@ -84,25 +90,61 @@ export default function Navigation() {
                 name="home"
                 component={HomeStack}
                 options={{ title: "Home", headerShown: false }}
-                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
               />
               <RootStack.Screen
                 name="login"
                 component={LogInStack}
                 options={{headerShown: false}}
               />
-            </>
-          ): <>
               <RootStack.Screen 
-                name="home"
-                component={HomeStack}
-                options={{ title: "Home", headerShown: false }}
+                name="task"
+                component={TaskStack}
+                options={{ title: "Task", headerShown: false }}
+                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
+              />
+            </>
+          ):quest != null || quest == "null" ?
+          ( <>
+              <RootStack.Screen 
+                name="task"
+                component={TaskStack}
+                options={{ title: "Task", headerShown: false }}
                 initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'completed':completed}}
               />
               <RootStack.Screen
                 name="login"
                 component={LogInStack}
                 options={{headerShown: false}}
+              />
+              <RootStack.Screen 
+                name="home"
+                component={HomeStack}
+                options={{ title: "Home", headerShown: false }}
+                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
+              />
+              <RootStack.Screen 
+                name="homeregister"
+                component={HomeRegisterStack}
+                options={{ title: "Home", headerShown: false }}
+              />
+            </>
+          ):
+            <>
+              <RootStack.Screen 
+                name="home"
+                component={HomeStack}
+                options={{ title: "Home", headerShown: false }}
+              />
+              <RootStack.Screen
+                name="login"
+                component={LogInStack}
+                options={{headerShown: false}}
+              />
+              <RootStack.Screen 
+                name="task"
+                component={TaskStack}
+                options={{ title: "Task", headerShown: false }}
+                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
               />
               <RootStack.Screen 
                 name="homeregister"

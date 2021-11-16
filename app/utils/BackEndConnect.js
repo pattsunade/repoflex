@@ -7,13 +7,10 @@ export default function BackEndConnect(method=null, req=null, body=null){
   const ip = "http://104.237.140.131";
   const port = "30000";
   const dir = "/app";
-
   async function Connect(method, req, body, ott, txi, phid){
     let url = ip + ":" + port + dir;
-    // console.log("ott-->",ott);
-    // console.log("txi-->",txi);
-    // console.log("phid-->",phid);
     if (body == null){
+      console.log("pidiendo datos");
       var backResponse = await fetch(url, {
       method: method,
       headers: {
@@ -22,15 +19,16 @@ export default function BackEndConnect(method=null, req=null, body=null){
       },
         body: JSON.stringify({
           "hdr": { 
-          "txi": txi,
-          "req": req,
-          "ott": ott,
-          "phid": phid
+            "txi": txi,
+            "req": req,
+            "ott": ott,
+            "phid": phid
           }
         }),
       });
     }
-    else {
+    else 
+    { console.log("enviando datos");
       var backResponse = await fetch(url, {
         method: method,
         headers: {
@@ -60,35 +58,29 @@ export default function BackEndConnect(method=null, req=null, body=null){
     }
   }
 
-  ret1 = AsyncStorage.getItem('@ott').then(async (ans) => {
+  ret1 = AsyncStorage.multiGet(['@ott','@txi']).then(async (ans) => {
     // console.log("ottSaved-->",ans);
-    if (ans == null || ans.length < 7){
+    if (ans[0][1] == null || ans[0][1].length < 7){
       prevOtt = "null";
     }
     else {
-      prevOtt = ans.substring(0,20);
+      prevOtt = ans[0][1].substring(0,20);
     }
-    var txi = await AsyncStorage.getItem('@txi');
-    if (txi == null){
+    if (ans[0][1] == null){
       txi = 1;
     }
     else {
-      txi = parseInt(txi) + 1;
+      txi = parseInt(ans[1][1]) + 1;
     }
     const expoPushToken = await Notifications.getExpoPushTokenAsync({
       experienceId: '@electronico/repoflex',
     });
-    console.log(expoPushToken);
-    console.log(expoPushToken.data);
+    // console.log(expoPushToken);
+    // console.log(expoPushToken.data.slice(18,-1));
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     console.log(finalStatus);
-    ret2 = await Connect(method, req, body, prevOtt, txi, expoPushToken.data).then(async (ans1) =>
-    { 
-      if (ans1 == false)
-      { Promise.reject("Problema json");
-      }
-      else
+    ret2 = await Connect(method, req, body, prevOtt, txi, expoPushToken.data.slice(18,-1)).then(async (ans1) =>
       { if('mtx' in ans1.hdr)
         { await AsyncStorage.multiSet([['@ott',ans1.hdr.ott],['@txi',ans1.hdr.txi.toString()],['@mtx',ans1.hdr.mtx]]);
         }
@@ -98,20 +90,8 @@ export default function BackEndConnect(method=null, req=null, body=null){
         if('stp' in ans1.ans)
         { await AsyncStorage.setItem('@stp',ans1.ans.stp.toString());   
         }
-        // if(ans1.ans.stx == 'nk')
-        // { console.log("entre aca");
-        //   Toast.show({
-        //     type: 'error',
-        //     props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '+ans1.ans.msg
-        //     },
-        //     autohide: false
-        //   });
-        //   AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']);
-        //   Promise.reject("Problema tx");
-        // }
         return ans1;
-      }
-    });
+      });
     return ret2
     });
   return ret1;

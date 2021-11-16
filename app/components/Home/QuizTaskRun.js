@@ -10,7 +10,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
-
+import Loading from '../Loading';
 const { width, height } = Dimensions.get('window');
 
 export default function QuizTaskRun (props) {
@@ -29,27 +29,27 @@ export default function QuizTaskRun (props) {
   const [formData, setFormData] = useState([]);
   const [formDataPic, setFormDataPic] = useState(defaultFormValuePic());
   const [pictureData, setPictureData] = useState([]);
-  // console.log("Questions en quiztaskrun-->",questions);
-  // console.log("Tid en quiztaskrun-->",tid);
-  // console.log("Completed en quiztaskrun-->",completed);
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Guardando respuestas...");
   function defaultFormValuePic() 
   { return {
       tid: tid,
       qid: qid,
       file: "" 
     };
-  };
+  }
   function formatoPic(objeto,qidd) 
   { return {
       tid: tid,
       qid: qidd,
       file : objeto.file
     };
-  };
-  const onChange = (e) => {
-    setInput(e.nativeEvent.text);
-  };
-  const handleAnswerOptionClickPic = (qidd) => {
+  }
+  function onChange(e) 
+  { setInput(e.nativeEvent.text);
+  }
+  function handleAnswerOptionClickPic(qidd) 
+  { setLoading(true);
     if(formDataPic.file.length>0)
     { setQid(qidd)
       if (qid) {
@@ -78,16 +78,15 @@ export default function QuizTaskRun (props) {
         props: 
         { onPress: () => {}, text1: 'Error', text2: "Debes subir una foto."
         }
-      }
-    );
+      });
     }
   }
   function onChangePic (e, type)
   { setFormDataPic({ ...formDataPic, [type]:e });
-  };
+  }
   async function sendimage(qidd)
   { return await BackEndConnect("POST","taskp",formatoPic(formDataPic,qidd));
-  };
+  }
   const compress = async (uri) => 
   { const manipResult = await ImageManipulator.manipulateAsync
     ( uri,
@@ -96,8 +95,8 @@ export default function QuizTaskRun (props) {
     );
     // setImage(manipResult.base64);
     onChangePic(manipResult.base64,"file");
-  };
-  const upload = async () =>
+  }
+  async function upload()
   { const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync();
     const resultPermissions = await MediaLibrary.requestPermissionsAsync();
     const roll = await ImagePicker.requestCameraRollPermissionsAsync();
@@ -111,14 +110,13 @@ export default function QuizTaskRun (props) {
     else
     { const result = await ImagePicker.launchCameraAsync(
       { allowsEditing:true,
-        aspect: [4, 3],
         quality: 1
       });
       if (result.cancelled) 
       { if (!image)
         { Toast.show(
           { type: 'error',
-            props: {onPress: () => {}, text1: 'Error', text2: "Debes seleccionar una imagen."
+            props: {onPress: () => {}, text1: 'Error', text2: "Debes tomar una foto."
             }
           });
         }
@@ -128,10 +126,9 @@ export default function QuizTaskRun (props) {
         setImage(result.uri);
       }
     }
-  };
-  const handleAnswerOptionClick = (res,qid) => 
-  { 
-    // console.log("res-->",res);
+  }
+  function handleAnswerOptionClick (res,qid)
+  { setLoading(true);
     if (res!=null&&(res.length>0||res>0))
     { formData.push({qid:qid,aid:res});
       if (res) 
@@ -146,7 +143,8 @@ export default function QuizTaskRun (props) {
           taskData:{qid:qid,aid:res},
         },
         merge: true
-      })
+      });
+      setLoading(false);
     }
     else
     { Toast.show(
@@ -157,30 +155,27 @@ export default function QuizTaskRun (props) {
         }
       );
     }
-  };
-    //Fecha
-  const onChangeDate = (event, selectedDate) => 
+  }
+  function onChangeDate(event, selectedDate)
   { const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
-  };
-  const showMode = (currentMode) => 
+  }
+  function showMode(currentMode)
   { setShow(true);
     setMode(currentMode);
-  };
-  const showDatepicker = () => 
+  }
+  function showDatepicker()
   { showMode('date');
-  };
-  const showTimepicker = () => 
+  }
+  function showTimepicker()
   { showMode('time');
-  };
-    //SUBIR IMAGEN
-  //Estrellas
-  const ratingFinish = (e) => 
+  }
+  function ratingFinish(e)
   { setStars(e);
-  };
-  const updateCheck = (id) =>{
-    if (checked.length==0){
+  }
+  function updateCheck()
+  { if (checked.length==0){
       for(let i=1;i<=questions.alt.length;i++){
         checked.push(false);
       }
@@ -208,15 +203,8 @@ export default function QuizTaskRun (props) {
               <TextInput
                 placeholder="Texto aquí"
                 style={styles.inputForm}
-                inputContainerStyle={{borderBottomWidth:0}}
-                errorStyle={styles.errorStyle}
                 onChange={(e) => onChange(e)}
                 maxLength={128}
-              />
-              <Icon
-                type="material-community"
-                name="at"
-                iconStyle={styles.iconRight}
               />
             </View>
             <View>
@@ -371,20 +359,9 @@ export default function QuizTaskRun (props) {
           </>
         ):
         <>
-          <View>
-            <View>
-              <Text style={styles.title}>Fin de la tarea</Text>
-            </View>
-            <Text style={styles.text}>Presiona continuar para enviar los datos de tu trabajo </Text>                
-          </View>
-          <View>    
-            <Button 
-              containerStyle={styles.btnContainer}
-              buttonStyle={styles.btn}
-              title="Finalizar Tarea" />    
-          </View>
         </>
       }
+      <Loading isVisible={loading} text={loadingText}/>
     </View>
   );
 }

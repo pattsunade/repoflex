@@ -6,37 +6,39 @@ import Toast from "react-native-easy-toast";
 import { useNavigation } from "@react-navigation/native";
 import { Divider, Button } from 'react-native-elements';
 import BackEndConnect from "../../utils/BackEndConnect";
+import Loading from "../../components/Loading";
 
 export default function DetailTask({route,navigation}) 
-{ const toastRef = useRef();
-  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = route.params;
+{ const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = route.params;
+  const [loading, setLoading] = useState(false);
   function formato() 
   { return{
       tid: tid,
     };
   }
   function assing()
-  { BackEndConnect("POST","assgn",formato()).then(async (response) => 
+  { setLoading(true);
+    BackEndConnect("POST","assgn",formato()).then(async (response) => 
     { if(response.ans.stx!="ok"){
       Toast.show(
-      {
-        type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
-        },
-        autohide: false
-      });
-    }
-      navigation.goBack()
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+          },
+          autohide: false
+        });
+      }
+      navigation.goBack();
+      setLoading(false);
     })
     .catch((ans) =>
     { console.log(ans);
       Toast.show(
-      {
-        type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente'+ans1.ans.msg
+      { type: 'error',
+        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '+ans1.ans.msg
         },
         autohide: false
       });
+      setLoading(false);
     });
   }
   return( 
@@ -58,30 +60,26 @@ export default function DetailTask({route,navigation})
           <Divider style= {styles.divider} />
           <View style={styles.viewTareasTexto}>
             <View>
-              <Text style={styles.textTask}>Lugar:</Text>
+              <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
             </View>
-            <Text style={styles.textRTask}>{pla}</Text>
           </View>
           <View style={styles.viewTareasDetalle}>
             <View>
-              <Text style={styles.textTaskDetalle}>Detalle:</Text>
+              <Text style={styles.textTaskDetalle}>Detalle: <Text style={styles.textRDetalle}>{det} </Text></Text>
             </View>
-            <Text style={styles.textRDetalle}>{det} </Text>
           </View>
           <View style={styles.viewTareasTexto}>
             <View>
-              <Text style={styles.textTask2}>A pagar:</Text>
+              <Text style={styles.textTask2}>A pagar: <Text style={styles.textRTask}>$ {amo}</Text></Text>
             </View>
-            <Text style={styles.textRTask}>$ {amo}</Text>
           </View>
           <View style={styles.viewTareasTexto}>
             <View>
-              <Text style={styles.textTask}>Tiempo de resolución:</Text>
+              <Text style={styles.textTask}>Tiempo de resolución: <Text style={styles.textRTask}>{tim} min</Text></Text>
             </View>
-            <Text style={styles.textRTask}>{tim} min</Text>
           </View>
           <Divider style= {styles.divider}/>
-          <Text style={styles.textTitle}>DETALLE DE ACCIONES</Text>
+          <Text style={styles.textTitle}>DETALLE DE ACTIVIDADES</Text>
           <Text style={styles.textDetalles}>{nqu}     Preguntas</Text>
           <Text style={styles.textDetalles}>{npi}     Fotografías</Text>
           <Text style={styles.textDetalles}>{nre}     Reposición</Text>
@@ -115,6 +113,7 @@ export default function DetailTask({route,navigation})
           </View>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
+      <Loading isVisible={loading} text="Asignando tarea..."/>
     </View>
   );
 }
@@ -204,7 +203,8 @@ const styles = StyleSheet.create(
   textRDetalle:
   { marginLeft:3,
     marginRight:50,
-    fontSize: 20
+    fontSize: 20,
+    fontWeight: "bold"
   },
   circleViewRZ:
   { width:35,

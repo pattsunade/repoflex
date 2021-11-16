@@ -5,16 +5,16 @@ import { useNavigation } from "@react-navigation/native";
 import EmailVerificationForm from "../../components/Login/EmailVerificationFormA";
 
 export default function EmailVerificationA ({route,navigation}) {
-  const { correo } = route.params;
+  const { correo, psw } = route.params;
   return (
     <ScrollView>
       <View style={styles.viewContainer} >
         <Text style={styles.texttitle}>Hemos enviado a tu correo un código de verificación que deberás ingresar aquí:</Text>
-        <EmailVerificationForm correo={correo}/>
+        <EmailVerificationForm correo={correo} psw={psw} />
       </View>
-      <Divider style= {styles.divider} />
+      <Divider style={styles.divider} />
       <View style={styles.viewZolbit}>
-        <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+        <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
       </View>
     </ScrollView>
   )

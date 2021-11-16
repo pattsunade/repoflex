@@ -7,40 +7,28 @@ import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
 import * as Notifications from 'expo-notifications';
 import * as Location from 'expo-location';
+import { useNavigation } from "@react-navigation/native";
 
 export default function Register() {
-  const [amou, setAmou] = useState();
-  const [asgn, setAsgn] = useState();
-  const [avai, setAvai] = useState();
-  const [fini, setFini] = useState();
-  const [proc, setProc] = useState();
-  const [chck, setChck] = useState();
-  const [acce, setAcce] = useState();
-  const [loca, setLoca] = useState();
   const [name, setName] = useState();
-  const [noti, setNoti] = useState();
   const [rank, setRank] = useState();
+  const [amou, setAmou] = useState();
+  const [avai, setAvai] = useState();
+  const [asgn, setAsgn] = useState();
+  const [proc, setProc] = useState();
+  const [envi, setEnvi] = useState();
+  const [chck, setChck] = useState();
+  const [fini, setFini] = useState();
+  const [loca, setLoca] = useState();
+  const [noti, setNoti] = useState();
+  const [tenp, setTenp] = useState();
   const [work, setWork] = useState();
   const [loading, setLoading] = useState(true);
-
+  const navigation = useNavigation();
   function formato(lati,longi)
   { return{
       lat: lati,
       lon: longi
-    };
-  }
-  function datos(response) {
-    return{
-      amou: response.ans.amou,
-      asgn: response.ans.asgn,
-      avai: response.ans.avai,
-      chck: response.ans.chck,
-      fini: response.ans.fini,
-      loca: response.ans.loca,
-      name: response.ans.name,
-      noti: response.ans.noti,
-      rank: response.ans.rank,
-      work: response.ans.work,
     };
   }
   useFocusEffect(
@@ -61,34 +49,28 @@ export default function Register() {
               notificaciones.push(counter);
             }
             setAmou(response.ans.amou);
-            setAsgn(response.ans.asgn);
+            setName(response.ans.name);
+            setRank(response.ans.rank);
             setAvai(response.ans.avai);
-            setAcce(response.ans.acce);
+            setAsgn(response.ans.asgn);
             setProc(response.ans.proc);
+            setEnvi(response.ans.envi);
             setChck(response.ans.chck);
             setFini(response.ans.fini);
-            setName(response.ans.name);
             setLoca(response.ans.loca);
             setNoti(notificaciones);
-            setRank(response.ans.rank);
             setWork(response.ans.work);
             setLoading(false);
           })
         .catch((ans) => 
           { console.log(ans);
-            navigation.reset(
-            { index: 0,
-              routes: [
-                {
-                  name: 'login',
+            Toast.show(
+              { type: 'error',
+                props: 
+                { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta nuevamente"
                 }
-              ],
-            });
-            // Toast.show(
-            // { type: 'error',
-            //   props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor inicia sesión nuevamente'
-            // }
-            // });
+              }
+            );
           }
         );
       })();
@@ -104,17 +86,17 @@ export default function Register() {
         ( <KeyboardAwareScrollView>
             <View style={styles.viewForm}>
               <HomeApp
+                name={name}
                 amou={amou}
-                asgn={asgn}
+                rank={rank}
                 avai={avai}
-                chck={chck}
-                acce={acce}
+                asgn={asgn}
                 proc={proc}
+                envi={envi}
+                chck={chck}
                 fini={fini}
                 loca={loca}
-                name={name}
                 noti={noti}
-                rank={rank}
                 work={work}
               />
             </View>

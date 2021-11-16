@@ -4,6 +4,7 @@ import * as Progress from 'react-native-progress';
 import { Button,Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from '@react-navigation/native';
+import Loading from "../Loading";
 import BackEndConnect from "../../utils/BackEndConnect";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
@@ -14,8 +15,10 @@ export default function TaskQuestion (props) {
   const {questions, tid, completed, taskData} = props;
   const navigation = useNavigation();
   const [formData, setFormData] = useState([]);
-  const per = completed*100/questions.length;
+  const per = Math.round(completed*100/questions.length);
   const compArr = questions.slice(0,completed);
+  const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Enviando tarea...");
   // console.log(per);
   // console.log("taskData en TaskQuestion-->",taskData);
   // console.log(questions);
@@ -25,10 +28,17 @@ export default function TaskQuestion (props) {
   // console.log("Tid en TaskQuestion-->",tid);
   // console.log("Completed en TaskQuestion-->",completed);
   function endTask()
-  { BackEndConnect("POST","taska",formato(formData)).then((ans) =>
+  { setLoading(true);
+    BackEndConnect("POST","taska",formato(formData)).then((ans) =>
     { if (ans.ans.stx === "ok")
-      { AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
-        { navigation.reset(
+      { Toast.show(
+        { type: 'success',
+          props: {onPress: () => {}, text1: 'Éxito', text2: ans.ans.msg
+          }
+        });
+        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
+        { setLoading(false);
+          navigation.reset(
           { index: 0,
             routes: 
             [ { name: 'home',
@@ -38,8 +48,59 @@ export default function TaskQuestion (props) {
         });
       }
       else
-      { console.log("Algo salio mal en taska");
+      { setLoading(false);
+        console.log("Algo salio mal en taska");
       }
+    });
+  }
+  function abort()
+  { setLoadingText("Abortando tarea...");
+    setLoading(true);
+    BackEndConnect("POST","abort",formato2()).then(async (response) => 
+    { if(response.ans.stx!="ok")
+      { Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+          },
+          autohide: false
+        });
+        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>{
+          setLoading(false);
+          navigation.reset({
+            index: 0,
+            routes: 
+            [ { name: 'login',
+              }
+            ],
+          });
+        });
+      }
+      else
+      { Toast.show(
+        { type: 'success',
+          props: {onPress: () => {}, text1: 'Éxito', text2: response.ans.msg
+          }
+        });
+        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
+        { setLoading(false);
+          navigation.reset({
+            index: 0,
+            routes: 
+            [ { name: 'home',
+              }
+            ],
+          });
+        });
+      }
+    })
+    .catch((ans) =>
+    { console.log(ans);
+      Toast.show(
+      { type: 'error',
+        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '+ans1.ans.msg
+        },
+        autohide: false
+      });
     });
   }
   function formato(data) {
@@ -48,15 +109,20 @@ export default function TaskQuestion (props) {
       abc: data
     };
   }
+  function formato2() 
+  { return{
+      tid: tid
+    };
+  }
   useEffect(() => 
-  { if (taskData!==null)
-    { 
+  { console.log(taskData);
+    if (taskData!=null || taskData!= undefined)
+    { console.log("entre en no null");
       if (formData.length==0)
       { 
         console.log("entre en 1");
         setFormData([...formData,taskData]);
         AsyncStorage.setItem('@taskData',JSON.stringify(taskData));
-        console.log("ofrmdata-->",formData);
       }
       else if (per<100)
       { const temp = [...formData,taskData];
@@ -66,8 +132,7 @@ export default function TaskQuestion (props) {
         setFormData(temp);
         // console.log("ofrmdata-->",formData);
       }
-      // AsyncStorage.setItem('@taskData',JSON.stringify(formData));
-      
+      // AsyncStorage.setItem('@taskData',JSON.stringify(formData));  
     }
   },[taskData]);
 
@@ -173,18 +238,25 @@ export default function TaskQuestion (props) {
           )
         }
       </View>
-      <View>
+      <View style={styles.wrapper}>
         { per==100 ?
           ( <Button
               title="Finalizar tarea"
-              buttonStyle={styles.btnCloseSession}
-              titleStyle={styles.CloseSessionText}
+              containerStyle={styles.btnContainer}
+              buttonStyle={styles.btnFinish}
               onPress={endTask}
             />
           )
           :(<></>)
         }
+        <Button
+          title="Abortar tarea"
+          containerStyle={styles.btnContainer}
+          buttonStyle={styles.btnAbort}
+          onPress={abort}
+        />
       </View>
+      <Loading isVisible={loading} text={loadingText}/>
     </ScrollView>
   )
 }
@@ -223,12 +295,28 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     paddingBottom:10,
-    paddingTop:30,
+    paddingTop:15,
     fontSize:20,
   },
-  btnCloseSession:{
-    marginTop:30,
-    borderRadius:0,
+  btnContainer:
+  { marginTop: 1,
+    width: "80%",
+    marginLeft: 40
+  },
+  btnFinish:{
+    marginTop:20,
+    borderRadius:20,
+    borderTopWidth: 1,
+    borderTopColor:"#e3e3e3",
+    borderBottomWidth: 1,
+    borderBottomColor:"#e3e3e3",
+    paddingTop: 10,
+    paddingBottom:10,
+    marginBottom:10,
+  },
+  btnAbort:{
+    marginTop:10,
+    borderRadius:20,
     backgroundColor:"#D0021B",
     borderTopWidth: 1,
     borderTopColor:"#e3e3e3",
@@ -236,10 +324,7 @@ const styles = StyleSheet.create({
     borderBottomColor:"#e3e3e3",
     paddingTop: 10,
     paddingBottom:10,
-    marginBottom:20,
-  },
-  CloseSessionText:{
-    color:"#6B35E2",
+    marginBottom:10,
   },
   divider:{
     backgroundColor:"#6B35E2",

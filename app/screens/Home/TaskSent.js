@@ -5,16 +5,16 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/native";
 
 import BackEndConnect from "../../utils/BackEndConnect";
-import ListTaskAccepted from "../../components/Home/ListTaskAccepted";
+import ListTaskSent from "../../components/Home/ListTaskSent";
 
-export default function TaskAccepted() {
+export default function TaskSent() {
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
   function formato() {
     return{
-      tat: 6,
+      tat: 4,
       lat: 12345,
       lon: 54321
     };

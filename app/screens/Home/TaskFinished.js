@@ -5,7 +5,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/native";
 
 import BackEndConnect from "../../utils/BackEndConnect";
-import ListTaskEnded from "../../components/Home/ListTaskEnded";
+import ListTaskFinished from "../../components/Home/ListTaskFinished";
 
 export default function TaskEnded() {
   const navigation = useNavigation();
@@ -14,7 +14,7 @@ export default function TaskEnded() {
   const [msg, setMsg] = useState("");
   function formato() {
     return{
-      tat: 4,
+      tat: 6,
       lat: 12345,
       lon: 54321
     };
@@ -44,7 +44,7 @@ export default function TaskEnded() {
       ):
       ( <View>
           <View style={styles.viewForm}>
-            <ListTaskEnded data={data}/>
+            <ListTaskFinished data={data}/>
           </View>
         </View>
       )

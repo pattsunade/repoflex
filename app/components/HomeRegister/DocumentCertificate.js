@@ -180,8 +180,9 @@ const styles = StyleSheet.create({
         marginLeft:10,
     },
     btnContainerNext: {
+        marginTop:25,
         marginBottom:20,
-        width: "100%",
+        width: "100%"
     },
     btnNext: {
         backgroundColor: "#6B35E2",

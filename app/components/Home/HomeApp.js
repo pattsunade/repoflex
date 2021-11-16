@@ -8,25 +8,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeApp(props) {
   const navigation = useNavigation();
-  const {name, rank, amou, avai, asgn, chck, proc, acce, fini, work, noti, loca} = props;
+  const {name, amou, rank, avai, asgn, proc, envi, chck, fini, loca, work, noti} = props;
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const RZ = String(rank).charAt(0);
   const RR = String(rank).charAt(2);
   const RI = String(rank).charAt(4);
   async function signOut()
-  { await AsyncStorage.removeItem('@ott');
-    navigation.reset(
-    { index: 0,
-      routes: [
-        { name: 'login',
-        }
-      ],
+  { AsyncStorage.multiRemove(['@ott','@tid','@quest','@taskData','@comp']).then(()=>
+    { navigation.reset(
+      { index: 0,
+        routes: [
+          { name: 'login',
+          }
+        ],
+      }); 
     });
   }
   return (
     <View>
-      <View>
+      {/*<View>
         <Icon
           size={30}
           type="material-community"
@@ -37,9 +38,9 @@ export default function HomeApp(props) {
               notifications:noti
           })}
         />
-      </View>
+      </View>*/}
       <View style={styles.viewContainerInfo} >
-        <Text style={styles.texttitle}>Ubicación: {loca}</Text>
+        <Text style={styles.texttitle}>Ubicación: {"\n"} {loca}</Text>
         <Text style={styles.texttitleSaludo}>Hola, </Text>
         <Text style={styles.texttitleNombre} onPress=
           { () => navigation.navigate("account",
@@ -110,7 +111,7 @@ export default function HomeApp(props) {
           </ListItem.Content>
           <ListItem.Chevron color="#6B35E2"/>
         </ListItem>
-        <ListItem
+        {/*<ListItem
           key="3"
           onPress={()=> navigation.navigate("taskinprogress")}
           Chevron
@@ -124,24 +125,24 @@ export default function HomeApp(props) {
             <ListItem.Title style={styles.numberItem}>{proc}</ListItem.Title>
           </ListItem.Content>
           <ListItem.Chevron color="#6B35E2"/>
-        </ListItem>
+        </ListItem>*/}
         <ListItem
-          key="4"
-          onPress={()=> navigation.navigate("taskended")}
+          key="3"
+          onPress={()=> navigation.navigate("tasksent")}
           Chevron
           bottomDivider
         >
           <Icon name="view-list" color="#6B35E2"/>
           <ListItem.Content>
-            <ListItem.Title style={styles.menuItem}>Terminadas</ListItem.Title>
+            <ListItem.Title style={styles.menuItem}>Enviadas</ListItem.Title>
           </ListItem.Content>
           <ListItem.Content>
-            <ListItem.Title style={styles.numberItem}>{fini}</ListItem.Title>
+            <ListItem.Title style={styles.numberItem}>{envi}</ListItem.Title>
           </ListItem.Content>
           <ListItem.Chevron color="#6B35E2"/>
         </ListItem>
         <ListItem
-          key="5"
+          key="4"
           onPress={()=> navigation.navigate("taskinrevision")}
           Chevron
           bottomDivider
@@ -156,17 +157,17 @@ export default function HomeApp(props) {
           <ListItem.Chevron color="#6B35E2"/>
         </ListItem>
         <ListItem
-          key="6"
-          onPress={()=> navigation.navigate("taskaccepted")}
+          key="5"
+          onPress={()=> navigation.navigate("taskfinished")}
           Chevron
           bottomDivider
         >
           <Icon name="view-list" color="#6B35E2"/>
             <ListItem.Content>
-              <ListItem.Title style={styles.menuItem}>Aceptadas</ListItem.Title>
+              <ListItem.Title style={styles.menuItem}>Finalizadas</ListItem.Title>
             </ListItem.Content>
             <ListItem.Content>
-              <ListItem.Title style={styles.numberItem}>{acce}</ListItem.Title>
+              <ListItem.Title style={styles.numberItem}>{fini}</ListItem.Title>
             </ListItem.Content>
             <ListItem.Chevron color="#6B35E2"/>
         </ListItem>
@@ -185,7 +186,7 @@ export default function HomeApp(props) {
           title="Cerrar sesión"
           buttonStyle={styles.btnCloseSession}
           titleStyle={styles.CloseSessionText}
-          onPress= {signOut}
+          onPress={signOut}
         />
       </View>
     </View>
@@ -204,7 +205,7 @@ const styles = StyleSheet.create(
   },
   texttitle:
   { marginTop:50,
-    marginBottom:10,
+    marginBottom:5,
     marginHorizontal:0,
     fontSize: 17,
     textAlign:"justify"
@@ -225,7 +226,7 @@ const styles = StyleSheet.create(
     textAlign:"justify"
   },
   texttitleResume:
-  { marginTop:20,
+  { marginTop:10,
     marginBottom:20,
     color: "#59575C",
     marginHorizontal:0,
@@ -248,7 +249,7 @@ const styles = StyleSheet.create(
   { flex: 1,
   },
   container:
-  { marginBottom:30,
+  { marginBottom:15,
     flex: .5,
     flexDirection: 'row',
     justifyContent: 'flex-start', //replace with flex-end or center
@@ -282,7 +283,7 @@ const styles = StyleSheet.create(
   customBtn:
   { backgroundColor: "#fff",
     borderRadius: 25,
-    marginTop:5 ,
+    marginTop:5,
     marginBottom:5,
     shadowColor: 'rgba(0, 0, 0, 0.1)',
     shadowOpacity: 0.8,

@@ -11,123 +11,123 @@ import Loading from "../Loading";
 import BackEndConnect from "../../utils/BackEndConnect";
 
 export default function DocumentSelfie (props) {
-    const { toastRef, setIsLoading, navigation} = props;
-    const [imageSelfie, setImageSelfie] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [imageDocumentSelfie, setImageDocumentSelfie] = useState("");
-    const [formData, setFormData] = useState(defaultFormValue());
-    const [isVisibleInfoSelfie, setIsVisibleInfoSelfie] = useState(false);
-    function onChange (e, type) {
-        setFormData({ ...formData, [type]:e });
+const { toastRef, setIsLoading, navigation} = props;
+const [imageSelfie, setImageSelfie] = useState("");
+const [loading, setLoading] = useState(false);
+const [imageDocumentSelfie, setImageDocumentSelfie] = useState("");
+const [formData, setFormData] = useState(defaultFormValue());
+const [isVisibleInfoSelfie, setIsVisibleInfoSelfie] = useState(false);
+function onChange (e, type) {
+    setFormData({ ...formData, [type]:e });
+};
+function defaultFormValue() {
+    return {
+      nfil: 1,
+      tfil: 1,
+      file: "", 
     };
-    function defaultFormValue() {
-        return {
-          nfil: 1,
-          tfil: 1,
-          file: "", 
-        };
+};
+function formato(objeto) {
+    return{
+      nfil : 1,
+      tfil: 1,
+      file : objeto.file
     };
-    function formato(objeto) {
-        return{
-          nfil : 1,
-          tfil: 1,
-          file : objeto.file
-        };
-    };
-    async function sendimage() {
-        await BackEndConnect("POST","sndfi",formato(formData));
-    };
-    const compress = async (uri) => {
-        const manipResult = await ImageManipulator.manipulateAsync(
-          uri,
-          [{ resize: { width:640 , height:480  } }],
-          { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
-        );
-        setImageSelfie(manipResult.base64);
-        onChange(manipResult.base64,"file");
-    };
-    const uploadSelfie = async () =>{
-        const resultPermissions = await MediaLibrary.requestPermissionsAsync();
-        const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync()
-        const roll = await ImagePicker.requestCameraRollPermissionsAsync()
-        if (resultPermissions === "denied"){
-            toastRef.current.show("Es necesario aceptar los permisos de cámara para subir imagenes")
-        }
-        else {
-            const result = await ImagePicker.launchCameraAsync({          
-                allowsEditing:true,
-                aspect: [4, 3],
-                quality: 1
-            });
-            if (result.cancelled) {
-                if (!imageSelfie){
-                    toastRef.current.show("Has cerrado la cámara sin tomar una imagen",3000);
-                }
-            } 
-            else {
-                compress(result.uri);
-                setImageDocumentSelfie(result.uri);
-                toastRef.current.show("Imagen selfie tomada",3000);
+};
+async function sendimage() {
+    await BackEndConnect("POST","sndfi",formato(formData));
+};
+const compress = async (uri) => {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width:640 , height:480  } }],
+      { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
+    );
+    setImageSelfie(manipResult.base64);
+    onChange(manipResult.base64,"file");
+};
+const uploadSelfie = async () =>{
+    const resultPermissions = await MediaLibrary.requestPermissionsAsync();
+    const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync()
+    const roll = await ImagePicker.requestCameraRollPermissionsAsync()
+    if (resultPermissions === "denied"){
+        toastRef.current.show("Es necesario aceptar los permisos de cámara para subir imagenes")
+    }
+    else {
+        const result = await ImagePicker.launchCameraAsync({          
+            allowsEditing:true,
+            aspect: [4, 3],
+            quality: 1
+        });
+        if (result.cancelled) {
+            if (!imageSelfie){
+                toastRef.current.show("Has cerrado la cámara sin tomar una imagen",3000);
             }
+        } 
+        else {
+            compress(result.uri);
+            setImageDocumentSelfie(result.uri);
+            toastRef.current.show("Imagen selfie tomada",3000);
         }
-    };
-    const uploadDocuments = () =>{
-        if(!imageSelfie){
-            toastRef.current.show("Debe subir su Selfie para Continuar",3000);
-        } else{
-            setLoading(true);
-            sendimage().then(() => {
-                navigation.navigate("documentfront");
-                setLoading(false);
-                }
-            );
-        }
-    };
-    return(
-        <ScrollView>
-            <View style={styles.viewContainer}>
-                <Text style={styles.title}>Fotografía Frontal (Selfie)</Text>
-                <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
-                <View style={styles.wrapper}>
-                    <View style={styles.container}>
-                        <View>
-                            <Button
-                                title={ !imageSelfie ? "Toma tu foto aquí" : "Cambiar Foto"}
-                                containerStyle={styles.btnContainer}
-                                buttonStyle={ !imageSelfie ? styles.btn : styles.btnCheck}
-                                onPress={uploadSelfie}
-                            />
-                        </View>
-                        <View>
-                        <Icon
-                            type="material-community"
-                            name="information-outline"
-                            iconStyle={styles.iconLeft}
-                            size={25}
-                            onPress={() => setIsVisibleInfoSelfie(true)}
-                        />
-                        <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
-                        </View>
-                    </View>
-                </View>
-                <Image
-                    source={imageSelfie ? {uri:imageDocumentSelfie} : require("../../../assets/no-image.png")}
-                    resizeMode="contain"
-                    style={styles.logo}
-                />
-                <Button
-                    title="Siguiente"
-                    containerStyle={styles.btnContainerNext}
-                    buttonStyle={styles.btnNext}
-                    onPress={uploadDocuments}
-                />
-                <View style={styles.viewZolbit}>
-                    <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
-                </View>
-                <Loading isVisible={loading} text="Subiendo imagen"/>
-            </View>
-        </ScrollView>
-    )
+    }
+};
+const uploadDocuments = () =>{
+    if(!imageSelfie){
+        toastRef.current.show("Debe subir su Selfie para Continuar",3000);
+    } else{
+        setLoading(true);
+        sendimage().then(() => {
+            navigation.navigate("documentfront");
+            setLoading(false);
+            }
+        );
+    }
+};
+return(
+  <ScrollView>
+    <View style={styles.viewContainer}>
+      <Text style={styles.title}>Fotografía Frontal (Selfie)</Text>
+      <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          <View>
+            <Button
+              title={ !imageSelfie ? "Toma tu foto aquí" : "Cambiar Foto"}
+              containerStyle={styles.btnContainer}
+              buttonStyle={ !imageSelfie ? styles.btn : styles.btnCheck}
+              onPress={uploadSelfie}
+            />
+          </View>
+          <View>
+          <Icon
+            type="material-community"
+            name="information-outline"
+            iconStyle={styles.iconLeft}
+            size={25}
+            onPress={() => setIsVisibleInfoSelfie(true)}
+          />
+          <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
+          </View>
+        </View>
+      </View>
+      <Image
+          source={imageSelfie ? {uri:imageDocumentSelfie} : require("../../../assets/no-image.png")}
+          resizeMode="contain"
+          style={styles.logo}
+      />
+      <Button
+        title="Siguiente"
+        containerStyle={styles.btnContainerNext}
+        buttonStyle={styles.btnNext}
+        onPress={uploadDocuments}
+      />
+      <View style={styles.viewZolbit}>
+        <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+      </View>
+      <Loading isVisible={loading} text="Subiendo imagen"/>
+      </View>
+    </ScrollView>
+  )
 }
 const styles = StyleSheet.create({
     viewContainer:{
@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
         marginLeft:10
     },
     btnContainerNext:{
+        marginTop:25,
         marginBottom:20,
         width:"100%"
     },

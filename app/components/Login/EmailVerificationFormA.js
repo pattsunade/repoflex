@@ -8,8 +8,10 @@ import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
 
 export default function EmailVerificationFormA (props) {
-  const  { correo } = props;
+  const  { correo, psw } = props;
+  console.log("psw->",psw);
   const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Enviando código...");
   const [code, setCode] = useState("");
   const [formData, setFormData] = useState(defaultFormValue());
   const navigation = useNavigation();
@@ -29,22 +31,42 @@ export default function EmailVerificationFormA (props) {
       }
     });
   }
-  const onSubmit = () => {
+  const onSubmit = () => 
+  { setLoading(true);
     if( code === " " )
     { Toast.show(
       { type: 'error',
         props: {onPress: () => {}, text1: 'Error', text2: "Debes ingresar el código de 5 dígitos enviado a tu correo"
         }
       });
-    } else {
-      verification().then(() => 
-      { navigation.reset(
-        { index: 0,
-          routes: [
-            {
-              name: 'login',
-            }
-          ],
+    } 
+    else
+    { verification().then(() => 
+      { setLoadingText("Iniciando sesión...");
+        BackEndConnect("POST","auten",formatoAuten()).then(async (response) => 
+        { if (response.ans.stx === "wk")
+          { Toast.show(
+            { type: 'error',
+              props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+              }
+            });
+            setLoading(false);
+          }
+          else
+          { console.log("entre!");
+            navigation.reset(
+            { index: 0,
+              routes: [
+                { name: 'homeregister',
+                }
+              ],
+            });
+            setLoading(false);
+          }
+        })
+        .catch((response) => 
+        { setLoading(false);
+          console.log(response);
         });
       })
       .catch((response) =>{
@@ -52,8 +74,8 @@ export default function EmailVerificationFormA (props) {
         Toast.show({
           type: 'error',
           props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
-          }
-        });
+            }
+          });
         }
       );
     }
@@ -68,6 +90,12 @@ export default function EmailVerificationFormA (props) {
     return{
       usr: correo,
       mvc : parseInt(objeto.mvc),
+    };
+  }
+  function formatoAuten() {
+    return{
+      usr : correo,
+      psw : psw
     };
   }
   function formato2(objeto) {
@@ -112,7 +140,7 @@ export default function EmailVerificationFormA (props) {
           buttonStyle={styles.btnLogin}
           onPress={onSubmit}
         />
-        <Loading isVisible={loading} text="Iniciando sesión"/>
+        <Loading isVisible={loading} text={loadingText}/>
       </View>
     </View>
   )

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, Alert, TouchableOpacity ,Dimensions
 import { Button, Divider,Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-easy-toast";
-import { Video } from 'expo-av';
+import YouTube from 'react-native-youtube';
 import BackEndConnect from "../../utils/BackEndConnect";
 import Loading from "../../components/Loading";
 
@@ -74,16 +74,16 @@ export default function Training () {
                         <View >
                             <Text style={styles.customBtnText}>Video</Text>
                             <Text style={styles.customBtnTextContent} >Video introductorio, se te realizara un test terminado el video.</Text>                 
-                            <Video
-                                source={{ uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' }}
-                                shouldPlay
-	                            resizeMode="cover"
-                                rate={1.0}
-                                volume={1.0}
-                                shouldPlay={false}
-                                useNativeControls
-	                            style={{ width: 280, height: 200, bottom:60 }}
-
+                            <YouTube
+                              videoId="76mLBQLNC5A" // The YouTube video ID
+                              play // control playback of video with true/false
+                              fullscreen // control whether the video should play in fullscreen or inline
+                              loop // control whether the video should loop when ended
+                              onReady={e => this.setState({ isReady: true })}
+                              onChangeState={e => this.setState({ status: e.state })}
+                              onChangeQuality={e => this.setState({ quality: e.quality })}
+                              onError={e => this.setState({ error: e.error })}
+                              style={{ alignSelf: 'stretch', height: 300 }}
                             />
                             
                         </View>                    

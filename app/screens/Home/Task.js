@@ -17,51 +17,10 @@ export default function Task ({route}) {
   const [error, setError] = useState(false);
   const [questions, setQuestions] = useState(quest);
   const [loading, setLoading] = useState(true);
-  // console.log("Quest en task-->",quest);
-  // console.log("Tid en task-->",tid);
-  // console.log("taskData en task-->",taskData);
-  // console.log("Completed en task-->",completed);
   function formato() 
   { return{
       tid: tid
     };
-  }
-  function abort()
-  { BackEndConnect("POST","abort",formato()).then(async (response) => 
-    { if(response.ans.stx!="ok")
-      { Toast.show(
-        { type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
-          },
-          autohide: false
-        });
-        navigation.reset({
-          index: 0,
-          routes: 
-          [ { name: 'login',
-            }
-          ],
-        });
-      }
-      AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>{
-        navigation.reset({
-          index: 0,
-          routes: 
-          [ { name: 'home',
-            }
-          ],
-        });
-      });
-    })
-    .catch((ans) =>
-    { console.log(ans);
-      Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '+ans1.ans.msg
-        },
-        autohide: false
-      });
-    });
   }
   useEffect(() => 
   { if(questions===undefined || questions === null)
@@ -69,7 +28,7 @@ export default function Task ({route}) {
       { var questAns = response.ans.tas;
         setQuestions(questAns);
         questAns = JSON.stringify(questAns);
-        AsyncStorage.multiSet([['@quest',questAns],['@tid',tid.toString()],['@comp',completed.toString()]])
+        AsyncStorage.multiSet([['@quest',questAns],['@tid',tid.toString()],['@comp',completed.toString()]]);
         setLoading(false);
       })
       .catch((ans) =>
@@ -89,7 +48,7 @@ export default function Task ({route}) {
           [ { name: 'login',
             }
           ],
-          })
+          });
         }
       );
     }
@@ -102,7 +61,7 @@ export default function Task ({route}) {
     }
   },[questions])
   if (loading)
-  { return <Loading isVisible={true} text="Cargando..." />
+  { return <Loading isVisible={true} text="Iniciando tarea..." />
   }
   else
   { if (error)
@@ -114,18 +73,11 @@ export default function Task ({route}) {
           <View>
             <TaskQuestion questions={questions} tid={tid} completed={completed} taskData={taskData}/>
           </View>
-          <View>
-            <Button
-              title="Abortar tarea"
-              buttonStyle={styles.btnCloseSession}
-              titleStyle={styles.CloseSessionText}
-              onPress={abort}
-            />
-          </View>
           <Divider style= {styles.divider} />
           <View style={styles.viewZolbit}>
             <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
           </View>
+          <Loading isVisible={loading} text="Iniciando tarea..."/>
         </ScrollView>
       )
     }
@@ -139,6 +91,18 @@ const styles = StyleSheet.create({
     marginBottom:5,
     justifyContent: "center",
     alignItems: "center"
+  },
+  btnCloseSession:{
+    marginTop:10,
+    borderRadius:20,
+    backgroundColor:"#D0021B",
+    borderTopWidth: 1,
+    borderTopColor:"#e3e3e3",
+    borderBottomWidth: 1,
+    borderBottomColor:"#e3e3e3",
+    paddingTop: 10,
+    paddingBottom:10,
+    marginBottom:10,
   },
   viewContainer2:{
     marginRight: 30,
@@ -163,7 +127,7 @@ const styles = StyleSheet.create({
   },
   divider:{
     backgroundColor: "#6B35E2",
-    margin: 40
+    margin: 20
   },
   viewZolbit:{
     justifyContent: "center",

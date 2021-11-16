@@ -22,7 +22,7 @@ function Tarea(props){
   const {lista} = props;
   const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = lista.item;
   const goTask = () =>
-  { console.log("go tarea");
+  { 
   }
   return( 
     <TouchableOpacity style={styles.TouchTask} onPress={goTask}>
@@ -41,15 +41,13 @@ function Tarea(props){
       <Divider style= {styles.divider}/>
       <View style={styles.viewTareasTexto}>
         <View>
-          <Text style={styles.textTask}>Lugar:</Text>
+          <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
         </View>
-        <Text style={styles.textRTask}>{pla}</Text>
       </View>
       <View style={styles.viewTareasTexto}>
         <View>
-          <Text style={styles.textTask2}>A pagar:</Text>
+          <Text style={styles.textTask2}>A pagar: <Text style={styles.textRTask}>$ {amo}</Text></Text>
         </View>
-        <Text style={styles.textRTask}>$ {amo}</Text>
       </View>
       <View style={styles.viewTareasTexto}>
         <View>
@@ -78,8 +76,7 @@ function Tarea(props){
             containerStyle={styles.btnContainer2}
             buttonStyle={styles.btn2}
             onPress={() => navigation.navigate("detailtaskinprogress",
-            {
-              tit:tit,
+            { tit:tit,
               typ:typ,
               tid:tid,
               pla:pla,
@@ -185,7 +182,7 @@ const styles = StyleSheet.create(
 
       btnContainer2: {
         marginTop: 20,
-        width: "100%",
+        width: "90%",
         marginHorizontal:15
       },
       btn2: {

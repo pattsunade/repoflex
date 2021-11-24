@@ -65,7 +65,7 @@ function Tarea(props){
             sig:sig
           })}
         />
-      </View>      
+      </View>
     </TouchableOpacity>
   );
 }

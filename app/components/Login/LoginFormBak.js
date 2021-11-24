@@ -16,12 +16,11 @@ export default function LoginForm()
   const [rutCorrect, setRutCorrect] = useState(2);
   const [changedRut, setChangedRut] = useState("");
   const [passCorrect, setPassCorrect] = useState(2);
-  const ref_input2 = useRef();
   const navigation = useNavigation();
 
   function onSubmit()
   { setLoading(true);
-    if (isEmpty(formData.rut) || isEmpty(formData.psw) || !rutCorrect || !passCorrect)
+    if (isEmpty(formData.rut) || isEmpty(formData.psw)) 
     { Toast.show(
       { type: 'error',
         props: {onPress: () => {}, text1: 'Error', text2: "Verifica los campos ingresados."
@@ -49,7 +48,7 @@ export default function LoginForm()
         else
         { let matrix = response.hdr.mtx;
           let stp = response.ans.stp;
-          if ((matrix.match(/1/g) || []).length>=parseInt(stp))
+          if ((matrix.match(/1/g) || []).length>=parseInt(stp)) 
           { navigation.reset(
             { index: 0,
               routes: [
@@ -214,9 +213,6 @@ export default function LoginForm()
           onEndEditing={(e) => onEnd(e,"rut")}
           maxLength={12}
           onChangeText={(e) => format(e)}
-          returnKeyType="next"
-          onSubmitEditing={() => { ref_input2.current.focus()}}
-          blurOnSubmit={false}
           value={changedRut}
         />
         <Icon
@@ -237,7 +233,6 @@ export default function LoginForm()
           placeholder="Contraseña"
           placeholderTextColor="#AC9DC9"
           style={styles.inputForm}
-          ref={ref_input2}
           inputContainerStyle={{borderBottomWidth:0}}
           password={true}
           secureTextEntry={showPassword ? false : true}

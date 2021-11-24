@@ -21,7 +21,7 @@ export default function AssignedDetail({route,navigation}) {
             <Text style={styles.textTypeTask}>{typ}</Text>
           </View>
           <View style={styles.viewTareas}>
-            <Text style={styles.textTitleTask}>{tit}</Text>  
+            <Text style={styles.textTitleTask}>{tit}</Text>
           </View>
           <View>
             <Text style={styles.idText}>id:{tid}</Text>
@@ -29,50 +29,44 @@ export default function AssignedDetail({route,navigation}) {
           <Divider style= {styles.divider} />
           <View style={styles.viewTareasTexto}>
             <View>
-              <Text style={styles.textTask}>Lugar:</Text>
+              <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
             </View>
-              <Text style={styles.textRTask}>{pla}</Text>
           </View>
           <View style={styles.viewTareasDetalle}>
             <View>
-              <Text style={styles.textTaskDetalle}>Detalle:</Text>
+              <Text style={styles.textTaskDetalle}>Detalle: <Text style={styles.textRDetalle}>{det} </Text></Text>
             </View>
-              <Text style={styles.textRDetalle}>{det} </Text>  
           </View>
           <View style={styles.viewTareasTexto}>
             <View>
-              <Text style={styles.textTask2}>A pagar:</Text>
+              <Text style={styles.textTask2}>A pagar: <Text style={styles.textRTask}>$ {amo}</Text></Text>
             </View>
-              <Text style={styles.textRTask}>$ {amo}</Text>
           </View>
           <View style={styles.viewTareasTexto}>
             <View>
-              <Text style={styles.textTask}>Tiempo de resolución:</Text>
+              <Text style={styles.textTask}>Tiempo de resolución: <Text style={styles.textRTask}>{tim} min</Text></Text>
             </View>
-              <Text style={styles.textRTask}>{tim} min</Text>
           </View>
           <Divider style= {styles.divider} />
           <Text style={styles.textTitle}>DETALLE DE ACCIONES</Text>
           <Text style={styles.textDetalles}>{nqu}     Preguntas</Text>
           <Text style={styles.textDetalles}>{npi}     Fotografías</Text>
           <Text style={styles.textDetalles}>{nre}     Reposición</Text>
-          <View style={styles.viewTareasTexto}>
-            <View>
-              <Button
-                title="         Iniciar         "
-                containerStyle={styles.btnContainer2}
-                buttonStyle={styles.btn2}
-                onPress={() => navigation.reset({ 
-                    index: 0,
-                    routes: [
-                      {
-                        name: 'task',
-                        params: {tid:tid,completed:0}
-                      }
-                    ],
-                  })}
+          <View style={styles.viewBtn}>
+            <Button
+              title="Iniciar"
+              containerStyle={styles.btnContainer2}
+              buttonStyle={styles.btn2}
+              onPress={() => navigation.reset({ 
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'task',
+                      params: {tid:tid,completed:0}
+                    }
+                  ],
+                })}
               />
-            </View>  
           </View>
         </TouchableOpacity>
       </KeyboardAwareScrollView>
@@ -197,7 +191,7 @@ const styles = StyleSheet.create({
   },
   btnContainer2: {
     marginTop: 20,
-    width: "100%",
+    width: "40%",
     marginHorizontal:15
   },
   btn2: {
@@ -205,5 +199,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginHorizontal:8,
     marginBottom:10
-  }
+  },
+  viewBtn:{
+    flexDirection:"row",
+    margin:1,
+    borderRadius:1,
+    alignSelf:"center"
+  },
 });

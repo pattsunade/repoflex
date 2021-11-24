@@ -1,10 +1,11 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeRegister from "../screens/HomeRegister/HomeRegister";
-import DocumentsSelfie from "../screens/HomeRegister/DocumentSelfie";
-import DocumentsFront from "../screens/HomeRegister/DocumentFront";
-import DocumentsReverse from "../screens/HomeRegister/DocumentReverse";
-import DocumentsCertificate from "../screens/HomeRegister/DocumentCertificate";
+import DocumentData from "../screens/HomeRegister/DocumentData";
+import DocumentSelfie from "../screens/HomeRegister/DocumentSelfie";
+import DocumentFront from "../screens/HomeRegister/DocumentFront";
+import DocumentReverse from "../screens/HomeRegister/DocumentReverse";
+import DocumentCertificate from "../screens/HomeRegister/DocumentCertificate";
 import EconomyActivityNumber from "../screens/HomeRegister/EconomyActivityNumber";
 import EconomyActivityCertificate from "../screens/HomeRegister/EconomyActivityCertificate";
 import Training from "../screens/HomeRegister/Training";
@@ -27,26 +28,32 @@ export default function HomeRegisterStack(){
         //options={{headerShown: false}}
       />
       <Stack.Screen
+        name="documentdata"
+        component={DocumentData}
+        options={{title: "Datos personales"}}
+        //options={{headerShown: false}}
+      />
+      <Stack.Screen
         name="documentselfie"
-        component={DocumentsSelfie}
-        options={{title: "Mi Foto"}}
+        component={DocumentSelfie}
+        options={{title: "Autoretrato"}}
         //options={{headerShown: false}}
       />
       <Stack.Screen
         name="documentfront"
-        component={DocumentsFront}
+        component={DocumentFront}
         options={{title: "Fotografía frontal del documento"}}
         //options={{headerShown: false}}
       />
       <Stack.Screen
         name="documentreverse"
-        component={DocumentsReverse}
+        component={DocumentReverse}
         options={{title: "Fotografía reverso del documento"}}
         //options={{headerShown: false}}
       />
       <Stack.Screen
         name="documentcertificate"
-        component={DocumentsCertificate}
+        component={DocumentCertificate}
         options={{title: "Certificado de antecedentes"}}
         //options={{headerShown: false}}
       />
@@ -66,7 +73,7 @@ export default function HomeRegisterStack(){
         name="training"
         component={Training}
         options={{title: "Mi Entrenamiento"}}
-        //options={{headerShown: false}}
+        // options={{headerShown: false}}
       />
       <Stack.Screen
         name="training2"

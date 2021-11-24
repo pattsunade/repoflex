@@ -67,10 +67,17 @@ export default function Register() {
             Toast.show(
               { type: 'error',
                 props: 
-                { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta nuevamente"
+                { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor inicia sesión nuevamente"
                 }
               }
             );
+            navigation.reset(
+            { index: 0,
+              routes: [
+                { name: 'login',
+                }
+              ],
+            });
           }
         );
       })();

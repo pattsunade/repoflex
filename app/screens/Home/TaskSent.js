@@ -44,7 +44,7 @@ export default function TaskSent() {
       ):
       ( <View>
           <View style={styles.viewForm}>
-            <ListTaskAccepted data={data}/>
+            <ListTaskSent data={data}/>
           </View>
         </View>
       )

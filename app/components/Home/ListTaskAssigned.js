@@ -1,7 +1,6 @@
-import { styleSheets } from 'min-document';
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Divider, Button, Image } from 'react-native-elements';
+import { Divider, Button} from 'react-native-elements';
 import { useNavigation } from "@react-navigation/native";
 
 export default function ListTaskAssigned(props) {
@@ -21,11 +20,8 @@ function Tarea(props){
   const navigation = useNavigation();
   const {lista} = props;
   const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = lista.item;
-  const goTask = () =>{
-    console.log("go tarea");
-  }
   return(
-    <TouchableOpacity style={styles.TouchTask} onPress={goTask} >
+    <TouchableOpacity style={styles.TouchTask}>
       <View style={styles.viewTareas}>
         <View style={styles.circleViewRZ}>
           <Text style={styles.circleText}>{sig}</Text>
@@ -51,7 +47,7 @@ function Tarea(props){
       </View>
       <View style={styles.viewBtn}>
         <Button
-          title="Ver más"
+          title="Ver detalles"
           containerStyle={styles.btnContainer2}
           buttonStyle={styles.btn2}
           onPress={() => navigation.navigate("assigneddetail",{
@@ -153,11 +149,11 @@ const styles = StyleSheet.create({
   },
   btnContainer2: {
     marginTop: 20,
-    width: "40%",
+    width: "50%",
     marginHorizontal:15
   },
   btn2: {
-    backgroundColor: "#68BB6D",
+    backgroundColor: "#A88DCB",
     borderRadius: 50,
     marginHorizontal:8,
     marginBottom:10

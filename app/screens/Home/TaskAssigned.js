@@ -5,6 +5,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import BackEndConnect from "../../utils/BackEndConnect";
+import Toast from 'react-native-toast-message';
 import ListTaskAssigned from "../../components/Home/ListTaskAssigned";
 import ListTaskInProgress from "../../components/Home/ListTaskInProgress";
 
@@ -28,27 +29,32 @@ export default function TaskAssigned() {
   useFocusEffect(
     useCallback(() =>
       { BackEndConnect("POST","tasks",formato()).then(async (response) =>
-        { console.log(response);
-          const array = response.ans.tas;
+        { const array = response.ans.tas;
           const arrayPending = [];
           const arrayInProgress = [];
-          console.log("Arreglo->",array[0]);
-          console.log("Data->",array[0].tst);
           setMsg(response.ans.msg);
           setMsp(response.ans.msp);
-          for(let i=0;i<array.length;i++)
-          { console.log("i->",i);
-            if(array[i].tst==2)
-            { arrayPending.push(array[i]);
+          if(array != undefined)
+          { for(let i=0;i<array.length;i++)
+            { if(array[i].tst==2)
+                arrayPending.push(array[i]);
+              else
+                arrayInProgress.push(array[i]); 
             }
-            else
-            { arrayInProgress.push(array[i]); 
-            }
+            setDataPending(arrayPending);
+            setInDataProgress(arrayInProgress);
           }
-          setDataPending(arrayPending);
-          setInDataProgress(arrayInProgress);
           setLoading(false);
-        });
+        }).catch((e) => 
+          { console.log(e);
+            setLoading(false);
+            Toast.show(
+            { type: 'error',
+              props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
+                }
+            });    
+          }
+        );
       },
     [])
   );
@@ -56,7 +62,7 @@ export default function TaskAssigned() {
   function Pending()
   { return(
       <>
-        { dataPending == null ?
+        { dataPending.length < 1 ?
           ( <View>
               <Text style={styles.title}>{msg}</Text>
             </View>
@@ -75,7 +81,7 @@ export default function TaskAssigned() {
   function InProgress()
   { return(
       <>
-        { dataInProgress == null ?
+        { dataInProgress.length < 1 ?
           ( <View>
               <Text style={styles.title}>{msp}</Text>
             </View>

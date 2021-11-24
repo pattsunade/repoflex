@@ -117,8 +117,7 @@ export default function RegisterForm(props) {
   };
 
   function onEnd(e,type)
-  { console.log("me llamaron");
-    if(type == 'rut')
+  { if(type == 'rut')
     { const rut = clean(e.nativeEvent.text);
       const rutLen = rut.length;
       if(rutLen==0)

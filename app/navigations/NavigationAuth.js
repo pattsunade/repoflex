@@ -9,14 +9,12 @@ import HomeRegisterStack from "./HomeRegisterStack";
 import TaskStack from "./TaskStack";
 import Loading from "../components/Loading";
 import BackEndConnect from '../utils/BackEndConnect';
-import Toast from 'react-native-toast-message';
 const RootStack = createStackNavigator();
 
 function SplashScreen() {
   return (
-    <View style={styles.loaderTask}>
-      <ActivityIndicator  size="large" color="#0000ff"/>
-      <Text>Cargando...</Text>
+    <View>
+      <Loading isVisible={true} text="Cargando..." />
     </View>
   );
 }

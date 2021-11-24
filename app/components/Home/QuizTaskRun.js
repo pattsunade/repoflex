@@ -174,7 +174,7 @@ export default function QuizTaskRun (props) {
   function ratingFinish(e)
   { setStars(e);
   }
-  function updateCheck()
+  function updateCheck(id)
   { if (checked.length==0){
       for(let i=1;i<=questions.alt.length;i++){
         checked.push(false);

@@ -25,7 +25,7 @@ function Tarea(props){
   { 
   }
   return( 
-    <TouchableOpacity style={styles.TouchTask} onPress={goTask}>
+    <TouchableOpacity style={styles.TouchTask}>
       <View style={styles.viewTareas}>
         <View style={styles.circleViewRZ}>
           <Text style={styles.circleText}>{sig}</Text>
@@ -52,7 +52,7 @@ function Tarea(props){
       <View style={styles.viewTareasTexto}>
         <View>
           <Button
-            title="Ver más"
+            title="Ver detalles"
             containerStyle={styles.btnContainer}
             buttonStyle={styles.btn}
             onPress={() => navigation.navigate("taskdetail",

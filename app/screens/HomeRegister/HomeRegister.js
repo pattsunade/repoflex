@@ -44,8 +44,7 @@ export default function Home () {
     navigation.reset(
     { index: 0,
       routes: [
-        {
-          name: 'login',
+        { name: 'login',
         }
       ],
     });
@@ -80,9 +79,29 @@ export default function Home () {
     let stp = await AsyncStorage.getItem('@stp');
     if(loading)
     { BackEndConnect("POST","matrx").then((ans)=>{
-        var mtx = ans.hdr.mtx;
-        setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
-        setLoading(false);
+        console.log(ans.ans.stx);
+        if(ans.ans.stx!="ok")
+        { setLoading(false);
+          Toast.show(
+          { type: 'error',
+            props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde.'
+              }
+          });
+          signOut();
+        }
+        else
+        { var mtx = ans.hdr.mtx;
+          setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
+          setLoading(false);
+        }
+      })
+      .catch((e) =>
+      { setLoading(false);
+        Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
+            }
+          });
       })
     }
     else
@@ -91,11 +110,10 @@ export default function Home () {
     }
     console.log("Llamaron a getmatrix");
   }
-  console.log("Matrix",matrix);
   if (loading)
-  { return <Loading isVisible={true} text="Cargando..." />
+  { return <Loading isVisible={true} text="Obteniendo datos..." />
   }
-  else if (matrix < 67){
+  else if (matrix < 70){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
@@ -105,10 +123,11 @@ export default function Home () {
         </View>
         <View style={styles.viewContainer2}>
           <Text style={styles.subtitle}> Pasos Pendientes</Text>
-          <TouchableOpacity style={styles.customBtn} onPress={() => 
-            matrix < 33 ? navigation.navigate("documentselfie"): 
-            matrix < 44 ? navigation.navigate("documentfront"):
-            matrix < 56 ? navigation.navigate("documentreverse"):
+          <TouchableOpacity style={styles.customBtn} onPress={() =>
+            matrix == 20 ? navigation.navigate("documentdata"):
+            matrix == 30 ? navigation.navigate("documentselfie"): 
+            matrix == 40 ? navigation.navigate("documentfront"):
+            matrix == 50 ? navigation.navigate("documentreverse"):
             navigation.navigate("documentcertificate")   
           }>
           <View style={styles.wrapper}>
@@ -264,7 +283,7 @@ export default function Home () {
       </ScrollView>
     )
   }
-  else if (matrix <= 67){
+  else if (matrix == 70){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
@@ -421,7 +440,7 @@ export default function Home () {
     </ScrollView>
   )
   }
-  else if (matrix <= 78){
+  else if (matrix == 80){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
@@ -578,7 +597,7 @@ export default function Home () {
       </ScrollView>
     )
   }
-  else if (matrix <= 89){
+  else if (matrix == 90){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>

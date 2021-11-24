@@ -77,7 +77,7 @@ const uploadDocuments = () =>{
     } else{
         setLoading(true);
         sendimage().then(() => {
-            navigation.navigate("documentfront");
+            navigation.replace("documentfront");
             setLoading(false);
             }
         );

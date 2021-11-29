@@ -26,6 +26,7 @@ export default function BackEndConnect(method=null, req=null, body=null){
           }
         }),
       });
+      console.log(backResponse);
     }
     else 
     { console.log("enviando datos");

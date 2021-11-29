@@ -10,26 +10,49 @@ import Loading from "../../components/Loading";
 
 export default function Firm () {
   const navigation = useNavigation();
-  const [TyCTitle, setTyCTitle] = useState();
-  const [TyCBody, setTyCBody] = useState();
-  const [loading, setLoading] = useState(false);
+  const [masterTitle, setMasterTitle] = useState();
+  const [paragraph, setParagraft] = useState([]);
+  const [fut, setFut] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   useFocusEffect(
     useCallback(() =>
-    { setLoading(true);
-      BackEndConnect("POST","terco").then(async (response) => {
-        var title = response.ans.tit;
-        var body = response.ans.bod;
-        setTyCTitle(title);
-        setTyCBody(body);
-        setLoading(false);
+    { BackEndConnect("POST","terco").then(async (response) =>
+      { if (response.ans.stx === "ok")
+        { var mst = response.ans.mat;
+          setMasterTitle(mst);
+          setParagraft(response.ans.par);
+          setFut(response.ans.fut);
+          setLoading(false);
+        }
+        else
+        { Toast.show({
+          type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde' + response.ans.stx
+            }
+          });
+          navigation.reset(
+          { index: 0,
+            routes: [
+              { name: 'login',
+              }
+            ],
+          });
+          setLoading(false);
+        }
       })
       .catch((response) =>
-      { console.log(response);
-        Toast.show({
+      { Toast.show({
           type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
+          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde' + response.ans.stx
             }
+        });
+        navigation.reset(
+        { index: 0,
+          routes: [
+            { name: 'login',
+            }
+          ],
         });
         setLoading(false);
       });
@@ -38,14 +61,19 @@ export default function Firm () {
 
   return (
     <ScrollView>
-      <View>
-        <TermsAndConditions navigation={navigation} TyCTitle={TyCTitle} TyCBody={TyCBody} />
-      </View>  
+      { loading ? (<Loading isVisible={loading} text="Cargando..." />)
+        :(<View>
+            <TermsAndConditions navigation={navigation} masterTitle={masterTitle} paragraph={paragraph} fut={fut}/>
+          </View>)
+      }
+      {/*<View>
+        <TermsAndConditions navigation={navigation} masterTitle={masterTitle} paragraph={paragraph} fut={fut}/>
+      </View>  */}
       <Divider style= {styles.divider} />
       <View style={styles.viewZolbit}>
         <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
       </View>
-      <Loading isVisible={loading} text="Cargando..."/>
+      {/*<Loading isVisible={loading} text="Cargando..."/>*/}
     </ScrollView>
   )
 }
@@ -57,5 +85,10 @@ const styles = StyleSheet.create({
   },
   textZolbit: {
     fontWeight: "bold",
+  },
+  divider:{
+    backgroundColor:"#6B35E2",
+    marginHorizontal:40,
+    marginTop:10,
   }
 });

@@ -10,7 +10,7 @@ export default function Login() {
   return(
     <ScrollView>
       <Image 
-        source={require("../../../assets/img/zolbitLogo.png")}
+        source={require("../../../assets/img/repoLogo.png")}
         resizeMode="contain"
         style={styles.logo}
       />

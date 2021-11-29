@@ -78,7 +78,7 @@ export default function DocumentFront (props) {
     else {
     setLoading(true);
     sendimage().then(() => {
-        navigation.navigate("documentreverse");
+        navigation.replace("documentreverse");
         setLoading(false);
         }
     );

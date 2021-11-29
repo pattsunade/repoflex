@@ -16,17 +16,17 @@ export default function TrainingQuestions (props) {
   return(
     <ScrollView>
       <View style={styles.viewContainer}>
-      <Card>
-        <Card.Title style={styles.cardTitleText}>Preguntas del Entrenamiento</Card.Title>
-        <Card.Divider/>
-        {Enunciados}
-      </Card>
-      <Button
-        title="Comenzar"
-        containerStyle={styles.btnContainer}
-        buttonStyle={styles.btn}
-        onPress={() => navigation.navigate("training3",{questions:questions,tid:tid})}
-      />
+        <Card>
+          <Card.Title style={styles.cardTitleText}>Preguntas del Entrenamiento</Card.Title>
+          <Card.Divider/>
+          {Enunciados}
+        </Card>
+        <Button
+          title="Comenzar"
+          containerStyle={styles.btnContainer}
+          buttonStyle={styles.btn}
+          onPress={() => navigation.navigate("training3",{questions:questions,tid:tid})}
+        />
       </View>
     </ScrollView>
   )

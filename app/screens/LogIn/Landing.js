@@ -8,11 +8,10 @@ export default function UserGuest() {
   return(
     <ScrollView centerContent={true} style={styles.viewBody} >
       <Image 
-        source={require("../../../assets/img/zolbitLogo.png")}
+        source={require("../../../assets/img/repoLogo.png")}
         resizeMode="contain"
         style={styles.logo}
       />
-      <Text style={styles.title}>Repoflex App</Text>
       <Text style={styles.description}>
         ¡Bienvenido a Repoflex!{"\n"}
         Un producto de Zolbit para el retail.
@@ -46,6 +45,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     description:{
+        marginTop:50,
         marginBottom: 5,
         fontSize: 18,
         textAlign:"center",
@@ -65,5 +65,6 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 150,
         marginTop: 70,
+        marginBottom:50
     }
 });

@@ -55,6 +55,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
     "react-native-maps": "0.28.0",
     "react-native-pager-view": "^5.4.9",
+    "react-native-parsed-text": "^0.0.22",
     "react-native-progress": "^4.1.2",
     "react-native-ratings": "^8.1.0",
     "react-native-reanimated": "~2.2.0",

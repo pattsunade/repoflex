@@ -48,6 +48,7 @@ export default function DocumentReverse (props) {
       [{ resize: { width:640 , height:480  } }],
       { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
     );
+    console.log(manipResult.base64)
     setImage(manipResult.base64);
     onChange(manipResult.base64,"file");
   };
@@ -64,10 +65,12 @@ export default function DocumentReverse (props) {
         aspect: [4, 3],
         quality: 1
       });
-      if (result.cancelled)
+      if (result.cancelled){
         if(!image)
           toastRef.current.show("Has cerrado la cámara sin tomar una imagen",3000);
-      else {
+      }
+      else 
+      { console.log("entre");
         compress(result.uri);
         setImageDocumentReverse(result.uri);
         toastRef.current.show("Imagen reverso del documento tomada",3000);
@@ -76,7 +79,9 @@ export default function DocumentReverse (props) {
   };
 
   const uploadDocuments = () =>
-  { if(!image)
+  { console.log(image);
+    console.log(DocumentReverse);
+    if(!image)
       toastRef.current.show("Debe subir todas las imagenes",3000);
     else{
       setLoading(true);

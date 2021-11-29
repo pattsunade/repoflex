@@ -2,7 +2,7 @@
   "expo": {
     "name": "Repoflex",
     "slug": "repoflex",
-    "version": "0.27.0",
+    "version": "0.30.0",
     "orientation": "portrait",
     "icon": "./assets/iconrepo.png",
     "splash": {
@@ -33,7 +33,7 @@
         "USER_FACING_NOTIFICATIONS"
      ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/iconrepo.png",
         "backgroundColor": "#000000"
       },
       "package": "com.electronico.repoflex",
@@ -49,7 +49,7 @@
         {
           "icon": "-",
           "color": "#ffffff",
-          "sounds": "-",
+          "sounds": ["./assets/notiSound.wav"],
           "mode": "production"
         }
       ]

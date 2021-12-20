@@ -20,6 +20,7 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const ref_input2 = useRef();
   const ref_input3 = useRef();
+  const ref_input4 = useRef();
   const navigation = useNavigation();
   
   function onSubmit()
@@ -51,7 +52,7 @@ export default function RegisterForm() {
             });
           }
           else
-          { navigation.replace("emailverificationA",{
+          { navigation.replace("emailverification",{
               rut:formData.rut,
               psw:formData.psw
             });
@@ -156,6 +157,7 @@ export default function RegisterForm() {
   return {
     rut: "",
     psw: "",
+    pho: "",
     repeatPassword: ""
     };
   }
@@ -164,6 +166,7 @@ export default function RegisterForm() {
     return{
       usr : objeto.rut,
       psw : objeto.psw,
+      pho : objeto.pho
     };
   }
 
@@ -194,17 +197,42 @@ export default function RegisterForm() {
         (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
         (<></>)
       }
+      <Text style={styles.textDescription}>{" "}Número telefónico</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          placeholder="56911111111"
+          placeholderTextColor="#AC9DC9"
+          keyboardType="numeric"
+          style={styles.inputForm}
+          onEndEditing={(e) => onEnd(e,"pho")}
+          maxLength={12}
+          returnKeyType="next"
+          onSubmitEditing={() => { ref_input3.current.focus()}}
+          blurOnSubmit={false}
+          ref={ref_input2}
+        />
+        <Icon
+          name="fingerprint"
+          iconStyle={styles.iconRight}
+        />
+      </View>
+      { rutCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
+        rutCorrect == 3 ?
+        (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
+        (<></>)
+      }
       <Text style={styles.textDescription}>{" "}Contraseña</Text>
       <View style={styles.searchSection}>
         <TextInput
           placeholder="********"
-          ref={ref_input2}
+          ref={ref_input3}
           placeholderTextColor="#AC9DC9"
           style={styles.inputForm}
           inputContainerStyle={{borderBottomWidth:0}}
           password={true}
           returnKeyType="next"
-          onSubmitEditing={() => { ref_input3.current.focus()}}
+          onSubmitEditing={() => { ref_input4.current.focus()}}
           secureTextEntry={showPassword ? false : true}
           onEndEditing={(e) => onEnd(e, "psw")}
           blurOnSubmit={false}
@@ -226,7 +254,7 @@ export default function RegisterForm() {
         <TextInput
           placeholder="********"
           placeholderTextColor="#AC9DC9"
-          ref={ref_input3}
+          ref={ref_input4}
           style={styles.inputForm}
           inputContainerStyle={{borderBottomWidth:0}}
           password={true}

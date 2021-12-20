@@ -1,9 +1,8 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-
-import Task from "../screens/Home/Task";
-import QuizTask from "../screens/Home/QuizTask";
+import Task from "../screens/Tasks/Task";
+import QuizTask from "../screens/Tasks/QuizTask";
 
 const Stack = createStackNavigator();
 
@@ -21,7 +20,7 @@ export default function TaskStack({route})
       <Stack.Screen
         name="quiztask"
         component={QuizTask}
-        options={{title: "Tarea"}}
+        options={{title: "Actividad"}}
         //options={{headerShown: false}}
       />  
     </Stack.Navigator>

@@ -200,7 +200,8 @@ export default function LoginForm()
   function formato(objeto) {
     return{
       usr : objeto.rut,
-      psw : objeto.psw
+      psw : objeto.psw,
+      orig : 'app'
     }
   }
 

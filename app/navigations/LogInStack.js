@@ -38,12 +38,12 @@ export default function LogInStack(){
         options={{title: "Verificar Email"}}
         //options={{headerShown: false}}
       />
-      <Stack.Screen
+      {/*<Stack.Screen
         name="emailverificationA"
         component={EmailVerificationA}
         options={{title: "Verificar Email"}}
         //options={{headerShown: false}}
-      />
+      />*/}
       <Stack.Screen
         name="newPassword"
         component={NewPassword}

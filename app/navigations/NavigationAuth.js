@@ -7,6 +7,7 @@ import LogInStack from "./LogInStack";
 import HomeStack from "./HomeStack";
 import HomeRegisterStack from "./HomeRegisterStack";
 import TaskStack from "./TaskStack";
+import AccountStack from "./AccountStack";
 import Loading from "../components/Loading";
 import BackEndConnect from '../utils/BackEndConnect';
 const RootStack = createStackNavigator();
@@ -76,6 +77,11 @@ export default function Navigation() {
                 options={{ title: "Task", headerShown: false }}
                 initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
               />
+              <RootStack.Screen 
+                name="account"
+                component={AccountStack}
+                options={{headerShown: false}}
+              />
             </>
           ): stp>matrix ?
           ( <>
@@ -92,6 +98,11 @@ export default function Navigation() {
               <RootStack.Screen
                 name="login"
                 component={LogInStack}
+                options={{headerShown: false}}
+              />
+              <RootStack.Screen 
+                name="account"
+                component={AccountStack}
                 options={{headerShown: false}}
               />
               <RootStack.Screen 
@@ -121,6 +132,11 @@ export default function Navigation() {
                 initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
               />
               <RootStack.Screen 
+                name="account"
+                component={AccountStack}
+                options={{headerShown: false}}
+              />
+              <RootStack.Screen 
                 name="homeregister"
                 component={HomeRegisterStack}
                 options={{ title: "Home", headerShown: false }}
@@ -132,6 +148,11 @@ export default function Navigation() {
                 name="home"
                 component={HomeStack}
                 options={{ title: "Home", headerShown: false }}
+              />
+              <RootStack.Screen 
+                name="account"
+                component={AccountStack}
+                options={{headerShown: false}}
               />
               <RootStack.Screen
                 name="login"

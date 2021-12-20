@@ -1,161 +1,266 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
-import { Input, Button } from "react-native-elements";
-import { size } from "lodash";
+import React, { useState,useRef } from "react";
+import { StyleSheet, View, Text, TextInput, ScrollView } from "react-native";
+import { Input, Icon, Button } from "react-native-elements";
+import { isEmpty } from "lodash";
+import { useNavigation } from "@react-navigation/native";
 import * as firebase from "firebase";
-import { reauthenticate } from "../../utils/api";
+import { validateEmail } from "../../utils/validations";
+import Loading from "../Loading";
+import Toast from 'react-native-toast-message';
+import BackEndConnect from "../../utils/BackEndConnect";
 
-export default function ChangePasswordForm(props) {
-  const { setShowModal, toastRef } = props;
+export default function NewPasswordForm () {
+  const [loading, setLoading] = useState(false);
+  const [passCorrect, setPassCorrect] = useState(2);
+  const [oldPassCorrect, setOldPassCorrect] = useState(2);
+  const [repeatPassCorrect, setRepeatPassCorrect] = useState(2);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState(defualtValue());
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const [formData, setFormData] = useState(defaultFormValue());
+  const ref_input2 = useRef();
+  const ref_input3 = useRef();
+  const navigation = useNavigation();
 
-  const onChange = (e, type) => {
+  function onEnd(e,type)
+  { let status = 2;
+    if(e.nativeEvent.text.length==0)
+      status = 2
+    else if(e.nativeEvent.text.length<6 || e.nativeEvent.text.length>15)
+      status = 0;
+    else
+      status = 1
+    if(type == 'pso')
+      setOldPassCorrect(status);
+    else
+      setPassCorrect(status);
     setFormData({ ...formData, [type]: e.nativeEvent.text });
-  };
+    console.log(oldPassCorrect);
+  }
 
-  const onSubmit = async () => {
-    let isSetErrors = true;
-    let errorsTemp = {};
-    setErrors({});
+  function defaultFormValue()
+  { return {
+      pso: "",
+      psn: ""
+    };
+  }
 
-    if (
-      !formData.password ||
-      !formData.newPassword ||
-      !formData.repeatNewPassword
-    ) {
-      errorsTemp = {
-        password: !formData.password
-          ? "La contraseña no puede estar vacia."
-          : "",
-        newPassword: !formData.newPassword
-          ? "La contraseña no puede estar vacia."
-          : "",
-        repeatNewPassword: !formData.repeatNewPassword
-          ? "La contraseña no puede estar vacia."
-          : "",
-      };
-    } else if (formData.newPassword !== formData.repeatNewPassword) {
-      errorsTemp = {
-        newPassword: "Las contraseñas no son iguales",
-        repeatNewPassword: "Las contraseñas no son iguales",
-      };
-    } else if (size(formData.newPassword) < 6) {
-      errorsTemp = {
-        newPassword: "La contraseña tiene que ser mayor a 5 caracteres.",
-        repeatNewPassword: "La contraseña tiene que ser mayor a 5 caracteres.",
-      };
-    } else {
-      setIsLoading(true);
-      await reauthenticate(formData.password)
-        .then(async () => {
-          await firebase
-            .auth()
-            .currentUser.updatePassword(formData.newPassword)
-            .then(() => {
-              isSetErrors = false;
-              setIsLoading(false);
-              setShowModal(false);
-              firebase.auth().signOut();
-            })
-            .catch(() => {
-              errorsTemp = {
-                other: "Error al actualizar la contraseña",
-              };
-              setIsLoading(false);
-            });
-        })
-        .catch(() => {
-          errorsTemp = {
-            password: "La contraseña no es correcta.",
-          };
-          setIsLoading(false);
-        });
+  function formato(objeto)
+  { return {
+      usr: '127208492',
+      pso: objeto.pso,
+      psn: objeto.psn
+    };
+  }
+
+  function chkPass (e,type)
+  { if(formData.psn==e.nativeEvent.text)
+    { setFormData({ ...formData, [type]: e.nativeEvent.text });
+      setRepeatPassCorrect(1);
     }
+    else
+      setRepeatPassCorrect(0);
+  }
 
-    isSetErrors && setErrors(errorsTemp);
+  const onSubmit = () => 
+  { setLoading(true);
+    // if (isEmpty(formData.psw) || isEmpty(formData.repeatPassword) || formData.vcd == 0 )
+    // { Toast.show(
+    //   { type: 'error',
+    //     props: {onPress: () => {}, text1: 'Error', text2: 'Hay campos vacíos.'
+    //     }
+    //   })
+    //   setLoading(false);
+    // }
+    // else if (!repeatPassCorrect || passCorrect == 1)
+    // { Toast.show(
+    //   { type: 'error',
+    //     props: {onPress: () => {}, text1: 'Error', text2: 'Revisa los campos erroneos.'
+    //     }
+    //   })
+    //   setLoading(false);
+    // }
+    // else
+    // { 
+    BackEndConnect("POST","chgpw",formato(formData))
+      .then((ans) =>
+        { if (ans.ans.stx != "ok")
+          { Toast.show(
+            { type: 'error',
+              props: {onPress: () => {}, text1: 'Error', text2: ans.ans.msg
+              }
+            });
+            setLoading(false);
+          }
+          else
+          { Toast.show(
+            { type: 'success',
+              props: {onPress: () => {}, text1: 'Éxito', text2: ans.ans.msg
+              }
+            });
+            navigation.reset(
+            { index: 0,
+              routes: [
+                {
+                  name: 'login',
+                }
+              ],
+            });
+            setLoading(false);
+          }
+        }
+      ).catch((ans)=>
+        { console.log(ans);
+          setLoading(false);
+        }
+      );
+    // }
   };
 
   return (
-    <View style={styles.view}>
-      <Input
-        placeholder="Contraseña actual"
-        containerStyle={styles.input}
-        password={true}
-        secureTextEntry={showPassword ? false : true}
-        rightIcon={{
-          type: "material-community",
-          name: showPassword ? "eye-off-outline" : "eye-outline",
-          color: "#c2c2c2",
-          onPress: () => setShowPassword(!showPassword),
-        }}
-        onChange={(e) => onChange(e, "password")}
-        errorMessage={errors.password}
-      />
-      <Input
-        placeholder="Nueva contraseña"
-        containerStyle={styles.input}
-        password={true}
-        secureTextEntry={showPassword ? false : true}
-        rightIcon={{
-          type: "material-community",
-          name: showPassword ? "eye-off-outline" : "eye-outline",
-          color: "#c2c2c2",
-          onPress: () => setShowPassword(!showPassword),
-        }}
-        onChange={(e) => onChange(e, "newPassword")}
-        errorMessage={errors.newPassword}
-      />
-      <Input
-        placeholder="Repetir nueva contraseña"
-        containerStyle={styles.input}
-        password={true}
-        secureTextEntry={showPassword ? false : true}
-        rightIcon={{
-          type: "material-community",
-          name: showPassword ? "eye-off-outline" : "eye-outline",
-          color: "#c2c2c2",
-          onPress: () => setShowPassword(!showPassword),
-        }}
-        onChange={(e) => onChange(e, "repeatNewPassword")}
-        errorMessage={errors.repeatNewPassword}
-      />
+    <ScrollView style={styles.formContainer}>
+      <Text style={styles.textDescription}> Contraseña actual:</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          placeholder="********"
+          placeholderTextColor="#AC9DC9"
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          errorStyle={styles.errorStyle}
+          password={true}
+          secureTextEntry={showOldPassword ? false : true}
+          onEndEditing={(e) => onEnd(e, "pso")}
+          returnKeyType="next"
+          onSubmitEditing={() => { ref_input2.current.focus()}}
+          blurOnSubmit={false}
+          maxLength={15}
+        />
+        <Icon
+          type="material-community"
+          name={showOldPassword ? "eye-outline" : "eye-off-outline"}
+          iconStyle={styles.iconRight}
+          onPress={() => setShowOldPassword(!showOldPassword)}
+        />
+      </View>
+      { oldPassCorrect == 0 ?
+      (<Text style={styles.textDescriptionError}>{" "}Su actual contraseña debe ser mayor a 5 y menor a 16 caracteres.</Text>):
+      (<></>)
+      }
+      <Text style={styles.textDescription}>{" "}Nueva contraseña</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          placeholder="********"
+          placeholderTextColor="#AC9DC9"
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          errorStyle={styles.errorStyle}
+          password={true}
+          returnKeyType="next"
+          onSubmitEditing={() => { ref_input3.current.focus()}}
+          blurOnSubmit={false}
+          secureTextEntry={showPassword ? false : true}
+          onEndEditing={(e) => onEnd(e, "psn")}
+          maxLength={15}
+          ref={ref_input2}
+        />
+        <Icon
+          type="material-community"
+          name={showPassword ? "eye-outline" : "eye-off-outline"}
+          iconStyle={styles.iconRight}
+          onPress={() => setShowPassword(!showPassword)}
+        />
+      </View>
+      { passCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}Su nueva contraseña debe ser mayor a 5 y menor a 16 caracteres.</Text>):
+        (<></>)
+      }
+      <Text style={styles.textDescription}>{" "}Repetir Contraseña</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          placeholder="********"
+          placeholderTextColor="#AC9DC9"
+          style={styles.inputForm}
+          ref={ref_input3}
+          inputContainerStyle={{borderBottomWidth:0}}
+          errorStyle={styles.errorStyle}
+          password={true}
+          secureTextEntry={showRepeatPassword ? false : true}
+          onEndEditing={(e) => chkPass(e,"repeatPassword")}
+          maxLength={32}
+        />
+        <Icon
+          type="material-community"
+          name={showRepeatPassword ? "eye-outline" : "eye-off-outline"}
+          iconStyle={styles.iconRight}
+          onPress={() => setShowRepeatPassword(!showRepeatPassword)}
+        />
+      </View>
+      { repeatPassCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}Las contraseñas no coinciden</Text>):
+        (<></>)
+      }
       <Button
-        title="Cambiar contraseña"
-        containerStyle={styles.btnContainer}
-        buttonStyle={styles.btn}
+        title="Modificar contraseña"
+        containerStyle={styles.btnContainerLogin}
+        buttonStyle={styles.btnLogin}
         onPress={onSubmit}
-        loading={isLoading}
+        disabled={repeatPassCorrect != 1 && oldPassCorrect != 1 ? (true):(false)}
       />
-      <Text>{errors.other}</Text>
-    </View>
-  );
-}
-
-function defualtValue() {
-  return {
-    password: "",
-    newPassword: "",
-    repeatNewPassword: "",
-  };
+      <Loading isVisible={loading} text="Cargando"/>
+    </ScrollView>
+  )
 }
 
 const styles = StyleSheet.create({
-  view: {
-    alignItems: "center",
+  formContainer: {
+    flex: 1,
+    marginTop: 10,
+  },
+  searchSection: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputForm: {
+    flex: 1,
     paddingTop: 10,
+    paddingRight: 10,
     paddingBottom: 10,
+    paddingLeft: 0,
+    width: "100%",
+    backgroundColor: '#fff',
+    borderRadius: 20
   },
-  input: {
-    marginBottom: 10,
+  btnContainerLogin: {
+    marginTop:20,
+    width:"95%"
   },
-  btnContainer: {
-    marginTop: 20,
-    width: "95%",
+  btnLogin: {
+    backgroundColor:"#6B35E2",
+    borderRadius:50
   },
-  btn: {
-    backgroundColor: "#6B35E2",
+  iconRight: {
+    color:"#AC9DC9",
   },
+  textRegister:{
+    marginTop:15,
+    marginLeft:10,
+    marginRight:10
+  },
+  btnRegister:{
+    color:"#6B35E2",
+    fontWeight:"bold"
+  },
+  textDescription: {
+    fontWeight:"normal",
+    fontSize:15,
+    marginTop:5,
+    justifyContent:"flex-start",
+  },
+  textDescriptionError:{
+    fontWeight:"normal",
+    fontSize:15,
+    justifyContent:"flex-start",
+    color:"#ff0000"
+  }
 });

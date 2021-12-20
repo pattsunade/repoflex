@@ -2,18 +2,19 @@ import React, { useRef } from "react";
 import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
 import { Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
-import EmailVerificationForm from "../../components/Login/EmailVerificationForm";
+import EmailVerificationForm from "../../components/Login/EmailVerificationFormA";
 
-export default function EmailVerification () {
+export default function EmailVerificationA ({route,navigation}) {
+  const { rut, psw } = route.params;
   return (
     <ScrollView>
       <View style={styles.viewContainer} >
-        <Text style={styles.texttitle}>Hemos enviado a tu correo un código de verificación que deberás ingresar aquí:</Text>
-        <EmailVerificationForm/>
+        <Text style={styles.texttitle}>Ingresa tu correo para enviar un código de verificación:</Text>
+        <EmailVerificationForm rut={rut} psw={psw} />
       </View>
-      <Divider style= {styles.divider} />
+      <Divider style={styles.divider} />
       <View style={styles.viewZolbit}>
-        <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+        <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
       </View>
     </ScrollView>
   )
@@ -22,7 +23,7 @@ export default function EmailVerification () {
 const styles = StyleSheet.create({
   viewContainer:{
     marginRight: 40,
-    marginLeft: 40,
+    marginLeft: 40
   },
   texttitle: {
     marginTop:50,
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
   textRegister:{
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   btnRegister:{
     color: "#6B35E2",
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
   },
   viewZolbit:{
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center"  
   },
   textZolbit: {
     fontWeight: "bold"

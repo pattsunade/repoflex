@@ -9,9 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 export default function InfoUser(props) {
   const {
     nameuser,
-    toastRef,
-    setLoading,
-    setLoadingText,
+    level
   } = props;
   const changeAvatar = async () => {
     const resultPermission = await Permissions.askAsync(
@@ -75,19 +73,17 @@ export default function InfoUser(props) {
       <Avatar
         rounded
         size="large"
-        showEditButton
-        onEditPress={changeAvatar}
+        onPress={changeAvatar}
         containerStyle={styles.userInfoAvatar}
-        source={ require("../../../assets/img/zolbitLogo.png")
+        source={ require("../../../assets/iconrepo2.png")
         }
       />
       <View>
         <Text style={styles.displayName}>
           {nameuser}
         </Text>
-        
       </View>
-      <Text style={styles.displaytype}>R e p o n e d o r</Text>
+      <Text style={styles.displaytype}>{level}</Text>
       
     </View>
     

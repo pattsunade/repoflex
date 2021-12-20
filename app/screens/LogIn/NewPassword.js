@@ -5,13 +5,11 @@ import { Divider } from "react-native-elements";
 import NewPasswordForm from "../../components/Login/NewPasswordForm";
 
 export default function NewPassword({route,navigation}) {
-  const { correo } = route.params;
+  const { rut } = route.params;
   return (
-    <ScrollView>
+    <ScrollView style={styles.viewContainer}>
       <Text style={styles.texttitle}>Ingresa el código que recibiste, junto con tu nueva contraseña.</Text>
-      <View style={styles.viewContainer} >
-        <NewPasswordForm correo={correo}/>
-      </View>
+      <NewPasswordForm rut={rut}/>     
       <Divider style= {styles.divider} />
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>    

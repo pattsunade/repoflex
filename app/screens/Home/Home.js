@@ -4,10 +4,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import HomeApp from "../../components/Home/HomeApp";
 import BackEndConnect from "../../utils/BackEndConnect";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem} from '@react-navigation/drawer';
 import Toast from 'react-native-toast-message';
 import * as Notifications from 'expo-notifications';
 import * as Location from 'expo-location';
+import { NavigationContainer } from '@react-navigation/native';
 import { useNavigation } from "@react-navigation/native";
+import Account from "../Account/Account.js";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Register() {
   const [name, setName] = useState();
@@ -20,17 +24,54 @@ export default function Register() {
   const [chck, setChck] = useState();
   const [fini, setFini] = useState();
   const [loca, setLoca] = useState();
+  const [levl, setLevl] = useState();
   const [noti, setNoti] = useState();
   const [tenp, setTenp] = useState();
   const [work, setWork] = useState();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const Drawer = createDrawerNavigator();
+
   function formato(lati,longi)
   { return{
       lat: lati,
       lon: longi
     };
   }
+
+  function HomeScreen() 
+  { return (
+      <View style={styles.viewForm}>
+        <HomeApp
+          name={name}
+          amou={amou}
+          rank={rank}
+          avai={avai}
+          asgn={asgn}
+          proc={proc}
+          envi={envi}
+          chck={chck}
+          fini={fini}
+          loca={loca}
+          noti={noti}
+          work={work}
+        />
+      </View>
+    );
+  }
+
+  function CustomDrawerContent(props)
+  { return (
+      <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+        <DrawerItem
+          label="Cerrar sesión"
+          onPress={() => signOut()}
+        />
+      </DrawerContentScrollView>
+    );
+  }
+
   useFocusEffect(
     useCallback(() => 
     { (async () => 
@@ -58,6 +99,7 @@ export default function Register() {
             setChck(response.ans.chck);
             setFini(response.ans.fini);
             setLoca(response.ans.loca);
+            setLevl(response.ans.levl)
             setNoti(notificaciones);
             setWork(response.ans.work);
             setLoading(false);
@@ -83,36 +125,27 @@ export default function Register() {
       })();
     },[])
   );
+
   return(
-    <>
-      { loading ? 
-        (<View style={styles.loaderTask}>
-            <ActivityIndicator  size="large" color="#0000ff"/>
-            <Text>Cargando</Text>
-          </View>):
-        ( <KeyboardAwareScrollView>
-            <View style={styles.viewForm}>
-              <HomeApp
-                name={name}
-                amou={amou}
-                rank={rank}
-                avai={avai}
-                asgn={asgn}
-                proc={proc}
-                envi={envi}
-                chck={chck}
-                fini={fini}
-                loca={loca}
-                noti={noti}
-                work={work}
-              />
-            </View>
-        </KeyboardAwareScrollView>
+  <>
+    { loading ? 
+      ( <View style={styles.loaderTask}>
+          <ActivityIndicator  size="large" color="#0000ff"/>
+          <Text>Cargando</Text>
+        </View>
+      ):
+      ( <Drawer.Navigator
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+        >
+          <Drawer.Screen name="Tareas" component={HomeScreen} />
+          <Drawer.Screen name="Cuenta" component={Account} initialParams={{'nameuser':name,'level':levl}} />
+        </Drawer.Navigator>
       )
     }
-    </>
+  </>
   );
 }
+
 const styles = StyleSheet.create({
   logo: {
     width: "100%",

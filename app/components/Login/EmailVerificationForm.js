@@ -1,140 +1,245 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, TextInput } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { size, isEmpty } from "lodash";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
+import {validateEmail} from "../../utils/validations";
 
-export default function EmailVerificationForm (props) {
+export default function EmailVerificationFormA (props) {
+  const { rut, psw } = props;
   const [loading, setLoading] = useState(false);
+  const [mailCorrect, setMailCorrect] = useState(3);
+  const [mvcCorrect, setMvcCorrect] = useState(2);
+  const [loadingText, setLoadingText] = useState("");
   const [code, setCode] = useState("");
-  const [formData, setFormData] = useState(defaultFormValue());
+  const [sndvcFormData, setSndvcFormData] = useState(sndvcDefaultFormValue());
+  const [vermaFormData, setVermaFormData] = useState(vermaDefaultFormValue());
   const navigation = useNavigation();
-  const onChange = (e, type) => {
-    setFormData({ ...formData, [type]: e.nativeEvent.text });
-  };
-  const onSubmit = () => 
-  { if( code === " " ){
-      toastRef.current.show("Debes ingresar el código de 5 dígitos enviado a tu correo", 3000);
-    } else {
-      verification().then(() => {
-        navigation.reset(
-        { index: 0,
-          routes: [
-            {
-              name: 'login',
-            }
-          ],
-        });
-      })
-      .catch((response) =>
-      { console.log(response);
-        Toast.show({
-          type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
-            }
-        });
-      });
-    }
-  }
-  function defaultFormValue()
+
+  function sndvcDefaultFormValue()
   { return {
-      usr: "",
+      usr: rut,
+      mail: "", 
+    };
+  }
+
+  function vermaDefaultFormValue()
+  { return {
+      usr: rut,
       mvc: 0, 
     };
   }
-  function formato(objeto)
-  { return{
-      usr: objeto.usr,
+
+  function vermaFormat(objeto) {
+    return{
+      usr: rut,
       mvc : parseInt(objeto.mvc),
     };
   }
-  function formato2(objeto) {
+
+  function sndvcFormat(objeto) {
     return{
-      usr: objeto.usr,
+      usr: rut,
+      mail: objeto.mail
     };
   }
-  async function verification() {
-    return await BackEndConnect("POST","verma",formato(formData));
+
+  // function autenFormat() {
+  //   return{
+  //     usr : rut,
+  //     psw : psw
+  //   }
+  // }
+
+  function onEnd(e,type)
+  { if(type=='mail')
+    { mail = e.nativeEvent.text.replace(/\s/g,'').toLowerCase()
+      if(mail.length==0)
+      { setMailCorrect(3); 
+      }
+      else if(!validateEmail(mail))
+      { setMailCorrect(0);
+      }
+      else if(mail.length>32)
+      { setMailCorrect(2);
+      }
+      else
+      { setMailCorrect(1);
+        setVermaFormData({ ...vermaFormData, [type]: mail });
+        setSndvcFormData({ ...sndvcFormData, [type]: mail });
+      }
+    }
+    else
+    { if(e.nativeEvent.text.length==0)
+      { setMvcCorrect(2); 
+      }
+      else if(e.nativeEvent.text.length>32)
+      { setMvcCorrect(0);
+      }
+      else
+      { setMvcCorrect(1);
+        setVermaFormData({ ...vermaFormData, [type]: e.nativeEvent.text });
+      }
+    }
   }
-  function verificationagain()
-  { BackEndConnect("POST","sndvc",formato2(formData))
+
+  function sndvc() {
+    setLoadingText("Enviando código...");
+    setLoading(true);
+    BackEndConnect("POST","sndvc",sndvcFormat(sndvcFormData))
     .then((ans) => {
-      if (ans.ans.stx=="vc")
+      if(ans.ans.stx=="ok")
+      { Toast.show(
+        { type: 'success',
+          props: {onPress: () => {}, text1: 'Éxito', text2: ans.ans.msg
+          }
+        })
+        setLoading(false);
+      }
+      else
       { Toast.show(
         { type: 'error',
           props: {onPress: () => {}, text1: 'Error', text2: ans.ans.msg
           }
         })
+        setLoading(false);
       }
     });
   }
+
+  function submit()
+  { setLoadingText("Verificando código...");
+    setLoading(true);
+    BackEndConnect("POST","verma",vermaFormat(vermaFormData)).then((response) => 
+    { if (response.ans.stx == "wc")
+      { Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+          }
+        });
+        setLoading(false);
+      }
+      else
+      { setLoadingText("Iniciando sesión");
+        navigation.reset(
+        { index: 0,
+          routes: [
+            { name: 'homeregister',
+            }
+          ],
+        });
+        setLoading(false);
+      }
+    })
+    .catch((response) =>
+    { Toast.show(
+      { type: 'error',
+        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
+          }
+        });
+      setLoading(false);
+    });
+  }
+
   return(
-    <View>
-      <Text style={styles.texttitle}> Código de Verificación:</Text>
-      <View style={styles.formContainer}>
-        <Input
-          placeholder="correo@dominio.com"
-          containerStyle={styles.inputForm}
+    <View style={styles.formContainer}>
+      <Text style={styles.textDescription}> Correo:</Text>
+      <View style={styles.mailSection}>
+        <TextInput
+          placeholder="Ingresar correo"
+          placeholderTextColor="#AC9DC9"
+          style={styles.inputForm}
           inputContainerStyle={{borderBottomWidth:0}}
-          onChange={(e) => onChange(e, "usr")}
-          rightIcon={
-          <Icon
-            type="material-community"
-            name="at"
-            iconStyle={styles.iconRight}
+          onEndEditing={(e) => onEnd(e, "mail")}
+          maxLength={32}
+        />
+        { mailCorrect==1 ? (
+          <Button
+            title="Enviar"
+            containerStyle={styles.sndBtnContainer}
+            buttonStyle={styles.sndBtn}
+            onPress={sndvc}
+            disabled={loading}
           />
-          }
-        />
-        <Input
-          placeholder=" - - - - - -"
-          containerStyle={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          onChange={(e) => onChange(e, "mvc")}
-          rightIcon={
-            <Icon
-              type="material-community"
-              name="lock-question"
-              iconStyle={styles.iconRight}
-            />
-          }
-          keyboardType="numeric"
-        />
-        <Text style={styles.textRegister}>
-          Para enviar nuevamente el correo con el código presiona {" "}
-          <Text
-            style={styles.btnRegister}
-            onPress={ () => verificationagain()}
-          >
-          Aquí
-          </Text>
-          . (No olvides verificar tu carpeta de Spam).
-        </Text>
-        <Button
-          title="Confirmar"
-          containerStyle={styles.btnContainerLogin}
-          buttonStyle={styles.btnLogin}
-          onPress={onSubmit}
-        />
-        <Loading isVisible={loading} text="Iniciando sesión" />
+        ):(
+          <Button
+            title="Enviar"
+            containerStyle={styles.sndBtnContainer}
+            buttonStyle={styles.sndBtn}
+            onPress={sndvc}
+            disabled={true}
+          />
+        )
+      }
       </View>
+      { mailCorrect == 2 ?
+        (<Text style={styles.textDescriptionError}>{" "}El correo debe ser menor a 30 caracteres.</Text>):
+        mailCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}El correo no tiene el formato correcto.</Text>):
+        (<></>)
+      }
+      <Text style={styles.textDescription}> Código de verificación:</Text>
+      <View style={styles.codeSection}>
+        <TextInput
+          placeholder="Ingresar código"
+          placeholderTextColor="#AC9DC9"
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          onEndEditing={(e) => onEnd(e, "mvc")}
+          keyboardType="numeric"
+          maxLength={32}
+        />
+        <Icon
+          type="material-community"
+          name={"lock-question"}
+          iconStyle={styles.iconRight}
+        />
+      </View>
+      { mvcCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}El código debe ser menor a 32 caracteres.</Text>):
+        (<></>)
+      }
+      { mailCorrect==1 && mvcCorrect==1 ? (
+          <Button
+            title="Confirmar"
+            containerStyle={styles.btnContainerSend}
+            buttonStyle={styles.sndBtn}
+            onPress={submit}
+            disabled={loading}
+          />
+        ):(
+          <Button
+            title="Confirmar"
+            containerStyle={styles.btnContainerSend}
+            buttonStyle={styles.sndBtn}
+            onPress={submit}
+            disabled={true}
+          />
+        )
+      }
+      <Loading isVisible={loading} text={loadingText}/>
     </View>
   )
 }
 const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     marginTop: 10,
+    justifyContent:"center"
   },
   inputForm: {
-    width: "100%",
+    flex: 1,
+    paddingTop: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+    paddingLeft: 0,
+    width:"100%",   
     backgroundColor: '#fff',
-    borderRadius: 50,
-    marginBottom:20
+    borderRadius: 20,
+    fontSize:16
   },
   texttitle: {
     marginHorizontal:20,
@@ -142,25 +247,51 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign:"justify"
   },
-  btnContainerLogin: {
+  btnContainerSend: {
     marginTop: 20,
-    width: "95%",
+    width: "100%",
   },
-  btnLogin: {
+  sndBtnContainer: {
+    width: "25%",
+    marginLeft:5
+  },
+  sndBtn: {
     backgroundColor: "#6B35E2",
     borderRadius: 50,
   },
   iconRight: {
-    color: "#c1c1c1",
+    color:"#AC9DC9",
+    marginLeft:25
   },
   textRegister:{
-    marginTop: 15,
-    marginLeft: 10,
-    marginRight: 10,
-    marginBottom:40,
+    marginTop:15,
+    marginLeft:10,
+    marginRight:10,
+    marginBottom:40
   },
-  btnRegister:{
-    color: "#6B35E2",
-    fontWeight: "bold",
+  mailSection: {
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+    marginTop:10
   },
+  codeSection: {
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+    marginTop:10,
+    marginRight:40
+  },
+  textDescription: {
+    fontWeight:"normal",
+    fontSize:17,
+    marginTop:10,
+    justifyContent:"flex-start"
+  },
+  textDescriptionError:{
+    fontWeight:"normal",
+    fontSize:15,
+    justifyContent:"flex-start",
+    color:"#ff0000"
+  }
 });

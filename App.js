@@ -14,6 +14,13 @@ const toastConfig = {
       style={{ borderLeftColor: 'red' }}
       contentContainerStyle={{ paddingHorizontal: 15 }}
       leadingIcon={require("./assets/error.png")}
+      text1Style={{
+        fontSize: 15,
+        fontWeight: 'bold'
+      }}
+      text2Style={{
+        fontSize: 13
+      }}
       text1={props.text1}
       text2={props.text2}
     />
@@ -24,6 +31,7 @@ const toastConfig = {
       style={{ borderLeftColor: 'green' }}
       contentContainerStyle={{ paddingHorizontal: 15 }}
       leadingIcon={require("./assets/ok-24.png")}
+      
       text1={props.text1}
       text2={props.text2}
     />
@@ -56,7 +64,7 @@ export default function App() {
   return(
     <>
       <Navigation/>
-      <Toast config={toastConfig} ref={(ref) => Toast.setRef(ref)} />
+      <Toast config={toastConfig} visibilityTime={7000} ref={(ref) => Toast.setRef(ref)} />
     </>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { StyleSheet, View, Text, TextInput, ScrollView } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { isEmpty } from "lodash";
@@ -10,7 +10,7 @@ import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
 
 export default function NewPasswordForm (props) {
-  const  { correo } = props;
+  const  { rut } = props;
   const [loading, setLoading] = useState(false);
   const [passCorrect, setPassCorrect] = useState(2);
   const [repeatPassCorrect, setRepeatPassCorrect] = useState(2);
@@ -18,6 +18,8 @@ export default function NewPasswordForm (props) {
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
   const [formData, setFormData] = useState(defaultFormValue());
   const navigation = useNavigation();
+  const ref_input2 = useRef();
+  const ref_input3 = useRef();
   function onEnd(e,type)
   { if(type=='psw')
     console.log(e.nativeEvent.text.length);
@@ -36,7 +38,7 @@ export default function NewPasswordForm (props) {
   }
   function defaultFormValue()
   { return {
-      usr: correo,
+      usr: rut,
       psw: "",
       vcd: ""
     };
@@ -59,7 +61,6 @@ export default function NewPasswordForm (props) {
   }
   const onSubmit = () => 
   { setLoading(true);
-    formData.usr = formData.usr.replace(/\s/g,'').toLowerCase();
     if (isEmpty(formData.psw) || isEmpty(formData.repeatPassword) || formData.vcd == 0 )
     { Toast.show(
       { type: 'error',
@@ -121,6 +122,9 @@ export default function NewPasswordForm (props) {
           style={styles.inputForm}
           keyboardType="numeric"
           onEndEditing={(e) => onEnd(e, "vcd")}
+          returnKeyType="next"
+          onSubmitEditing={() => { ref_input2.current.focus()}}
+          blurOnSubmit={false}
           maxLength={12}
         />
         <Icon
@@ -137,10 +141,14 @@ export default function NewPasswordForm (props) {
           style={styles.inputForm}
           inputContainerStyle={{borderBottomWidth:0}}
           errorStyle={styles.errorStyle}
+          returnKeyType="next"
+          onSubmitEditing={() => { ref_input3.current.focus()}}
+          blurOnSubmit={false}
           password={true}
           secureTextEntry={showPassword ? false : true}
           onEndEditing={(e) => onEnd(e, "psw")}
           maxLength={15}
+          ref={ref_input2}
         />
         <Icon
           type="material-community"
@@ -165,6 +173,7 @@ export default function NewPasswordForm (props) {
           secureTextEntry={showRepeatPassword ? false : true}
           onEndEditing={(e) => chkPass(e,"repeatPassword")}
           maxLength={32}
+          ref={ref_input3}
         />
         <Icon
           type="material-community"
@@ -182,6 +191,7 @@ export default function NewPasswordForm (props) {
         containerStyle={styles.btnContainerLogin}
         buttonStyle={styles.btnLogin}
         onPress={onSubmit}
+        disabled={repeatPassCorrect != 1 || formData.vcd == 0 ? (true):(false)}
       />
       <Loading isVisible={loading} text="Cargando"/>
     </ScrollView>

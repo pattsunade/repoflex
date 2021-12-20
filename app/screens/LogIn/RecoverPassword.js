@@ -5,11 +5,9 @@ import RecoverPasswordForm from "../../components/Login/RecoverPasswordForm";
 
 export default function RecoverPassword() {
   return (
-    <ScrollView>
-      <Text style={styles.texttitle}>Ingresa tu correo para comenzar con el proceso de recuperación de contraseña:</Text>
-      <View style={styles.viewContainer} >
-        <RecoverPasswordForm/>
-      </View>
+    <ScrollView style={styles.viewContainer}>
+      <Text style={styles.texttitle}>Ingresa tu rut para comenzar con el proceso de recuperación de contraseña:</Text>
+      <RecoverPasswordForm/>
       <Divider style= {styles.divider} />
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>    
@@ -25,8 +23,8 @@ const styles = StyleSheet.create({
     marginTop: 70
   },
   viewContainer:{
-    marginRight: 40,
-    marginLeft: 40
+    marginRight: 30,
+    marginLeft: 30
   },
   textRegister:{    
     flex: 1,

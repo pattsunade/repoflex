@@ -2,7 +2,6 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Home from "../screens/Home/Home";
-import Account from "../screens/Account/Account";
 import TaskAvailable from "../screens/Home/TaskAvailable";
 import TaskAssigned from "../screens/Home/TaskAssigned";
 import TaskInProgress from "../screens/Home/TaskInProgress";
@@ -14,8 +13,6 @@ import DetailTask from "../screens/Home/DetailTask";
 import DetailTaskInProgress from "../screens/Home/DetailTaskInProgress";
 import TaskDetail from "../screens/Home/TaskDetail";
 import AssignedDetail from "../screens/Home/AssignedDetail";
-import Task from "../screens/Home/Task";
-import QuizTask from "../screens/Home/QuizTask";
 
 const Stack = createStackNavigator();
 
@@ -27,18 +24,6 @@ export default function HomeStack({route})
         component={Home}
         //options={{title: "Home"}}
         options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="account"
-        component={Account}
-        options={{title: "Mi Cuenta"}}
-        //options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="notification"
-        component={Notification}
-        options={{title: "Notificaciones"}}
-        //options={{headerShown: false}}
       />
       <Stack.Screen
         name="taskavailable"

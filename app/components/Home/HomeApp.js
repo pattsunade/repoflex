@@ -14,7 +14,8 @@ export default function HomeApp(props) {
   const RZ = String(rank).charAt(0);
   const RR = String(rank).charAt(2);
   const RI = String(rank).charAt(4);
-  async function signOut()
+
+  function signOut()
   { AsyncStorage.multiRemove(['@ott','@tid','@quest','@taskData','@comp']).then(()=>
     { navigation.reset(
       { index: 0,
@@ -25,6 +26,7 @@ export default function HomeApp(props) {
       }); 
     });
   }
+  
   return (
     <View>
       {/*<View>
@@ -247,6 +249,7 @@ const styles = StyleSheet.create(
   },
   wrapperInfo:
   { flex: 1,
+    marginBottom:50
   },
   container:
   { marginBottom:15,

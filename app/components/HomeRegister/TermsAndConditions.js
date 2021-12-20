@@ -99,7 +99,6 @@ export default function TermsAndConditions (props) {
         containerStyle={styles.btnContainer}
         buttonStyle={styles.btn}
         onPress={onSubmit}
-        disabled={!read}
       />
       </View>
     </ScrollView>

@@ -31,15 +31,15 @@ export default function AccountOptions(props) {
         iconColorRight: "#6B35E2",
         // onPress: () => selectedComponent("password"),
       },
-      {
-        title: "Configuraciones",
-        iconType: "material-community",
-        iconNameLeft: "subject",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "subject",
-        iconColorRight: "#6B35E2",
-        // onPress: () => selectedComponent("password"),
-      },
+      // {
+      //   title: "Configuraciones",
+      //   iconType: "material-community",
+      //   iconNameLeft: "subject",
+      //   iconColorLeft: "#6B35E2",
+      //   iconNameRight: "subject",
+      //   iconColorRight: "#6B35E2",
+      //   // onPress: () => selectedComponent("password"),
+      // },
     ];
   }
 
@@ -61,23 +61,24 @@ export default function AccountOptions(props) {
         iconColorLeft: "#6B35E2",
         iconNameRight: "chevron-right",
         iconColorRight: "#6B35E2",
+        onPress: () => navigation.navigate("account",{screen:"frequentquestions"})
       },
-      {
-        title: "Invitar a un amigo",
-        iconType: "material-community",
-        iconNameLeft: "group-add",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "chevron-right",
-        iconColorRight: "#6B35E2",
-      },
-      {
-        title: "Referidos",
-        iconType: "material-community",
-        iconNameLeft: "supervised-user-circle",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "chevron-right",
-        iconColorRight: "#6B35E2",
-      },
+      // {
+      //   title: "Invitar a un amigo",
+      //   iconType: "material-community",
+      //   iconNameLeft: "group-add",
+      //   iconColorLeft: "#6B35E2",
+      //   iconNameRight: "chevron-right",
+      //   iconColorRight: "#6B35E2",
+      // },
+      // {
+      //   title: "Referidos",
+      //   iconType: "material-community",
+      //   iconNameLeft: "supervised-user-circle",
+      //   iconColorLeft: "#6B35E2",
+      //   iconNameRight: "chevron-right",
+      //   iconColorRight: "#6B35E2",
+      // },
       {
         title: "Acerca de la App",
         iconType: "material-community",
@@ -85,15 +86,16 @@ export default function AccountOptions(props) {
         iconColorLeft: "#6B35E2",
         iconNameRight: "chevron-right",
         iconColorRight: "#6B35E2",
+        onPress: () => navigation.navigate("account",{screen:"about"})
       },
-      {
-        title: "Evalúanos",
-        iconType: "material-community",
-        iconNameLeft: "star-border",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "chevron-right",
-        iconColorRight: "#6B35E2",
-      },
+      // {
+      //   title: "Evalúanos",
+      //   iconType: "material-community",
+      //   iconNameLeft: "star-border",
+      //   iconColorLeft: "#6B35E2",
+      //   iconNameRight: "chevron-right",
+      //   iconColorRight: "#6B35E2",
+      // },
       
     ];
   }
@@ -140,40 +142,35 @@ export default function AccountOptions(props) {
   
   return (
     <ScrollView>
-      <View>
+      <View style={styles.menuBorder}>
         <Text style={styles.titleSecction}>{"  "}GENERAL</Text>
-      </View>
-      {map(menuOptions, (menu, index) => (
-        <ListItem
-          key={index}
-          title={menu.title}
-          leftIcon={{
-            type: menu.iconType,
-            name: menu.iconNameLeft,
-            color: menu.iconColorLeft,
-          }}
-          rightIcon={{
-            type: menu.iconType,
-            name: menu.iconNameRight,
-            color: menu.iconColorRight,
-          }}
-          containerStyle={styles.menuItem}
-          onPress={menu.onPress}
-          Chevron
-        >
-        <Icon name={menu.iconNameLeft} color="#6B35E2"/>
-        <ListItem.Content>
-        <ListItem.Title containerStyle={styles.menuItem}>{menu.title}</ListItem.Title>
-        </ListItem.Content>
-        <ListItem.Chevron color="#6B35E2" />
-        </ListItem>
-      ))}
-
-      <View>
+        {map(menuOptions, (menu, index) => (
+          <ListItem
+            key={index}
+            title={menu.title}
+            leftIcon={{
+              type: menu.iconType,
+              name: menu.iconNameLeft,
+              color: menu.iconColorLeft,
+            }}
+            rightIcon={{
+              type: menu.iconType,
+              name: menu.iconNameRight,
+              color: menu.iconColorRight,
+            }}
+            containerStyle={styles.menuItem}
+            onPress={menu.onPress}
+            Chevron
+          >
+          <Icon name={menu.iconNameLeft} color="#6B35E2"/>
+          <ListItem.Content>
+          <ListItem.Title containerStyle={styles.menuItem}>{menu.title}</ListItem.Title>
+          </ListItem.Content>
+          <ListItem.Chevron color="#6B35E2" />
+          </ListItem>
+        ))}
         <Text style={styles.titleSecction}>{"  "}OTROS</Text>
-      </View>
-
-      {map(menuOptions2, (menu, index) => (
+        {map(menuOptions2, (menu, index) => (
         <ListItem
           key={index}
           title={menu.title}
@@ -199,6 +196,7 @@ export default function AccountOptions(props) {
         <ListItem.Chevron color="#6B35E2" />
         </ListItem>
       ))}
+      </View>
     </ScrollView>
   );
 }
@@ -213,5 +211,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize:17,
     color: "#6B35E2",
-  }
+  },
+  menuBorder:
+  { marginRight: 30,
+    marginLeft: 30
+  },
 });

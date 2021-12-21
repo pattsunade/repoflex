@@ -2,6 +2,8 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import ChangePassword from "../screens/Account/ChangePassword.js";
 import PersonalData from "../screens/Account/PersonalData.js";
+import FrecuentQuestions from "../screens/Account/FrequentQuestions.js";
+import About from "../screens/Account/About.js";
 
 export default function AccountStack()
 { const Stack = createStackNavigator();
@@ -16,6 +18,16 @@ export default function AccountStack()
         name="personaldata"
         component={PersonalData}
         options={{title: "Datos personales"}}
+      />
+      <Stack.Screen
+        name="frequentquestions"
+        component={FrecuentQuestions}
+        options={{title: "Preguntas frecuentes"}}
+      />
+      <Stack.Screen
+        name="about"
+        component={About}
+        options={{title: "Acerca de la app"}}
       />
     </Stack.Navigator>
   )

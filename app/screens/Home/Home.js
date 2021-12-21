@@ -64,10 +64,10 @@ export default function Register() {
   { return (
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
-        <DrawerItem
+        {/*<DrawerItem
           label="Cerrar sesión"
           onPress={() => signOut()}
-        />
+        />*/}
       </DrawerContentScrollView>
     );
   }

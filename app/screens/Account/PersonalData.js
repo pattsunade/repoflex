@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
     marginTop: 70
   },
   viewContainer:{
-    marginRight: 40,
-    marginLeft: 40
+    marginRight: 30,
+    marginLeft: 30
   },
   textRegister:{    
     flex: 1,

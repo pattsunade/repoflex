@@ -6,7 +6,7 @@ import Register from "../screens/LogIn/Register";
 import RecoverPassword from "../screens/LogIn/RecoverPassword";
 import NewPassword from "../screens/LogIn/NewPassword";
 import EmailVerification from "../screens/LogIn/EmailVerification";
-import EmailVerificationA from "../screens/LogIn/EmailVerificationA";
+// import EmailVerificationA from "../screens/LogIn/EmailVerificationA";
 
 const Stack = createStackNavigator();
 export default function LogInStack(){

@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
 import { Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
-import EmailVerificationForm from "../../components/Login/EmailVerificationFormA";
+import EmailVerificationForm from "../../components/Login/EmailVerificationForm";
 
 export default function EmailVerificationA ({route,navigation}) {
   const { rut, psw } = route.params;

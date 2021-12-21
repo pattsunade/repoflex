@@ -212,16 +212,17 @@ export default function RegisterForm() {
           ref={ref_input2}
         />
         <Icon
-          name="fingerprint"
+          type="material-community"
+          name="card-account-phone"
           iconStyle={styles.iconRight}
         />
       </View>
-      { rutCorrect == 0 ?
+      {/*{ rutCorrect == 0 ?
         (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
         rutCorrect == 3 ?
         (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
         (<></>)
-      }
+      }*/}
       <Text style={styles.textDescription}>{" "}Contraseña</Text>
       <View style={styles.searchSection}>
         <TextInput

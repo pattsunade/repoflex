@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Text,Picker, ScrollView,Switch,TouchableOpacity } from "react-native";
+import React, { useState,useRef,useEffect } from "react";
+import { StyleSheet, View, Text,Picker, Switch, Animated, ScrollView,TouchableOpacity,Dimensions,SafeAreaView } from "react-native";
 import { Input, Icon, Button, ListItem} from "react-native-elements";
 import Loading from "../Loading";
 import { size, isEmpty,map } from "lodash";
@@ -15,17 +15,29 @@ export default function HomeApp(props) {
   const RR = String(rank).charAt(2);
   const RI = String(rank).charAt(4);
 
-  function signOut()
-  { AsyncStorage.multiRemove(['@ott','@tid','@quest','@taskData','@comp']).then(()=>
-    { navigation.reset(
-      { index: 0,
-        routes: [
-          { name: 'login',
-          }
-        ],
-      }); 
-    });
-  }
+  const [active, setActive] = useState(false)
+  let transformX = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    if (active) {
+      Animated.timing(transformX, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true
+      }).start()
+    } else {
+      Animated.timing(transformX, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true
+      }).start()
+    }
+  }, [active]);
+
+  const rotationX = transformX.interpolate({
+    inputRange: [0, 1],
+    outputRange: [2, Dimensions.get('screen').width / 2]
+  })
   
   return (
     <View>
@@ -66,18 +78,16 @@ export default function HomeApp(props) {
         </View>
       </View>
       <TouchableOpacity style={styles.customBtn}>
-        <View>
-          <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
-          <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
-          <Icon 
-            size={15}
-            type="material-community"
-            name="information-outline"
-            color= "black"
-            containerStyle={styles.btnContainer}
-            onPress={()=> navigation.navigate("home")}
-          />
-        </View>
+        <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
+        <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
+        <Icon 
+          size={15}
+          type="material-community"
+          name="information-outline"
+          color= "black"
+          containerStyle={styles.btnContainer}
+          onPress={()=> navigation.navigate("home")}
+        />
       </TouchableOpacity>
       <View>
         <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
@@ -143,7 +153,7 @@ export default function HomeApp(props) {
           </ListItem.Content>
           <ListItem.Chevron color="#6B35E2"/>
         </ListItem>
-        <ListItem
+        {/*<ListItem
           key="4"
           onPress={()=> navigation.navigate("taskinrevision")}
           Chevron
@@ -157,7 +167,7 @@ export default function HomeApp(props) {
             <ListItem.Title style={styles.numberItem}>{chck}</ListItem.Title>
           </ListItem.Content>
           <ListItem.Chevron color="#6B35E2"/>
-        </ListItem>
+        </ListItem>*/}
         <ListItem
           key="5"
           onPress={()=> navigation.navigate("taskfinished")}
@@ -174,23 +184,58 @@ export default function HomeApp(props) {
             <ListItem.Chevron color="#6B35E2"/>
         </ListItem>
       </View>
-      <View>
-        <Switch
-          trackColor={{ false: "#6B35E2", true: "#AC9DC9" }}
-          thumbColor={isEnabled ? "#6B35E2" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
-      </View>
-      <View>
-        <Button 
-          title="Cerrar sesión"
-          buttonStyle={styles.btnCloseSession}
-          titleStyle={styles.CloseSessionText}
-          onPress={signOut}
-        />
-      </View>
+      <SafeAreaView style={{
+          flex: 1,
+          alignItems: 'center',
+          marginTop: 20
+      }}>
+        <View style={{
+          flexDirection: 'row',
+          position: 'relative',
+          height: 50,
+          borderRadius: 10,
+          backgroundColor: '#efebf0',
+          marginHorizontal: 5
+          }}>
+          <Animated.View
+            style={{
+              position: 'absolute',
+              height: 50 - 2*2,
+              top: 2,
+              bottom: 2,
+              borderRadius: 10,
+              width: Dimensions.get('screen').width / 2 - 2 - 5*2 - 80,
+              transform: [
+                {
+                  translateX: rotationX
+                }
+              ],
+              backgroundColor: active ? "#1273DE":"#bedadc"
+            }}
+          >
+          </Animated.View>
+          <TouchableOpacity style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            marginLeft:45
+          }} onPress={() => setActive(false)}>
+            <Text style={styles.switchText}>
+              off
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            marginRight:45
+          }} onPress={() => setActive(true)}>
+            <Text style={styles.switchText}>
+              on
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -270,7 +315,7 @@ const styles = StyleSheet.create(
   btnContainer:
   { position:"absolute", // para posisionarlo en cualquier lado
    justifyContent: 'center',
-    top: 50,
+    top: 25,
     right: 5,
     //sombreado
   },
@@ -350,4 +395,8 @@ const styles = StyleSheet.create(
     textAlign: 'center',
     color:"#fff"
   },
+  switchText:{
+    color: "#000000",
+    fontSize: 20
+  }
 });

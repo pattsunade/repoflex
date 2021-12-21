@@ -2,6 +2,7 @@ import React, { useState,useCallback } from "react";
 import { StyleSheet, View,Text,ActivityIndicator} from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from "@react-navigation/native";
 
 import BackEndConnect from "../../utils/BackEndConnect";
@@ -12,6 +13,7 @@ export default function TaskEnded() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
+  const Tab = createMaterialTopTabNavigator();
   function formato() {
     return{
       tat: 6,
@@ -30,6 +32,55 @@ export default function TaskEnded() {
     },
     [])
   );
+
+  function Finished()
+  { return(
+      <>
+        { loading ? 
+          ( <View style={styles.loaderTask}>
+              <ActivityIndicator  size="large" color="#0000ff"/>
+              <Text>Cargando Tareas</Text>
+            </View>):
+          data == null ?
+          ( <View>
+              <Text style={styles.title}>{msg}</Text>
+            </View>
+          ):
+          ( <View>
+              <View style={styles.viewForm}>
+                <ListTaskFinished data={data}/>
+              </View>
+            </View>
+          )
+        }
+      </>
+    )
+  }
+
+  function Paid()
+  { return(
+      <>
+        { loading ? 
+          ( <View style={styles.loaderTask}>
+              <ActivityIndicator  size="large" color="#0000ff"/>
+              <Text>Cargando Tareas</Text>
+            </View>):
+          data == null ?
+          ( <View>
+              <Text style={styles.title}>no hay tareas pagadas</Text>
+            </View>
+          ):
+          ( <View>
+              <View style={styles.viewForm}>
+                <ListTaskFinished data={data}/>
+              </View>
+            </View>
+          )
+        }
+      </>
+    )
+  }
+
   return(
   <>
     { loading ? 
@@ -37,17 +88,10 @@ export default function TaskEnded() {
           <ActivityIndicator  size="large" color="#0000ff"/>
           <Text>Cargando Tareas</Text>
         </View>):
-      data == null ?
-      ( <View>
-          <Text style={styles.title}>{msg}</Text>
-        </View>
-      ):
-      ( <View>
-          <View style={styles.viewForm}>
-            <ListTaskFinished data={data}/>
-          </View>
-        </View>
-      )
+      ( <Tab.Navigator>
+            <Tab.Screen name="Finalizadas" component={Finished} />
+            <Tab.Screen name="Pagadas" component={Paid} />
+        </Tab.Navigator>)
     }
   </>
   );

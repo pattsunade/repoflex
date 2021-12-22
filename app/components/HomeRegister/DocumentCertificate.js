@@ -17,9 +17,11 @@ export default function DocumentCertificate (props) {
   const [documentCertificate, setDocumentCertificate] = useState("");
   const [formData, setFormData] = useState(defaultFormValue());
   const [isVisibleInfoCertificate, setIsVisibleInfoCertificate] = useState(false);
+
   function onChange (e, type) {
     setFormData({ ...formData, [type]:e });
   };
+
   function defaultFormValue()
   { return {
       nfil: 4,
@@ -37,6 +39,7 @@ export default function DocumentCertificate (props) {
   async function sendimage() {
     return await BackEndConnect("POST","sndfi",formato(formData));
   };
+
   const compress = async (uri) => {
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
@@ -46,6 +49,7 @@ export default function DocumentCertificate (props) {
     setImage(manipResult.base64);
     onChange(manipResult.base64,"file");
   };
+
   const upload = async () =>
   { const resultPermissions = await MediaLibrary.requestPermissionsAsync();
     const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync();
@@ -59,8 +63,9 @@ export default function DocumentCertificate (props) {
         quality: 1
       });
       if (result.cancelled)
-        if (!image)
+      { if (!image)
           toastRef.current.show("Has cerrado la cámara sin tomar una imagen",3000);
+      }
       else
       { compress(result.uri);
         setDocumentCertificate(result.uri);
@@ -68,6 +73,7 @@ export default function DocumentCertificate (props) {
       }
     }
   };
+
   const uploadDocuments = () =>
   { if(!image)
       toastRef.current.show("Debe subir el certificado para continuar",1500);
@@ -80,6 +86,9 @@ export default function DocumentCertificate (props) {
       );
     }
   };
+
+  console.log("docu->",documentCertificate);
+
   return (
     <ScrollView>
       <View style={styles.viewContainer} >

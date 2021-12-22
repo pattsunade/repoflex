@@ -99,7 +99,7 @@ export default function LoginForm()
 
   function clean(rut)
   { return typeof rut === 'string'
-      ? rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase()
+      ? rut.replace(/^0+|[^0-9kK]+/g, '')
       : ''
   }
 
@@ -187,7 +187,6 @@ export default function LoginForm()
         setFormData({ ...formData, [type]: e.nativeEvent.text });
       }
     }
-    console.log(passCorrect);
   }
 
   function defaultFormValue() {
@@ -219,6 +218,9 @@ export default function LoginForm()
           onSubmitEditing={() => { ref_input2.current.focus()}}
           blurOnSubmit={false}
           value={changedRut}
+          secureTextEntry={Platform.OS === 'ios' ? false : true}
+          keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
+          autoCapitalize="none"
         />
         <Icon
           name="fingerprint"

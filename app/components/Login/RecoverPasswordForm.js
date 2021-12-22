@@ -86,7 +86,7 @@ export default function RecoverPasswordForm () {
 
   function clean(rut)
   { return typeof rut === 'string'
-      ? rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase()
+      ? rut.replace(/^0+|[^0-9kK]+/g, '')
       : ''
   }
 
@@ -129,8 +129,9 @@ export default function RecoverPasswordForm () {
           onEndEditing={(e) => onEnd(e,"usr")}
           maxLength={12}
           onChangeText={(e) => format(e)}
-          // onSubmitEditing={() => { ref_input2.current.focus()}}
-          // blurOnSubmit={false}
+          secureTextEntry={Platform.OS === 'ios' ? false : true}
+          keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
+          autoCapitalize="none"
           value={changedRut}
         />
         <Icon

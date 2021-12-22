@@ -10,45 +10,65 @@ import ListTaskFinished from "../../components/Home/ListTaskFinished";
 
 export default function TaskEnded() {
   const navigation = useNavigation();
-  const [data, setData] = useState([]);
+  const Tab = createMaterialTopTabNavigator();
+  const [dataFinished, setDataFinished] = useState([]);
+  const [dataPaid, setDataPaid] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
-  const Tab = createMaterialTopTabNavigator();
+  const [msp, setMsp] = useState("");
+
   function formato() {
     return{
-      tat: 6,
+      tat: 67,
       lat: 12345,
       lon: 54321
     };
   }
+
   useFocusEffect(
     useCallback(() =>
-    { BackEndConnect("POST","tasks",formato()).then(async (response) =>
-      { const array = response.ans.tas;
-        setMsg(response.ans.msg);
-        setData(array);
-        setLoading(false);
-      });
-    },
+      { BackEndConnect("POST","tasks",formato()).then(async (response) =>
+        { const array = response.ans.tas;
+          const arrayFinished = [];
+          const arrayPaid = [];
+          setMsg(response.ans.msg);
+          setMsp(response.ans.msp);
+          if(array != undefined)
+          { for(let i=0;i<array.length;i++)
+            { if(array[i].tst==6)
+                arrayFinished.push(array[i]);
+              else if(array[i].tst==7)
+                arrayPaid.push(array[i]); 
+            }
+            setDataFinished(arrayFinished);
+            setDataPaid(arrayPaid);
+          }
+          setLoading(false);
+        }).catch((e) => 
+          { console.log(e);
+            setLoading(false);
+            Toast.show(
+            { type: 'error',
+              props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
+                }
+            });    
+          }
+        );
+      },
     [])
   );
 
   function Finished()
   { return(
       <>
-        { loading ? 
-          ( <View style={styles.loaderTask}>
-              <ActivityIndicator  size="large" color="#0000ff"/>
-              <Text>Cargando Tareas</Text>
-            </View>):
-          data == null ?
+        { dataFinished.length < 1 ?
           ( <View>
               <Text style={styles.title}>{msg}</Text>
             </View>
           ):
           ( <View>
               <View style={styles.viewForm}>
-                <ListTaskFinished data={data}/>
+                <ListTaskFinished data={dataFinished}/>
               </View>
             </View>
           )
@@ -60,19 +80,14 @@ export default function TaskEnded() {
   function Paid()
   { return(
       <>
-        { loading ? 
-          ( <View style={styles.loaderTask}>
-              <ActivityIndicator  size="large" color="#0000ff"/>
-              <Text>Cargando Tareas</Text>
-            </View>):
-          data == null ?
+        { dataPaid.length < 1 ?
           ( <View>
-              <Text style={styles.title}>no hay tareas pagadas</Text>
+              <Text style={styles.title}>{msp}</Text>
             </View>
           ):
           ( <View>
               <View style={styles.viewForm}>
-                <ListTaskFinished data={data}/>
+                <ListTaskFinished data={dataPaid}/>
               </View>
             </View>
           )

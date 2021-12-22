@@ -20,6 +20,7 @@ export default function NewPasswordForm (props) {
   const navigation = useNavigation();
   const ref_input2 = useRef();
   const ref_input3 = useRef();
+
   function onEnd(e,type)
   { if(type=='psw')
     console.log(e.nativeEvent.text.length);
@@ -36,6 +37,7 @@ export default function NewPasswordForm (props) {
     console.log(passCorrect);
     setFormData({ ...formData, [type]: e.nativeEvent.text });
   }
+
   function defaultFormValue()
   { return {
       usr: rut,
@@ -43,6 +45,7 @@ export default function NewPasswordForm (props) {
       vcd: ""
     };
   }
+
   function formato(objeto) {
   return{
     usr : objeto.usr,
@@ -50,6 +53,7 @@ export default function NewPasswordForm (props) {
     vcd : parseInt(objeto.vcd)
     };
   }
+
   function chkPass (e,type)
   { if(formData.psw==e.nativeEvent.text)
     { setFormData({ ...formData, [type]: e.nativeEvent.text });
@@ -59,6 +63,7 @@ export default function NewPasswordForm (props) {
     { setRepeatPassCorrect(0);
     }
   }
+
   const onSubmit = () => 
   { setLoading(true);
     if (isEmpty(formData.psw) || isEmpty(formData.repeatPassword) || formData.vcd == 0 )
@@ -112,6 +117,7 @@ export default function NewPasswordForm (props) {
       );
     }
   };
+  
   return (
     <ScrollView style={styles.formContainer}>
       <Text style={styles.textDescription}> Código de Verificación:</Text>

@@ -10,40 +10,65 @@ import ListTaskInRevision from "../../components/Home/ListTaskInRevision";
 
 export default function TaskSent() {
   const navigation = useNavigation();
-  const [data, setData] = useState([]);
+  const Tab = createMaterialTopTabNavigator();
+  const [dataSent, setDataSent] = useState([]);
+  const [dataInRevision, setDataInRevision] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
-  const Tab = createMaterialTopTabNavigator();
+  const [msp, setMsp] = useState("");
+  
   function formato() {
     return{
-      tat: 4,
+      tat: 45,
       lat: 12345,
       lon: 54321
     };
   }
+
   useFocusEffect(
     useCallback(() =>
-    { BackEndConnect("POST","tasks",formato()).then(async (response) =>
-      { const array = response.ans.tas;
-        setMsg(response.ans.msg);
-        setData(array);
-        setLoading(false);
-      });
-    },
+      { BackEndConnect("POST","tasks",formato()).then(async (response) =>
+        { const array = response.ans.tas;
+          const arraySent = [];
+          const arrayInRevision = [];
+          setMsg(response.ans.msg);
+          setMsp(response.ans.msp);
+          if(array != undefined)
+          { for(let i=0;i<array.length;i++)
+            { if(array[i].tst==4)
+                arraySent.push(array[i]);
+              else if(array[i].tst==5)
+                arrayInRevision.push(array[i]); 
+            }
+            setDataSent(arraySent);
+            setDataInRevision(arrayInRevision);
+          }
+          setLoading(false);
+        }).catch((e) => 
+          { console.log(e);
+            setLoading(false);
+            Toast.show(
+            { type: 'error',
+              props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
+                }
+            });   
+          }
+        );
+      },
     [])
   );
 
   function Sent()
   { return(
       <>
-        { data == null ?
+        { dataSent.length < 1 ?
         ( <View>
             <Text style={styles.title}>{msg}</Text>
           </View>
         ):
         ( <View>
             <View style={styles.viewForm}>
-              <ListTaskSent data={data}/>
+              <ListTaskSent data={dataSent}/>
             </View>
           </View>
         )
@@ -55,14 +80,14 @@ export default function TaskSent() {
   function InRevision()
   { return(
       <>
-        { data == null ?
+        { dataInRevision < 1 ?
         ( <View>
-            <Text style={styles.title}>no hay tareas en revision</Text>
+            <Text style={styles.title}>{msp}</Text>
           </View>
         ):
         ( <View>
             <View style={styles.viewForm}>
-              <ListTaskSent data={data}/>
+              <ListTaskInRevision data={dataInRevision}/>
             </View>
           </View>
         )

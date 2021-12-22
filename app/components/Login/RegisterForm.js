@@ -149,7 +149,7 @@ export default function RegisterForm() {
 
   function clean(rut)
   { return typeof rut === 'string'
-      ? rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase()
+      ? rut.replace(/^0+|[^0-9kK]+/g, '')
       : ''
   }
 
@@ -175,7 +175,7 @@ export default function RegisterForm() {
       <Text style={styles.textDescription}>{" "}Ingresa tu rut</Text>
       <View style={styles.searchSection}>
         <TextInput
-          placeholder="11111111-1"
+          placeholder="Ingrese su rut"
           placeholderTextColor="#AC9DC9"
           style={styles.inputForm}
           onEndEditing={(e) => onEnd(e,"rut")}
@@ -185,6 +185,9 @@ export default function RegisterForm() {
           onSubmitEditing={() => { ref_input2.current.focus()}}
           blurOnSubmit={false}
           value={changedRut}
+          secureTextEntry={Platform.OS === 'ios' ? false : true}
+          keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
+          autoCapitalize="none"
         />
         <Icon
           name="fingerprint"

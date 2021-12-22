@@ -48,7 +48,6 @@ export default function DocumentReverse (props) {
       [{ resize: { width:640 , height:480  } }],
       { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
     );
-    console.log(manipResult.base64)
     setImage(manipResult.base64);
     onChange(manipResult.base64,"file");
   };

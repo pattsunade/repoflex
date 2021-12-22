@@ -2,6 +2,7 @@ import React, { useState,useCallback } from "react";
 import { StyleSheet, View,Text,ActivityIndicator} from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as Location from 'expo-location';
 import { useNavigation } from "@react-navigation/native";
 
 import BackEndConnect from "../../utils/BackEndConnect";
@@ -12,24 +13,54 @@ export default function TaskAvailable() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
-  function formato() {
+
+  function formato(lati,longi) {
     return{
       tat: 1,
-      lat: 12345,
-      lon: 54321
+      lat: lati,
+      lon: longi
     };
   }
+
   useFocusEffect(
-    useCallback(() =>
-    { BackEndConnect("POST","tasks",formato()).then(async (response) =>
-      { const array = response.ans.tas;
-        setMsg(response.ans.msg);
-        setData(array);
-        setLoading(false);
-      });
-    },
-    [])
+    useCallback(() => 
+    { (async () => 
+      { let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        BackEndConnect("POST","tasks",formato(location.coords.latitude.toString(),
+          location.coords.longitude.toString())).then(async (response) =>
+        { const array = response.ans.tas;
+          setMsg(response.ans.msg);
+          setData(array);
+          setLoading(false);
+        })
+        .catch((ans) => 
+          { console.log(ans);
+            Toast.show(
+              { type: 'error',
+                props: 
+                { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor inicia sesión nuevamente"
+                }
+              }
+            );
+            navigation.reset(
+            { index: 0,
+              routes: [
+                { name: 'login',
+                }
+              ],
+            });
+          }
+        );
+      })();
+    },[])
   );
+
+
   return(
   <>
     { loading ? 

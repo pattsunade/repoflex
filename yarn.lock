@@ -6139,6 +6139,11 @@ expo-notifications@~0.12.3:
     fs-extra "^9.0.1"
     uuid "^3.4.0"
 
+expo-optimize@^0.2.7:
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/expo-optimize/-/expo-optimize-0.2.7.tgz#00d389307ec93427c03361fabdf0bec1397fa30d"
+  integrity sha512-K/VTcP6WtJWVwggCePxP+imdfxUYPJH/pWvdWTsk4OR+1/211teM8nCE2mtzp9yyS0LereTD1V1v1DKDRoFuQQ==
+
 expo-permissions@~12.1.1:
   version "12.1.1"
   resolved "https://registry.npmjs.org/expo-permissions/-/expo-permissions-12.1.1.tgz"

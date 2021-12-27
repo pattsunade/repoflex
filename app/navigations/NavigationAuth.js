@@ -27,11 +27,12 @@ export default function Navigation() {
   const [quest, setQuest] = useState();
   const [tid, setTid] = useState();
   const [taskData, setTaskData] = useState();
-  const [completed, setCompleted] = useState()
+  const [completed, setCompleted] = useState();
+  const [intro, setIntro] = useState();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     function getOtt(){
-      let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp']).then((ans) =>
+      let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp','@intro']).then((ans) =>
       { let mtx;
         console.log(ans);
         setOtt(ans[0][1]);
@@ -44,6 +45,7 @@ export default function Navigation() {
         setTid(parseInt(ans[4][1]));
         setTaskData(JSON.parse(ans[5][1]));
         setCompleted(parseInt(ans[6][1]));
+        setIntro(parseInt(ans[7][1]))
         setLoading(false);
       });
     }
@@ -60,6 +62,7 @@ export default function Navigation() {
                 name="login"
                 component={LogInStack}
                 options={{headerShown: false}}
+                initialParams={{'intro':intro}}
               />
               <RootStack.Screen 
                 name="home"

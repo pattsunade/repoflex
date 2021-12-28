@@ -25,15 +25,13 @@ export default function TermsAndConditions (props) {
               { navigation.reset(
                 { index: 0,
                   routes: [
-                    {
-                      name: 'endregister',
+                    { name: 'endregister'
                     }
                   ],
                 });
               }
-              else{
+              else
                 console.log("Algo salio mal");
-              }
             });
           }
         }

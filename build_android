@@ -1,0 +1,1 @@
+turtle build:android --keystore-path /home/nicopino/repoflex/android/certs/repoflex.jks --keystore-alias QGVsZWN0cm9uaWNvL3JlcG9mbGV4

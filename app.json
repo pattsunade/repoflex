@@ -2,7 +2,7 @@
   "expo": {
     "name": "Repoflex",
     "slug": "repoflex",
-    "version": "0.50.0",
+    "version": "0.53.0",
     "orientation": "portrait",
     "icon": "./assets/iconrepo.png",
     "splash": {
@@ -39,7 +39,7 @@
       },
       "package": "com.electronico.repoflex",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"

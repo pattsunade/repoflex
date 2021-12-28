@@ -7,7 +7,7 @@ export default function About() {
   return (
     <View style={styles.parentView}>
       <Text style={styles.textStyle}> Repoflex Móvil</Text>
-      <Text style={styles.textStyle}> Versión:0.40.0 </Text>
+      <Text style={styles.textStyle}> Versión:0.53.0 </Text>
       <Text style={styles.textStyle}> 2021 Zolbit </Text>
       <Text style={styles.textStyle}> Todos los derechos </Text>
       <Text style={styles.textStyle}> reservados </Text>

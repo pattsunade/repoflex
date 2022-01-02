@@ -9596,6 +9596,11 @@ mockdate@^3.0.2:
   resolved "https://registry.npmjs.org/mockdate/-/mockdate-3.0.5.tgz"
   integrity sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==
 
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/move-concurrently/-/move-concurrently-1.0.1.tgz"
@@ -11557,6 +11562,13 @@ react-native-keyboard-aware-scroll-view@^0.9.4:
   dependencies:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
+
+react-native-modal-datetime-picker@^13.0.1:
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-modal-datetime-picker/-/react-native-modal-datetime-picker-13.0.1.tgz#c645c4dff121027f10d4717a1d19551c96fb8b11"
+  integrity sha512-uPgonEKa/nIotmboEEriTCVfWLgrtuR+fybqSw6XcPc/+ve7Q6p55cbUGKtne3+sFcelk+QHcb0aPu56+VbsJA==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-native-pager-view@^5.4.9:
   version "5.4.9"

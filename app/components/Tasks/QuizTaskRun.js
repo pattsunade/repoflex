@@ -6,11 +6,12 @@ import { Rating, AirbnbRating } from 'react-native-ratings';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
 import Loading from '../Loading';
+import moment from "moment";
 const { width, height } = Dimensions.get('window');
 
 export default function QuizTaskRun (props) {
@@ -22,8 +23,9 @@ export default function QuizTaskRun (props) {
   const [checked, setChecked] = useState([]);
   const [stars, setStars] = useState();
   const [image, setImage] = useState("");
-  const [date, setDate] = useState(new Date())
-  const [mode, setMode] = useState('date');
+  const [date, setDate] = useState();
+  const [showDate, setShowDate] = useState(null);
+  const [disabledContinue, setDisabledContinue] = useState(true);
   const [show, setShow] = useState(false);
   const [qid, setQid] = useState(0);
   const [formData, setFormData] = useState([]);
@@ -31,6 +33,7 @@ export default function QuizTaskRun (props) {
   const [pictureData, setPictureData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("Guardando respuestas...");
+
   function defaultFormValuePic() 
   { return {
       tid: tid,
@@ -38,16 +41,20 @@ export default function QuizTaskRun (props) {
       file: "" 
     };
   }
+
   function formatoPic(objeto,qidd) 
   { return {
       tid: tid,
       qid: qidd,
-      file : objeto.file
+      file: objeto.file
     };
   }
+
   function onChange(e) 
   { setInput(e.nativeEvent.text);
+    setContinue(false);
   }
+
   function handleAnswerOptionClickPic(qidd) 
   { setLoading(true);
     if(formDataPic.file.length>0)
@@ -81,12 +88,15 @@ export default function QuizTaskRun (props) {
       });
     }
   }
+
   function onChangePic (e, type)
   { setFormDataPic({ ...formDataPic, [type]:e });
   }
+
   async function sendimage(qidd)
   { return await BackEndConnect("POST","taskp",formatoPic(formDataPic,qidd));
   }
+
   const compress = async (uri) => 
   { const manipResult = await ImageManipulator.manipulateAsync
     ( uri,
@@ -96,6 +106,7 @@ export default function QuizTaskRun (props) {
     // setImage(manipResult.base64);
     onChangePic(manipResult.base64,"file");
   }
+
   async function upload()
   { const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync();
     const resultPermissions = await MediaLibrary.requestPermissionsAsync();
@@ -127,6 +138,7 @@ export default function QuizTaskRun (props) {
       }
     }
   }
+
   function handleAnswerOptionClick (res,qid)
   { setLoading(true);
     if (res!=null&&(res.length>0||res>0))
@@ -156,24 +168,22 @@ export default function QuizTaskRun (props) {
       );
     }
   }
-  function onChangeDate(event, selectedDate)
-  { const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
-    setDate(currentDate);
-  }
-  function showMode(currentMode)
-  { setShow(true);
-    setMode(currentMode);
-  }
-  function showDatepicker()
-  { showMode('date');
-  }
-  function showTimepicker()
-  { showMode('time');
-  }
+
+  const handleConfirm = (date) => {
+    // console.warn("A date has been picked: ", moment(date).format('YYMMDDHHMM'));
+    setDate(moment(date).format('YYMMDDHHMM'));
+    setShowDate(moment(date).format('DD-MM-YYYY HH:MM'))
+    hideDatePicker(false);
+    setDisabledContinue(false);
+  };
+  const hideDatePicker = () =>
+    setShow(false);
+  const showDatepicker = () => 
+    setShow(true);
   function ratingFinish(e)
   { setStars(e);
   }
+
   function updateCheck(id)
   { if (checked.length==0){
       for(let i=1;i<=questions.alt.length;i++){
@@ -184,6 +194,7 @@ export default function QuizTaskRun (props) {
     newChk[id-1] = !newChk[id-1];
     // console.log(newChk)
     setChecked(newChk);
+    setDisabledContinue(false);
   }
   return(
     <View>
@@ -211,6 +222,7 @@ export default function QuizTaskRun (props) {
               <Button 
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn} title="Siguiente"
+                disabled={disabledContinue}
                 onPress={() => handleAnswerOptionClick(input,questions.qid)}
               />
             </View>
@@ -259,6 +271,7 @@ export default function QuizTaskRun (props) {
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
                 title="Siguiente"
+                disabled={disabledContinue}
                 onPress={() =>{
                   let altId="" 
                   for (let i=1;i<=checked.length;i++){
@@ -292,6 +305,7 @@ export default function QuizTaskRun (props) {
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
                 title="Siguiente"
+                disabled={disabledContinue}
                 onPress={() => handleAnswerOptionClick(stars,questions.qid)}
               />
             </View>
@@ -320,43 +334,32 @@ export default function QuizTaskRun (props) {
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
                 title="Siguiente"
+                disabled={disabledContinue}
                 onPress={() => handleAnswerOptionClickPic(questions.qid)}
               />
             </View>
           </>
         ):questions.aty == 6 ?
-        ( <>
-            <View>
-              <View>
-                <Text style={styles.title}>{questions.tiq}</Text>
-              </View>
-              <Text style={styles.text}>Pregunta {completed + 1} </Text>
-            </View>
-            <View>
-              <View>
-                <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate} onPress={showDatepicker} title="Establecer Fecha" />
-              </View>
-              <View>
-                <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate} onPress={showTimepicker} title="Establecer Hora" />
-              </View>
-              {show && 
-                ( <DateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display="default"
-                    onChange={onChangeDate}
-                  />
-                )
-              }
-            </View>
+        ( <View style={styles.viewContainer}>
+            <Text style={styles.title}>{questions.tiq}</Text>
+            <Text style={styles.text}>Actividad {completed + 1} </Text>
+            <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate} onPress={showDatepicker} title="Seleccionar fecha y hora"/>
+            { showDate ? ( <Text style={styles.text}>{showDate}</Text>):(<></>)
+            }
+            <DateTimePickerModal
+              isVisible={show}
+              mode={"datetime"}
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+            />
             <Button 
               containerStyle={styles.btnContainer}
               buttonStyle={styles.btn}
               title="Siguiente"
-              onPress={() => handleAnswerOptionClick(date,questions.qid)}/>
-          </>
+              disabled={disabledContinue}
+              onPress={() => handleAnswerOptionClick(date,questions.qid)}
+            />
+          </View>
         ):
         <>
         </>
@@ -390,11 +393,11 @@ const styles = StyleSheet.create(
     justifyContent: "center",
     alignItems: "center"
   },
-  logo:{
-        width:"100%",
-        height:150,
-        marginTop:10
-    },
+  logo:
+  { width:"100%",
+    height:150,
+    marginTop:10
+  },
   viewContainer2:
   { marginRight: 30,
     marginLeft: 30,
@@ -456,7 +459,6 @@ const styles = StyleSheet.create(
   btnContainer:
   { marginTop: 20,
     width: "80%",
-    marginLeft: 40
   },
   btn:
   { backgroundColor: "#6B35E2",
@@ -464,8 +466,7 @@ const styles = StyleSheet.create(
   },
   btnContainerDate:
   { marginTop: 20,
-    width: "50%",
-    marginLeft: 100
+    width: "70%"
   },
   btnDate:
   { backgroundColor: "#6B35E2",

@@ -40,7 +40,7 @@ export default function LoginForm()
             setLoading(false);
           }
         else if (response.ans.stx === "uk")
-        { navigation.navigate("emailverificationA",
+        { navigation.navigate("emailverification",
           { rut:formData.rut,
             psw:formData.psw
           });

@@ -52,131 +52,137 @@ export default function Navigation() {
     getOtt();
   }, []);
   return(
-    <NavigationContainer>
-      <RootStack.Navigator>
-      { loading ? 
-        ( <RootStack.Screen name="Splash" component={SplashScreen}/>
+    <>
+    { loading ?
+        ( <Loading isVisible={loading} text="Cargando..."/>
         ): ott == null || ott == "null" ?
-          ( <>
-              <RootStack.Screen
-                name="login"
-                component={LogInStack}
-                options={{headerShown: false}}
-                initialParams={{'intro':intro}}
-              />
-              <RootStack.Screen 
-                name="home"
-                component={HomeStack}
-                options={{ title: "Home", headerShown: false }}
-              />
-              <RootStack.Screen 
-                name="homeregister"
-                component={HomeRegisterStack}
-                options={{ title: "Home", headerShown: false }}
-              />
-              <RootStack.Screen 
-                name="task"
-                component={TaskStack}
-                options={{ title: "Task", headerShown: false }}
-                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
-              />
-              <RootStack.Screen 
-                name="account"
-                component={AccountStack}
-                options={{headerShown: false}}
-              />
-            </>
+          ( <NavigationContainer>
+              <RootStack.Navigator>
+                <RootStack.Screen
+                  name="login"
+                  component={LogInStack}
+                  options={{headerShown: false}}
+                  initialParams={{'intro':intro}}
+                />
+                <RootStack.Screen 
+                  name="home"
+                  component={HomeStack}
+                  options={{ title: "Home", headerShown: false }}
+                />
+                <RootStack.Screen 
+                  name="homeregister"
+                  component={HomeRegisterStack}
+                  options={{ title: "Home", headerShown: false }}
+                />
+                <RootStack.Screen 
+                  name="task"
+                  component={TaskStack}
+                  options={{ title: "Task", headerShown: false }}
+                  initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
+                />
+                <RootStack.Screen 
+                  name="account"
+                  component={AccountStack}
+                  options={{headerShown: false}}
+                />
+              </RootStack.Navigator>
+            </NavigationContainer>
           ): stp>matrix ?
-          ( <>
-              <RootStack.Screen 
-                name="homeregister"
-                component={HomeRegisterStack}
-                options={{ title: "Home", headerShown: false }}
-              />
-              <RootStack.Screen 
-                name="home"
-                component={HomeStack}
-                options={{ title: "Home", headerShown: false }}
-              />
-              <RootStack.Screen
-                name="login"
-                component={LogInStack}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen 
-                name="account"
-                component={AccountStack}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen 
-                name="task"
-                component={TaskStack}
-                options={{ title: "Task", headerShown: false }}
-                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
-              />
-            </>
+          ( <NavigationContainer>
+              <RootStack.Navigator>
+                <RootStack.Screen 
+                  name="homeregister"
+                  component={HomeRegisterStack}
+                  options={{ title: "Home", headerShown: false }}
+                />
+                <RootStack.Screen 
+                  name="home"
+                  component={HomeStack}
+                  options={{ title: "Home", headerShown: false }}
+                />
+                <RootStack.Screen
+                  name="login"
+                  component={LogInStack}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen 
+                  name="account"
+                  component={AccountStack}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen 
+                  name="task"
+                  component={TaskStack}
+                  options={{ title: "Task", headerShown: false }}
+                  initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
+                />
+              </RootStack.Navigator>
+            </NavigationContainer>
           ):quest != null || quest == "null" ?
-          ( <>
-              <RootStack.Screen 
-                name="task"
-                component={TaskStack}
-                options={{ title: "Task", headerShown: false }}
-                initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'completed':completed}}
-              />
-              <RootStack.Screen
-                name="login"
-                component={LogInStack}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen 
-                name="home"
-                component={HomeStack}
-                options={{ title: "Home", headerShown: false }}
-                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
-              />
-              <RootStack.Screen 
-                name="account"
-                component={AccountStack}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen 
-                name="homeregister"
-                component={HomeRegisterStack}
-                options={{ title: "Home", headerShown: false }}
-              />
-            </>
+          ( <NavigationContainer>
+              <RootStack.Navigator>
+                <RootStack.Screen 
+                  name="task"
+                  component={TaskStack}
+                  options={{ title: "Task", headerShown: false }}
+                  initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'completed':completed}}
+                />
+                <RootStack.Screen
+                  name="login"
+                  component={LogInStack}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen 
+                  name="home"
+                  component={HomeStack}
+                  options={{ title: "Home", headerShown: false }}
+                  initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
+                />
+                <RootStack.Screen 
+                  name="account"
+                  component={AccountStack}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen 
+                  name="homeregister"
+                  component={HomeRegisterStack}
+                  options={{ title: "Home", headerShown: false }}
+                />
+              </RootStack.Navigator>
+            </NavigationContainer>
           ):
-            <>
-              <RootStack.Screen 
-                name="home"
-                component={HomeStack}
-                options={{ title: "Home", headerShown: false }}
-              />
-              <RootStack.Screen 
-                name="account"
-                component={AccountStack}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen
-                name="login"
-                component={LogInStack}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen 
-                name="task"
-                component={TaskStack}
-                options={{ title: "Task", headerShown: false }}
-                initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
-              />
-              <RootStack.Screen 
-                name="homeregister"
-                component={HomeRegisterStack}
-                options={{ title: "Home", headerShown: false }}
-              />
-            </>
+            <NavigationContainer>
+              <RootStack.Navigator>
+                <RootStack.Screen 
+                  name="home"
+                  component={HomeStack}
+                  options={{ title: "Home", headerShown: false }}
+                />
+                <RootStack.Screen 
+                  name="account"
+                  component={AccountStack}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen
+                  name="login"
+                  component={LogInStack}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen 
+                  name="task"
+                  component={TaskStack}
+                  options={{ title: "Task", headerShown: false }}
+                  initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
+                />
+                <RootStack.Screen 
+                  name="homeregister"
+                  component={HomeRegisterStack}
+                  options={{ title: "Home", headerShown: false }}
+                />
+            </RootStack.Navigator>
+          </NavigationContainer>
       }
-      </RootStack.Navigator>
-    </NavigationContainer>
+    </>
   )
 }
 const styles = StyleSheet.create({

@@ -52,7 +52,7 @@
         {
           "icon": "-",
           "color": "#ffffff",
-          "sounds": ["./assets/notiSound.wav"],
+          "sounds": ["./assets/notisound.wav"],
           "mode": "production"
         }
       ]

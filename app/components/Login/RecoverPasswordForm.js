@@ -134,10 +134,6 @@ export default function RecoverPasswordForm () {
           autoCapitalize="none"
           value={changedRut}
         />
-        <Icon
-          name="fingerprint"
-          iconStyle={styles.iconRight}
-        />
       </View>
       <View style={styles.viewError}>
       { rutCorrect == 0 ?

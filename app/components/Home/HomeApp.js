@@ -5,64 +5,85 @@ import Loading from "../Loading";
 import { size, isEmpty,map } from "lodash";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from "moment";
 
 export default function HomeApp(props) {
   const navigation = useNavigation();
-  const {name, amou, rank, avai, asgn, proc, envi, chck, fini, loca, work, noti} = props;
+  const {name, amou, rank, avai, asgn, proc, envi, chck, fini, loca, work, noti, levl} = props;
   const [isEnabled, setIsEnabled] = useState(false);
+  const [newDate, setNewDate] = useState(moment(new Date()).format('DD-MM-YYYY HH:MM'))
+  const [number, setNumber] = useState(0);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const RZ = String(rank).charAt(0);
   const RR = String(rank).charAt(2);
   const RI = String(rank).charAt(4);
-
   const [active, setActive] = useState(false)
   let transformX = useRef(new Animated.Value(0)).current
 
-  useEffect(() => {
-    if (active) {
-      Animated.timing(transformX, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true
-      }).start()
-    } else {
-      Animated.timing(transformX, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true
-      }).start()
-    }
-  }, [active]);
+  // function refresh()
+  // { setNewDate(moment(new Date()).format('DD-MM-YYYY HH:MM'));
+  //   console.log("hola")
+  // }
 
-  const rotationX = transformX.interpolate({
-    inputRange: [0, 1],
-    outputRange: [2, Dimensions.get('screen').width / 2]
-  })
+  // useEffect(()=>
+  // { console.log(moment(new Date()).format('DD-MM-YYYY HH:MM'));
+  //   setNewDate(moment(new Date()).format('DD-MM-YYYY HH:MM'));
+  // },[number])
+
+  // useEffect(() => {
+  //   if (active) {
+  //     Animated.timing(transformX, {
+  //       toValue: 1,
+  //       duration: 300,
+  //       useNativeDriver: true
+  //     }).start()
+  //   } else {
+  //     Animated.timing(transformX, {
+  //       toValue: 0,
+  //       duration: 300,
+  //       useNativeDriver: true
+  //     }).start()
+  //   }
+  // }, [active]);
+
+  // const rotationX = transformX.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: [2, Dimensions.get('screen').width / 2]
+  // })
   
   return (
     <View>
-      {/*<View>
-        <Icon
-          size={30}
-          type="material-community"
-          name="bell-outline"
-          color= "black"
-          containerStyle={styles.btnContainer}
-          onPress={()=> navigation.navigate("notification",{
-              notifications:noti
-          })}
-        />
-      </View>*/}
-      <View style={styles.viewContainerInfo} >
-        <Text style={styles.texttitle}>Ubicación: {"\n"} {loca}</Text>
-        <Text style={styles.texttitleSaludo}>Hola, </Text>
-        <Text style={styles.texttitleNombre} onPress=
-          { () => navigation.navigate("account",
-            { nameuser:name
-            })
-          }>
-          {name}.
-        </Text>
+      <View style={styles.viewContainerInfo}>
+        <View style={{flexDirection:'column'}}>
+          <Text style={styles.texttitle}>Ubicación: {"\n"} <Text style={{fontWeight:'bold'}}> {loca}</Text></Text>
+          <Text style={styles.texttitle2}>Última actualización: {"\n"} <Text style={{fontWeight:'bold'}}> {newDate}</Text></Text>
+          <Text style={styles.texttitleSaludo}>Hola, </Text>
+          <Text style={styles.texttitleNombre}>
+            {name}.
+          </Text>
+        </View>
+        <View style={{flexDirection:'column',justifyContent:'space-around','marginLeft':25}}>
+          <Icon
+            size={40}
+            type="material-community"
+            name="refresh"
+            color= "#5300eb"
+            containerStyle={styles.btnContainer}
+            // onPress={()=>setNumber(1)}
+          />
+          <Icon
+            size={40}
+            type="material-community"
+            name="account-circle"
+            color= "#5300eb"
+            containerStyle={styles.btnContainer}
+            onPress={ () => navigation.navigate("account",
+              { nameuser:name,
+                level:levl
+              })
+            }
+          />
+        </View>
       </View>
       <View style={styles.wrapperInfo}>
         <View style = {styles.container}>
@@ -80,14 +101,14 @@ export default function HomeApp(props) {
       <TouchableOpacity style={styles.customBtn}>
         <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
         <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
-        <Icon 
+        {/*<Icon 
           size={15}
           type="material-community"
           name="information-outline"
           color= "black"
           containerStyle={styles.btnContainer}
           onPress={()=> navigation.navigate("home")}
-        />
+        />*/}
       </TouchableOpacity>
       <View>
         <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
@@ -184,7 +205,7 @@ export default function HomeApp(props) {
             <ListItem.Chevron color="#6B35E2"/>
         </ListItem>
       </View>
-      <SafeAreaView style={{
+      {/*<SafeAreaView style={{
           flex: 1,
           alignItems: 'center',
           marginTop: 20
@@ -235,7 +256,7 @@ export default function HomeApp(props) {
             </Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </SafeAreaView>*/}
     </View>
   );
 }
@@ -244,6 +265,7 @@ const styles = StyleSheet.create(
   { marginRight: 10,
     marginLeft: 10,
     marginBottom:0,
+    flexDirection:'row'
   },
   logo:
   { width: "100%",
@@ -252,6 +274,13 @@ const styles = StyleSheet.create(
   },
   texttitle:
   { marginTop:50,
+    marginBottom:5,
+    marginHorizontal:0,
+    fontSize: 17,
+    textAlign:"justify"
+  },
+  texttitle2:
+  { marginTop:10,
     marginBottom:5,
     marginHorizontal:0,
     fontSize: 17,
@@ -313,8 +342,7 @@ const styles = StyleSheet.create(
     marginLeft:65,
   },
   btnContainer:
-  { position:"absolute", // para posisionarlo en cualquier lado
-   justifyContent: 'center',
+  { justifyContent: 'center',
     top: 25,
     right: 5,
     //sombreado

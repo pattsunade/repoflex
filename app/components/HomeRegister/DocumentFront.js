@@ -87,8 +87,8 @@ export default function DocumentFront (props) {
   return(
     <ScrollView>
       <View style={styles.viewContainer}>
-        <Text style={styles.title}>Cédula de Identidad (Parte Frontal)</Text>
-        <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
+        <Text style={styles.title}>Cédula de Identidad</Text>
+        <Text style={styles.text}>Verificaremos que la fotografía coincida con la parte frontal de la cédula de identidad.</Text>
         <View style={styles.wrapper}>
           <View style={styles.container}>
             <View>

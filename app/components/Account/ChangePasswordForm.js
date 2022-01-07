@@ -252,10 +252,11 @@ const styles = StyleSheet.create({
     fontWeight:"bold"
   },
   textDescription: {
-    fontWeight:"normal",
+    fontWeight:"bold",
     fontSize:15,
     marginTop:5,
     justifyContent:"flex-start",
+    color:"#5300eb"
   },
   textDescriptionError:{
     fontWeight:"normal",

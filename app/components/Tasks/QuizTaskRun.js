@@ -52,7 +52,7 @@ export default function QuizTaskRun (props) {
 
   function onChange(e) 
   { setInput(e.nativeEvent.text);
-    setContinue(false);
+    setDisabledContinue(false);
   }
 
   function handleAnswerOptionClickPic(qidd) 
@@ -91,6 +91,7 @@ export default function QuizTaskRun (props) {
 
   function onChangePic (e, type)
   { setFormDataPic({ ...formDataPic, [type]:e });
+    setDisabledContinue(false);
   }
 
   async function sendimage(qidd)
@@ -182,6 +183,7 @@ export default function QuizTaskRun (props) {
     setShow(true);
   function ratingFinish(e)
   { setStars(e);
+    setDisabledContinue(false);
   }
 
   function updateCheck(id)
@@ -218,7 +220,7 @@ export default function QuizTaskRun (props) {
                 maxLength={128}
               />
             </View>
-            <View>
+            <View style={styles.searchSection}>
               <Button 
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn} title="Siguiente"
@@ -235,7 +237,7 @@ export default function QuizTaskRun (props) {
               </View>
               <Text style={styles.text}>Pregunta {completed + 1} </Text>
             </View>
-            <View>
+            <View style={styles.searchSection2}>
               {questions.alt.map(
                 (answerOption) => 
                   ( <Button 
@@ -267,22 +269,24 @@ export default function QuizTaskRun (props) {
                   />
               }
               )}
-              <Button 
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                title="Siguiente"
-                disabled={disabledContinue}
-                onPress={() =>{
-                  let altId="" 
-                  for (let i=1;i<=checked.length;i++){
-                    if(checked[i-1]){
-                      altId = altId+i.toString()+"-";
+              <View style={styles.searchSection}>
+                <Button
+                  containerStyle={styles.btnContainer}
+                  buttonStyle={styles.btn}
+                  title="Siguiente"
+                  disabled={disabledContinue}
+                  onPress={() =>{
+                    let altId="" 
+                    for (let i=1;i<=checked.length;i++){
+                      if(checked[i-1]){
+                        altId = altId+i.toString()+"-";
+                      }
                     }
-                  }
-                  // console.log(altId);
-                  handleAnswerOptionClick(altId,questions.qid)
-                }}
-              />
+                    // console.log(altId);
+                    handleAnswerOptionClick(altId,questions.qid)
+                  }}
+                />
+              </View>
             </View>
           </>
         ):questions.aty == 4 ?
@@ -301,13 +305,15 @@ export default function QuizTaskRun (props) {
                 size={30}
                 onFinishRating={ratingFinish}
               />
-              <Button 
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                title="Siguiente"
-                disabled={disabledContinue}
-                onPress={() => handleAnswerOptionClick(stars,questions.qid)}
-              />
+              <View style={styles.searchSection}>
+                <Button 
+                  containerStyle={styles.btnContainer}
+                  buttonStyle={styles.btn}
+                  title="Siguiente"
+                  disabled={disabledContinue}
+                  onPress={() => handleAnswerOptionClick(stars,questions.qid)}
+                />
+              </View>
             </View>
           </>  
         ):questions.aty == 5 ?
@@ -329,14 +335,16 @@ export default function QuizTaskRun (props) {
                   source={image ? {uri:image} : require("../../../assets/no-image.png")}
                   resizeMode="contain"
                   style={styles.logo}
-                />         
-              <Button 
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                title="Siguiente"
-                disabled={disabledContinue}
-                onPress={() => handleAnswerOptionClickPic(questions.qid)}
-              />
+                />
+              <View style={styles.searchSection}>
+                <Button 
+                  containerStyle={styles.btnContainer}
+                  buttonStyle={styles.btn}
+                  title="Siguiente"
+                  disabled={disabledContinue}
+                  onPress={() => handleAnswerOptionClickPic(questions.qid)}
+                />
+              </View>
             </View>
           </>
         ):questions.aty == 6 ?
@@ -502,5 +510,14 @@ const styles = StyleSheet.create(
   { flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 20,
+    marginLeft: 20
+  },
+  searchSection2:
+  { flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
+    marginLeft: 20
   }
 });

@@ -104,6 +104,7 @@ export default function Navigation() {
                   name="login"
                   component={LogInStack}
                   options={{headerShown: false}}
+                  initialParams={{'intro':intro}}
                 />
                 <RootStack.Screen 
                   name="account"
@@ -131,6 +132,7 @@ export default function Navigation() {
                   name="login"
                   component={LogInStack}
                   options={{headerShown: false}}
+                  initialParams={{'intro':intro}}
                 />
                 <RootStack.Screen 
                   name="home"
@@ -167,6 +169,7 @@ export default function Navigation() {
                   name="login"
                   component={LogInStack}
                   options={{headerShown: false}}
+                  initialParams={{'intro':intro}}
                 />
                 <RootStack.Screen 
                   name="task"

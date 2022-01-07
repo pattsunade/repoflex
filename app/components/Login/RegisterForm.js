@@ -175,9 +175,9 @@ export default function RegisterForm() {
       <Text style={styles.textDescription}>{" "}Ingresa tu rut</Text>
       <View style={styles.searchSection}>
         <TextInput
-          placeholder="Ingrese su rut"
+          placeholder="11.111.111-1"
           placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
+          style={styles.inputForm2}
           onEndEditing={(e) => onEnd(e,"rut")}
           maxLength={12}
           onChangeText={(e) => format(e)}
@@ -188,10 +188,6 @@ export default function RegisterForm() {
           secureTextEntry={Platform.OS === 'ios' ? false : true}
           keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
           autoCapitalize="none"
-        />
-        <Icon
-          name="fingerprint"
-          iconStyle={styles.iconRight}
         />
       </View>
       { rutCorrect == 0 ?
@@ -206,18 +202,13 @@ export default function RegisterForm() {
           placeholder="56911111111"
           placeholderTextColor="#AC9DC9"
           keyboardType="numeric"
-          style={styles.inputForm}
+          style={styles.inputForm2}
           onEndEditing={(e) => onEnd(e,"pho")}
           maxLength={12}
           returnKeyType="next"
           onSubmitEditing={() => { ref_input3.current.focus()}}
           blurOnSubmit={false}
           ref={ref_input2}
-        />
-        <Icon
-          type="material-community"
-          name="card-account-phone"
-          iconStyle={styles.iconRight}
         />
       </View>
       {/*{ rutCorrect == 0 ?
@@ -316,6 +307,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     fontSize:16
   },
+  inputForm2: {
+    flex: 1,
+    paddingTop: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+    paddingLeft: 0,
+    marginRight:24,
+    width: "100%",   
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    fontSize:16
+  },
   searchSection: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -339,10 +342,11 @@ const styles = StyleSheet.create({
     color:"#AC9DC9",
   },
   textDescription: {
-    fontWeight:"normal",
-    fontSize:17,
+    fontWeight:"bold",
+    fontSize:15,
     marginTop:10,
     justifyContent:"flex-start",
+    color:"#5300eb"
   },
   textDescription2:{
     fontWeight:"normal",

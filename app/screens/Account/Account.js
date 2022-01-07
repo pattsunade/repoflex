@@ -9,11 +9,17 @@ import InfoUser from "../../components/Account/InfoUser";
 import AccountOptions from "../../components/Account/AccountOptions";
 
 export default function Account({route,navigation}) {
-  const { nameuser,level } = route.params;
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { nameuser,level} = route.params;
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [loadingText, setLoadingText] = useState("");
-  const [reloadUserInfo, setReloadUserInfo] = useState(false);
+
+  useEffect(() =>
+  { AsyncStorage.getItem('@usr').then((ans)=>
+    { setUser(ans);
+      setLoading(false);
+    })
+  });
 
   function signOut()
   { AsyncStorage.multiRemove(['@ott','@tid','@quest','@taskData','@comp']).then(()=>
@@ -29,18 +35,21 @@ export default function Account({route,navigation}) {
 
   return(
     <ScrollView style={styles.viewUserInfo}>
-      <InfoUser 
-        level={level}
-        nameuser={nameuser}
-      /> 
-      <AccountOptions userInfo={userInfo} setReloadUserInfo={setReloadUserInfo} />   
-      <Button 
-        title="Cerrar sesión"
-        containerStyle={styles.btnContainer}
-        buttonStyle={styles.btnFinish}
-        onPress= {signOut}
-      />
-      <Loading text={loadingText} isVisible={loading}  />
+      { loading ? (<Loading isVisible={loading} text="Obteniendo datos..." />)
+        :(<>
+            <InfoUser
+              level={level}
+              nameuser={nameuser}
+            /> 
+            <AccountOptions usr={user}/>
+            <Button 
+              title="Cerrar sesión"
+              containerStyle={styles.btnContainer}
+              buttonStyle={styles.btnFinish}
+              onPress= {signOut}
+            />
+          </>)
+      }
     </ScrollView>
   );
 }
@@ -52,8 +61,8 @@ const styles = StyleSheet.create(
   },
   btnContainer:
   { marginTop: 1,
-    width: "80%",
-    marginLeft: 40
+    width: "85%",
+    marginLeft: 30
   },
   btnFinish:{
     marginTop:20,

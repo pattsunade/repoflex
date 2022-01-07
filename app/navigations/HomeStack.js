@@ -17,12 +17,14 @@ import AssignedDetail from "../screens/Home/AssignedDetail";
 const Stack = createStackNavigator();
 
 export default function HomeStack({route})
-{ return(
+{ 
+  // const {usr} = route.params;
+  return(
     <Stack.Navigator> 
       <Stack.Screen
         name="home"
         component={Home}
-        //options={{title: "Home"}}
+        // initialParams={{'usr':usr}}
         options={{headerShown: false}}
       />
       <Stack.Screen

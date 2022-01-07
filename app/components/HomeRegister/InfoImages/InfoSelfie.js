@@ -24,7 +24,7 @@ export default function InfoSelfie (props) {
                 style={styles.logo}
             />
             <View style={styles.viewContainerInfo} >
-                <Text style={styles.texttitle}>La Fotografia o Selfie debe ser de rostro completo y parte superior de los hombros</Text>
+                <Text style={styles.texttitle}>La Fotografia debe ser de rostro completo y parte superior de los hombros</Text>
             </View>
             <View style={styles.viewContainerInfo}>
                 <View style={styles.wrapperInfo}>

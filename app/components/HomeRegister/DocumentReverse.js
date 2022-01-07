@@ -94,8 +94,8 @@ export default function DocumentReverse (props) {
   return(
     <ScrollView>
       <View style={styles.viewContainer}>
-        <Text style={styles.title}>Cédula de Identidad (Reverso)</Text>
-        <Text style={styles.text}>Verificaremos que estos datos coincidan con los ingresados con anterioridad.</Text>
+        <Text style={styles.title}>Cédula de Identidad</Text>
+        <Text style={styles.text}>Verificaremos que la fotografía coincida con el reverso de la cédula de identidad.</Text>
         <View style={styles.wrapper}>
           <View style={styles.container}>
             <View>

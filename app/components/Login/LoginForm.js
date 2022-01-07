@@ -50,11 +50,11 @@ export default function LoginForm()
         { let matrix = response.hdr.mtx;
           let stp = response.ans.stp;
           if ((matrix.match(/1/g) || []).length>=parseInt(stp))
-          { navigation.reset(
+          { AsyncStorage.setItem('@usr',formData.rut)
+            navigation.reset(
             { index: 0,
-              routes: [
-                {
-                  name: 'home',
+              routes: 
+              [ { name: 'home'
                 }
               ],
             });
@@ -210,7 +210,7 @@ export default function LoginForm()
         <TextInput
           placeholder="Ingrese su rut"
           placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
+          style={styles.inputForm2}
           onEndEditing={(e) => onEnd(e,"rut")}
           maxLength={12}
           onChangeText={(e) => format(e)}
@@ -221,10 +221,6 @@ export default function LoginForm()
           secureTextEntry={Platform.OS === 'ios' ? false : true}
           keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
           autoCapitalize="none"
-        />
-        <Icon
-          name="fingerprint"
-          iconStyle={styles.iconRight}
         />
       </View>
       <View style={styles.viewError}>
@@ -315,6 +311,18 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 10,
     paddingLeft: 0,
+    width: "100%",   
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    fontSize:18
+  },
+  inputForm2: {
+    flex: 1,
+    paddingTop: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+    paddingLeft: 0,
+    marginRight:24,
     width: "100%",   
     backgroundColor: '#fff',
     borderRadius: 20,

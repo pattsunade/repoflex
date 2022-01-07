@@ -86,7 +86,7 @@ const uploadDocuments = () =>{
 return(
   <ScrollView>
     <View style={styles.viewContainer}>
-      <Text style={styles.title}>Fotografía Frontal (Selfie)</Text>
+      <Text style={styles.title}>Fotografía Frontal</Text>
       <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
       <View style={styles.wrapper}>
         <View style={styles.container}>

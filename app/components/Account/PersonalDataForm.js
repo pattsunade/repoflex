@@ -1,145 +1,417 @@
-import React,{useState} from "react";
-import { StyleSheet, Text, View, ScrollView, Alert, TouchableOpacity, Linking } from 'react-native';
-import { Button, Icon, Divider } from "react-native-elements";
+import React,{useState,useRef,useEffect} from "react";
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { Input,Button, Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
-import * as WebBrowser from 'expo-web-browser';
-import ParsedText from 'react-native-parsed-text';
+import Loading from "../Loading";
+import { Picker } from "@react-native-picker/picker";
+import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
 
 export default function PersonalDataForm (props) {
+  const {data,lists} = props;
   const navigation = useNavigation();
+  const [name, setName] = useState(data.name);
+  const [snam, setSnam] = useState(data.snam);
+  const [addr, setAddr] = useState(data.addr);
+  const [phon, setPhon] = useState(data.phon);
+  const [acnu, setAcnu] = useState(data.acnu);
+  const [formData, setFormData] = useState({});
+  const [nameCorrect, setNameCorrect] = useState(2);
+  const [snamCorrect, setSnamCorrect] = useState(2);
+  const [ndocCorrect, setNdocCorrect] = useState(2);
+  const [addrCorrect, setAddrCorrect] = useState(2);
+  const [acnuCorrect, setAcnuCorrect] = useState(2);
+  const [loadingText, setLoadingText] = useState("Cargando...");
+  const [districtObj, setDistrictObj] = useState({});
+  const [districtList, setDistrictList] = useState([]);
+  const [regiCod, setRegiCod] = useState(data.regi);
+  const [comuCod, setComuCod] = useState(data.comu);
+  const [bankCod, setBankCod] = useState(data.bank);
+  const [actyCod, setActyCod] = useState(data.acty);
+  const [button, setButton] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const bankList = [];
+  const regionList = [];
+  const acctypeList = [];
   
+  setLists();
+
+  function formato(obj)
+  { return {...obj,uid:data.uid}
+  }
+
+  function onEnd(data,key)
+  { setFormData({...formData, [key]:data});
+    setButton(false);
+  }
+
+  function gecomFormat(regi)
+  { return{
+      reg:regi
+    }
+  }
+
+  function getcom(cod)
+  { setLoadingText("Obteniendo comunas...");
+    setLoading(true);
+    BackEndConnect("POST","gecom",gecomFormat(cod)).then((ans)=>
+    { setDistrictObj(ans.ans);
+      setLoading(false);
+    })
+    .catch((ans) => 
+    { console.log(ans);
+      Toast.show(
+        { type: 'error',
+          props: 
+          { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
+          }
+        }
+      );
+      navigation.goBack();
+    });
+  }
+
+  function onSubmit()
+  { setLoading(true);
+    BackEndConnect("POST","usact",formato(formData)).then((response)=>
+    { if(response.ans.stx=='ok')
+      { Toast.show(
+        { type: 'success',
+          props: {onPress: () => {}, text1: 'Éxito', text2: 'Actualización exitosa'
+          }
+        });
+      }
+      else
+      { Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: 'Error de comunicación, intenta más tarde'
+          }
+        });
+      }
+      setLoading(false);
+      console.log(response);
+    })
+    .catch((e)=>
+    { console.log(e);
+      Toast.show(
+      { type: 'error',
+        props: {onPress: () => {}, text1: 'Error', text2: "Error interno, intenta más tarde"
+        }
+      });
+    })
+  }
+
+  function setLists()
+  { let b=lists.bancos.length;
+    let r=lists.regiones.length;
+    let a=lists.actypes.length;
+    // let c=comunas.com.length
+    let num=r;
+    if(num<b)
+      num=b;
+    else if(num<a)
+      num=a;
+    // else if(num<r)
+    //   num=r;
+    for(let i=0;i<num;i++)
+    { if(lists.regiones[i]!=null)
+        regionList.push(
+          <Picker.Item label={lists.regiones[i]["name"]} value={lists.regiones[i]["cod"]} key={lists.regiones[i]["cod"]} />
+        )
+      if(lists.bancos[i]!=null)
+        bankList.push(
+          <Picker.Item label={lists.bancos[i]["name"]} value={lists.bancos[i]["cod"]} key={lists.bancos[i]["cod"]} />
+        )
+      if(lists.actypes[i]!=null)
+        acctypeList.push(
+          <Picker.Item label={lists.actypes[i]["name"]} value={lists.actypes[i]["cod"]} key={lists.actypes[i]["cod"]} />
+        )
+      // if(comunas.com[i]!=null)
+      //   districtList.push(
+      //     <Picker.Item label={comunas.com[i]["nam"]} value={comunas.com[i]["cod"]} key={comunas.com[i]["cod"]} />
+      //   )
+    }
+  }
+
+  function format(rut)
+  { if (rut.length>0)
+    { rut = clean(rut);
+      var result = rut.slice(-4, -1) + '-' + rut.substr(rut.length - 1);
+      for (var i = 4; i < rut.length; i += 3) {
+        result = rut.slice(-3 - i, -i) + '.' + result
+      }
+      return result
+    }
+    else
+    { return ""
+    }
+  }
+
+  function clean(rut)
+  { return typeof rut === 'string'
+      ? rut.replace(/^0+|[^0-9kK]+/g, '')
+      : ''
+  }
+
+  useEffect(()=>
+  { console.log("me llamaron");
+    getcom(regiCod);
+  },[regiCod])
+
+  const renderDistrictList = () =>
+  { let districtList = [];
+    for(let i=0;i<parseInt(districtObj.knt);i++)
+    { districtList.push(
+        <Picker.Item label={districtObj.com[i]["nam"]} value={districtObj.com[i]["cod"]} key={districtObj.com[i]["cod"]} />
+      )
+    }
+    return districtList
+  }
 
   // paragraph.map((ans) =>{console.log(ans.bod)})
   return (
-    <ScrollView>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Nombres</Text>
-          <Text style={styles.dataText}>Nicolás Antonio</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+    <ScrollView style={styles.formContainer}>
+      <Text style={styles.textDescription}>{" "}Nombres</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          onChange={(e) => onEnd(e.nativeEvent.text, "name")}
+          maxLength={50}
+          onChangeText={(e)=>setName(e)}
+          value={name}
+        />
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Apellidos</Text>
-          <Text style={styles.dataText}>Pino Leva</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      { nameCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}Su nombre debe ser menor a 50 caracteres.</Text>):
+        (<></>)
+      }
+      <Text style={styles.textDescription}>{" "}Apellidos</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          onChange={(e) => onEnd(e.nativeEvent.text, "snam")}
+          maxLength={50}
+          onChangeText={(e)=>setSnam(e)}
+          value={snam}
+        />
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Rut</Text>
-          <Text style={styles.dataText}>19.410.235-6</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      { snamCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}Su apellido debe ser menor a 50 caracteres.</Text>):
+        (<></>)
+      }
+      <Text style={styles.textDescription}>{" "}Rut</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          placeholder={format(data.rut)}
+          placeholderTextColor="#bca2fd"
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          // onEndEditing={(e) => onEnd(e, "name")}
+          maxLength={50}
+          editable={false}
+        />
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Correo</Text>
-          <Text style={styles.dataText}>npino7081@gmail.com</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      <Text style={styles.textDescription}>{" "}Número de documento</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          placeholder={data.ndoc}
+          placeholderTextColor="#bca2fd"
+          keyboardType="numeric"
+          style={styles.inputForm}
+          onEndEditing={(e) => onEnd(e, "ndoc")}
+          editable={false}
+          maxLength={20}
+          />
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Teléfono</Text>
-          <Text style={styles.dataText}>+56998869780</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      { ndocCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}El número de documento debe ser menor a 20.</Text>):
+        (<></>)
+      }
+      <Text style={styles.textDescription}>{" "}Correo</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          placeholder={data.mail}
+          placeholderTextColor="#bca2fd"
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          // onEndEditing={(e) => onEnd(e, "name")}
+          maxLength={50}
+          editable={false}
+        />
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Dirección</Text>
-          <Text style={styles.dataText}>Quirihue 255 DPTO 45</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      <Text style={styles.textDescription}>{" "}Número telefónico</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          onChange={(e) => onEnd(e.nativeEvent.text, "phon")}
+          maxLength={50}
+          onChangeText={(e)=>setPhon(e)}
+          value={phon}
+        />
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Comuna</Text>
-          <Text style={styles.dataText}>Ñuñoa</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      <Text style={styles.textDescription}>{" "}Región</Text>
+      <View style={styles.card}>
+        <Picker
+          selectedValue={regiCod}
+          style={styles.inputForm}
+          onValueChange={(itemValue) => setRegiCod(itemValue)}
+        >
+          {regionList}
+        </Picker>
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>País</Text>
-          <Text style={styles.dataText}>Chile</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      <Text style={styles.textDescription}>{" "}Comuna</Text>
+      <View style={styles.card}>
+        <Picker
+          selectedValue={comuCod}
+          style={styles.inputForm}
+          onValueChange={(itemValue) => { onEnd(itemValue,"comu")
+                                          setComuCod(itemValue)}}
+        >
+          {renderDistrictList()}
+        </Picker>
       </View>
-      <Text style={styles.titleText}> Datos bancarios</Text>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Banco</Text>
-          <Text style={styles.dataText}>Banco de Chile</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      <Text style={styles.textDescription}>{" "}Dirección</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          onChange={(e) => onEnd(e.nativeEvent.text, "addr")}
+          maxLength={128}
+          onChangeText={(e)=>setAddr(e)}
+          value={addr}
+        />
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Tipo de cuenta</Text>
-          <Text style={styles.dataText}>Corriente</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      { addrCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}Su dirección debe ser menor a 128 caracteres.</Text>):
+        (<></>)
+      }
+      <Text style={styles.textDescription}>{" "}Banco</Text>
+      <View style={styles.card}>
+        <Picker
+          selectedValue={bankCod}
+          style={styles.inputForm}  
+          onValueChange={(itemValue) => {onEnd(itemValue,"bank")
+                                         setBankCod(itemValue)}}
+          > 
+          {bankList}
+        </Picker>
       </View>
-      <View style={styles.parentView}>
-        <View style={styles.firstRowView}>
-          <Text style={styles.dataText}>Número</Text>
-          <Text style={styles.dataText}>00-174-07682-07</Text>
-        </View>
-        <View>
-          <Icon type="material-community" name="file-edit-outline" size={24} color="black" />
-        </View>
+      <Text style={styles.textDescription}>{" "}Tipo de cuenta</Text>
+      <View style={styles.card}>
+        <Picker
+          selectedValue={actyCod}
+          style={styles.inputForm}  
+          onValueChange={(itemValue) => {onEnd(itemValue,"acty")
+                                         setActyCod(itemValue)}}
+          >
+          {acctypeList}
+        </Picker>
       </View>
+      <Text style={styles.textDescription}>{" "}Número de cuenta</Text>
+      <View style={styles.searchSection}>
+        <TextInput
+          style={styles.inputForm}
+          inputContainerStyle={{borderBottomWidth:0}}
+          onChange={(e) => onEnd(e.nativeEvent.text, "acnu")}
+          keyboardType="numeric"
+          onChangeText={(e)=>setAcnu(e)}
+          value={acnu}
+        />
+      </View>
+      { acnuCorrect == 0 ?
+        (<Text style={styles.textDescriptionError}>{" "}Su número de cuenta debe ser menor a 9 caracteres.</Text>):
+        (<></>)
+      }
+      <Button
+        title="Enviar"
+        containerStyle={styles.btnContainerRegister}
+        buttonStyle={styles.btnRegister}
+        onPress={onSubmit}
+        disabled={button}
+      />
+      <Loading isVisible={loading} text={loadingText} />
     </ScrollView>
   )
 }
 
 
 const styles = StyleSheet.create({
-  parentView: {
-    flexDirection: 'row',
-    marginTop:15
-  },
-  firstRowView: {
+  formContainer: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderBottomColor: 'black',
-    borderBottomWidth: 2,
+    marginTop: 15,
   },
-  dataText:{
-    color: "#6B35E2",
-    fontSize:14
+  inputForm: {
+    flex: 1,
+    paddingTop: 12,
+    paddingRight: 10,
+    paddingBottom: 12,
+    paddingLeft: 15,
+    width: "100%",   
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    fontSize:16
+  },
+  searchSection: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card:{
+    backgroundColor: "#fff",
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputForm2:{
+    height: 40,
+    margin: 12,
+    backgroundColor: '#fff',
+    borderRadius:20
+  },
+  btnContainerRegister: {
+    marginTop: 30,
+    width: "100%",
+    marginBottom: 30
+  },
+  picker:{
+    width:"100%",
+    marginTop:3,
+    backgroundColor:'#fff',
+    borderRadius:20,
+    alignItems:"center",
+    justifyContent:"center",
+  },
+  btnRegister: {
+    backgroundColor:"#6B35E2",
   },
   iconRight: {
     color:"#AC9DC9",
   },
-  titleText:{
-    fontSize:20,
+  textDescription: {
     fontWeight:"bold",
-    marginTop:10
-  }
+    fontSize:15,
+    marginTop:10,
+    justifyContent:"flex-start",
+    color:"#5300eb"
+  },
+  textDescription2:{
+    fontWeight:"normal",
+    fontSize:10,
+    justifyContent:"flex-start",
+  },
+  textDescriptionError:{
+    fontWeight:"normal",
+    fontSize:15,
+    justifyContent:"flex-start",
+    color:"#ff0000"
+  },
+  divider:{
+    backgroundColor: "#6B35E2",
+    margin: 10,
+  },
 });

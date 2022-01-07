@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {validateEmail} from "../../utils/validations";
 
 export default function EmailVerificationFormA (props) {
@@ -124,6 +125,7 @@ export default function EmailVerificationFormA (props) {
       }
       else
       { setLoadingText("Iniciando sesión");
+        AsyncStorage.setItem('@usr',rut);
         navigation.reset(
         { index: 0,
           routes: [
@@ -135,7 +137,8 @@ export default function EmailVerificationFormA (props) {
       }
     })
     .catch((response) =>
-    { Toast.show(
+    { console.log(response);
+      Toast.show(
       { type: 'error',
         props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
           }
@@ -186,16 +189,11 @@ export default function EmailVerificationFormA (props) {
         <TextInput
           placeholder="Ingresar código"
           placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
+          style={styles.inputForm2}
           inputContainerStyle={{borderBottomWidth:0}}
           onEndEditing={(e) => onEnd(e, "mvc")}
           keyboardType="numeric"
           maxLength={32}
-        />
-        <Icon
-          type="material-community"
-          name={"lock-question"}
-          iconStyle={styles.iconRight}
         />
       </View>
       { mvcCorrect == 0 ?
@@ -236,6 +234,18 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 10,
     paddingLeft: 0,
+    width:"100%",   
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    fontSize:16
+  },
+  inputForm2: {
+    flex: 1,
+    paddingTop: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+    paddingLeft: 0,
+    marginRight:112,
     width:"100%",   
     backgroundColor: '#fff',
     borderRadius: 20,
@@ -283,10 +293,11 @@ const styles = StyleSheet.create({
     marginRight:40
   },
   textDescription: {
-    fontWeight:"normal",
-    fontSize:17,
+    fontWeight:"bold",
+    fontSize:15,
     marginTop:10,
-    justifyContent:"flex-start"
+    justifyContent:"flex-start",
+    color:"#5300eb"
   },
   textDescriptionError:{
     fontWeight:"normal",

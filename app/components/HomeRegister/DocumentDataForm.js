@@ -38,7 +38,6 @@ export default function DocumentDataForm(props) {
   const ref_input8 = useRef();
   const ref_input9 = useRef();
   setLists();
-  console.log(regi2Format(formData));
 
   function setLists()
   { console.log("me llamaron");
@@ -155,11 +154,11 @@ export default function DocumentDataForm(props) {
         setLoading(true);
         BackEndConnect("POST","gecom",gecomFormat(e)).then((ans)=>
         { for(let i=0;i<parseInt(ans.ans.knt);i++)
-          { console.log(ans.ans.com[i]["nam"]);
-            districtList.push(
+          { districtList.push(
               <Picker.Item label={ans.ans.com[i]["nam"]} value={ans.ans.com[i]["cod"]} key={ans.ans.com[i]["cod"]} />
             )
           }
+          setLoadingText("Cargando...");
           setLoading(false);
         });
       }
@@ -242,10 +241,6 @@ export default function DocumentDataForm(props) {
           onSubmitEditing={() => { ref_input2.current.focus()}}
           blurOnSubmit={false}
         />
-        <Icon
-          name="border-color"
-          iconStyle={styles.iconRight}
-        />
       </View>
       { nameCorrect == 0 ?
         (<Text style={styles.textDescriptionError}>{" "}Su nombre debe ser menor a 50 caracteres.</Text>):
@@ -266,10 +261,6 @@ export default function DocumentDataForm(props) {
           blurOnSubmit={false}
           ref={ref_input2}
         />
-        <Icon
-            name="rate-review"
-            iconStyle={styles.iconRight}
-          />
       </View>
       { snamCorrect == 0 ?
         (<Text style={styles.textDescriptionError}>{" "}Su apellido debe ser menor a 50 caracteres.</Text>):
@@ -286,10 +277,6 @@ export default function DocumentDataForm(props) {
           maxLength={20}
           ref={ref_input3}
           />
-         <Icon
-            name="badge"
-            iconStyle={styles.iconRight}
-          />
       </View>
       { ndocCorrect == 0 ?
         (<Text style={styles.textDescriptionError}>{" "}El número de documento debe ser menor a 20.</Text>):
@@ -298,17 +285,13 @@ export default function DocumentDataForm(props) {
       <Text style={styles.textDescription}>{" "}Región</Text>
       <View style={styles.card}>
         <Picker
-          selectedValue={setSelectValueRegion}
+          selectedValue={selectValueRegion}
           style={styles.inputForm}  
           onValueChange={(itemValue,itemIndex) => {setSelectValueRegion(itemValue);onChange(itemValue, "region") }}
         >
           <Picker.Item label="Seleccionar región" value='0'/>
           {regionList}
         </Picker>
-        {/*<Icon
-          name="map"
-          iconStyle={styles.iconRight}
-        />*/}
       </View>
       <Text style={styles.textDescription}>{" "}Comuna</Text>
       <View style={styles.card}>
@@ -332,10 +315,6 @@ export default function DocumentDataForm(props) {
           errorStyle={styles.errorStyle}
           onEndEditing={(e) => onEnd(e, "addr")}
           maxLength={128}
-        />
-        <Icon
-          name="home"
-          iconStyle={styles.iconRight}
         />
       </View>
       { addrCorrect == 0 ?
@@ -376,10 +355,6 @@ export default function DocumentDataForm(props) {
           onEndEditing={(e) => onEnd(e, "acnu")}
           keyboardType="numeric"
         />
-        <Icon
-          name="payment"
-          iconStyle={styles.iconRight}
-        />
       </View>
       { acnuCorrect == 0 ?
         (<Text style={styles.textDescriptionError}>{" "}Su número de cuenta debe ser menor a 9 caracteres.</Text>):
@@ -399,19 +374,21 @@ export default function DocumentDataForm(props) {
 const styles = StyleSheet.create({
   formContainer: {
     flex: 1,
-    marginTop: 30,
+    marginTop: 15,
   },
   inputForm: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 12,
     paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 0,
+    paddingBottom: 12,
+    paddingLeft: 15,
     width: "100%",   
     backgroundColor: '#fff',
-    borderRadius: 20
+    borderRadius: 20,
+    fontSize:16
   },
   searchSection: {
+    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -419,8 +396,6 @@ const styles = StyleSheet.create({
   card:{
     backgroundColor: "#fff",
     marginTop: 10,
-    marginLeft: 4,
-    borderRadius: 20,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -455,6 +430,7 @@ const styles = StyleSheet.create({
     fontSize:15,
     marginTop:10,
     justifyContent:"flex-start",
+    color:"#5300eb"
   },
   textDescription2:{
     fontWeight:"normal",
@@ -469,6 +445,6 @@ const styles = StyleSheet.create({
   },
   divider:{
     backgroundColor: "#6B35E2",
-    margin: 20,
+    margin: 10,
   },
 });

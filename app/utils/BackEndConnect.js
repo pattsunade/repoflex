@@ -73,25 +73,27 @@ export default function BackEndConnect(method=null, req=null, body=null){
     else {
       txi = parseInt(ans[1][1]) + 1;
     }
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      console.log(finalStatus);
     const expoPushToken = await Notifications.getExpoPushTokenAsync({
       experienceId: '@electronico/repoflex',
     });
     // console.log(expoPushToken);
     // console.log(expoPushToken.data.slice(18,-1));
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    console.log(finalStatus);
     ret2 = await Connect(method, req, body, prevOtt, txi, expoPushToken.data.slice(18,-1)).then(async (ans1) =>
-      { if('mtx' in ans1.hdr)
-        { await AsyncStorage.multiSet([['@ott',ans1.hdr.ott],['@txi',ans1.hdr.txi.toString()],['@mtx',ans1.hdr.mtx]]);
+      { try{
+          if('mtx' in ans1.hdr)
+            await AsyncStorage.multiSet([['@ott',ans1.hdr.ott],['@txi',ans1.hdr.txi.toString()],['@mtx',ans1.hdr.mtx]]);
+          else
+            await AsyncStorage.multiSet([['@ott',ans1.hdr.ott],['@txi',ans1.hdr.txi.toString()]]);
+          if('stp' in ans1.ans)
+            await AsyncStorage.setItem('@stp',ans1.ans.stp.toString());             
+          return ans1;
         }
-        else
-        { await AsyncStorage.multiSet([['@ott',ans1.hdr.ott],['@txi',ans1.hdr.txi.toString()]]);
+        catch(e){
+          console.log(e);
         }
-        if('stp' in ans1.ans)
-        { await AsyncStorage.setItem('@stp',ans1.ans.stp.toString());   
-        }
-        return ans1;
       });
     return ret2
     });

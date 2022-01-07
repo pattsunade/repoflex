@@ -122,7 +122,7 @@ export default function Home () {
           <Text>{matrix} %</Text>
         </View>
         <View style={styles.viewContainer2}>
-          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <Text style={styles.subtitle}>Siguiente Paso</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() =>
             matrix == 20 ? navigation.navigate("documentdata"):
             matrix == 30 ? navigation.navigate("documentselfie"): 
@@ -147,6 +147,7 @@ export default function Home () {
             </View>
           </View>
           </TouchableOpacity>
+          <Text style={styles.subtitle}>Pasos Pendientes</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() => {
             Toast.show(
               { type: 'error',
@@ -292,7 +293,7 @@ export default function Home () {
           <Text>{matrix} %</Text>
         </View>
         <View style={styles.viewContainer2}>
-          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <Text style={styles.subtitle}>Siguiente Paso</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() => {}} >
           <View style={styles.wrapper}>
             <View style={styles.container}>
@@ -306,11 +307,12 @@ export default function Home () {
               </View>
               <View>
                 <Text style={styles.customBtnText}>Revisión de la Postulación</Text>
-                <Text style={styles.customBtnTextContent} >Nosotros nos encargamos de este paso. estamos revisando tu solicitud de registro y verificando tu identidad.</Text>
+                <Text style={styles.customBtnTextContent} >Nosotros nos encargamos de este paso. Estamos revisando tu solicitud de registro y verificando tu identidad.</Text>
               </View>
             </View>
           </View>  
           </TouchableOpacity>
+          <Text style={styles.subtitle}>Pasos Pendientes</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() => {
               Toast.show(
               { type: 'error',
@@ -449,7 +451,7 @@ export default function Home () {
           <Text>{matrix} %</Text>
         </View>
         <View style={styles.viewContainer2}>
-          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <Text style={styles.subtitle}>Siguiente Paso</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() => navigation.navigate("training")} >
           <View style={styles.wrapper}>
             <View style={styles.container}>
@@ -468,6 +470,7 @@ export default function Home () {
               </View>
             </View>
           </TouchableOpacity>
+          <Text style={styles.subtitle}>Pasos Pendientes</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() => {
             Toast.show(
               { type: 'error',
@@ -606,7 +609,7 @@ export default function Home () {
           <Text>{matrix} %</Text>
         </View>
         <View style={styles.viewContainer2}>
-          <Text style={styles.subtitle}> Pasos Pendientes</Text>
+          <Text style={styles.subtitle}>Siguiente Paso</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() => navigation.navigate("firm")} >
           <View style={styles.wrapper}>
             <View style={styles.container}>
@@ -625,6 +628,7 @@ export default function Home () {
             </View>
           </View>
           </TouchableOpacity>
+          <Text style={styles.subtitle}>Pasos Pendientes</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() => {
             Toast.show(
               { type: 'error',

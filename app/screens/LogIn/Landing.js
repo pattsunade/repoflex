@@ -82,7 +82,6 @@ const styles = StyleSheet.create({
   image: {
     width: 270,
     height: 270,
-    borderColor: 'red',
     borderWidth: 2,
     borderRadius: 150
   },
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   text:
-  { color: '#d4c4fb',
+  { color: '#b597ff',
     fontSize: 20,
     textAlign: 'center'
   },

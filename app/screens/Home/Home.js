@@ -10,10 +10,11 @@ import * as Notifications from 'expo-notifications';
 import * as Location from 'expo-location';
 import { NavigationContainer } from '@react-navigation/native';
 import { useNavigation } from "@react-navigation/native";
-import Account from "../Account/Account.js";
+import Loading from "../../components/Loading";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from "moment";
 
-export default function Register() {
+export default function Home() {
   const [name, setName] = useState();
   const [rank, setRank] = useState();
   const [amou, setAmou] = useState();
@@ -31,6 +32,7 @@ export default function Register() {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const Drawer = createDrawerNavigator();
+  const hola = "hola";
 
   function formato(lati,longi)
   { return{
@@ -39,40 +41,41 @@ export default function Register() {
     };
   }
 
-  function HomeScreen() 
-  { return (
-      <View style={styles.viewForm}>
-        <HomeApp
-          name={name}
-          amou={amou}
-          rank={rank}
-          avai={avai}
-          asgn={asgn}
-          proc={proc}
-          envi={envi}
-          chck={chck}
-          fini={fini}
-          loca={loca}
-          noti={noti}
-          work={work}
-        />
-      </View>
-    );
-  }
+  // function HomeScreen() 
+  // { return (
+  //     <View style={styles.viewForm}>
+  //       <HomeApp
+  //         name={name}
+  //         amou={amou}
+  //         rank={rank}
+  //         avai={avai}
+  //         asgn={asgn}
+  //         proc={proc}
+  //         envi={envi}
+  //         chck={chck}
+  //         fini={fini}
+  //         loca={loca}
+  //         noti={noti}
+  //         work={work}
+  //         date={date}
+  //       />
+  //     </View>
+  //   );
+  // }
 
-  function CustomDrawerContent(props)
-  { return (
-      <DrawerContentScrollView {...props}>
-        <DrawerItemList {...props} />
-        {/*<DrawerItem
-          label="Cerrar sesión"
-          onPress={() => signOut()}
-        />*/}
-      </DrawerContentScrollView>
-    );
-  }
+  // function CustomDrawerContent(props)
+  // { return (
+  //     <DrawerContentScrollView {...props}>
+  //       <DrawerItemList {...props} />
+  //       {/*<DrawerItem
+  //         label="Cerrar sesión"
+  //         onPress={() => signOut()}
+  //       />*/}
+  //     </DrawerContentScrollView>
+  //   );
+  // }
 
-  useFocusEffect(
+  useEffect(
     useCallback(() => 
     { (async () => 
       { let { status } = await Location.requestForegroundPermissionsAsync();
@@ -99,7 +102,7 @@ export default function Register() {
             setChck(response.ans.chck);
             setFini(response.ans.fini);
             setLoca(response.ans.loca);
-            setLevl(response.ans.levl)
+            setLevl(response.ans.levl);
             setNoti(notificaciones);
             setWork(response.ans.work);
             setLoading(false);
@@ -122,24 +125,32 @@ export default function Register() {
             });
           }
         );
-      })();
+      })([]);
     },[])
-  );
+  ,[hola]);
 
   return(
   <>
     { loading ? 
-      ( <View style={styles.loaderTask}>
-          <ActivityIndicator  size="large" color="#0000ff"/>
-          <Text>Cargando</Text>
-        </View>
+      ( <Loading isVisible={loading} text="Cargando..." />
       ):
-      ( <Drawer.Navigator
-          drawerContent={(props) => <CustomDrawerContent {...props} />}
-        >
-          <Drawer.Screen name="Tareas" component={HomeScreen} />
-          <Drawer.Screen name="Cuenta" component={Account} initialParams={{'nameuser':name,'level':levl}} />
-        </Drawer.Navigator>
+      ( <View style={styles.viewForm}>
+          <HomeApp
+            name={name}
+            amou={amou}
+            rank={rank}
+            avai={avai}
+            asgn={asgn}
+            proc={proc}
+            envi={envi}
+            chck={chck}
+            fini={fini}
+            loca={loca}
+            noti={noti}
+            work={work}
+            levl={levl}
+          />
+      </View>
       )
     }
   </>

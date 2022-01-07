@@ -8,9 +8,8 @@ import ChangeEmailForm from "./ChangeEmailForm";
 import ChangePasswordForm from "./ChangePasswordForm";
 
 export default function AccountOptions(props) {
-  const { userInfo, toastRef, setRealoadUserInfo } = props;
+  const {usr} = props;
   const navigation = useNavigation();
-  
   function generateOptions()
   { return [
       {
@@ -20,17 +19,17 @@ export default function AccountOptions(props) {
         iconColorLeft: "#6B35E2",
         iconNameRight: "account-circle",
         iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("account",{screen:"personaldata"}),
+        onPress: () => navigation.navigate("personaldata",{usr:usr}),
       },
-      {
-        title: "Ranking",
-        iconType: "material-community",
-        iconNameLeft: "people",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "people",
-        iconColorRight: "#6B35E2",
-        // onPress: () => selectedComponent("password"),
-      },
+      // {
+      //   title: "Ranking",
+      //   iconType: "material-community",
+      //   iconNameLeft: "people",
+      //   iconColorLeft: "#6B35E2",
+      //   iconNameRight: "people",
+      //   iconColorRight: "#6B35E2",
+      //   // onPress: () => selectedComponent("password"),
+      // },
       // {
       //   title: "Configuraciones",
       //   iconType: "material-community",
@@ -52,7 +51,7 @@ export default function AccountOptions(props) {
         iconColorLeft: "#6B35E2",
         iconNameRight: "lock",
         iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("account",{screen:"changepassword"})
+        onPress: () => navigation.navigate("changepassword")
       },
       {
         title: "Preguntas frecuentes",
@@ -61,7 +60,7 @@ export default function AccountOptions(props) {
         iconColorLeft: "#6B35E2",
         iconNameRight: "chevron-right",
         iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("account",{screen:"frequentquestions"})
+        onPress: () => navigation.navigate("frequentquestions")
       },
       // {
       //   title: "Invitar a un amigo",
@@ -86,7 +85,7 @@ export default function AccountOptions(props) {
         iconColorLeft: "#6B35E2",
         iconNameRight: "chevron-right",
         iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("account",{screen:"about"})
+        onPress: () => navigation.navigate("about")
       },
       // {
       //   title: "Evalúanos",

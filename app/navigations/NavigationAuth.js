@@ -42,6 +42,7 @@ export default function Navigation() {
           setTaskData(JSON.parse(ans[5][1]));
           setCompleted(parseInt(ans[6][1]));
           setIntro(parseInt(ans[7][1]));
+          await SplashScreen.hideAsync();
         });
       }
       catch (e)
@@ -57,6 +58,7 @@ export default function Navigation() {
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
+      console.log("me llamaron!");
       await SplashScreen.hideAsync();
     }
   }, [appIsReady]);

@@ -5,7 +5,6 @@ import Toast,{BaseToast} from 'react-native-toast-message';
 import Navigation from "./app/navigations/NavigationAuth";
 import * as Notifications from 'expo-notifications';
 
-LogBox.ignoreAllLogs();
 
 const toastConfig = {
   error: ({props, ...rest}) => (

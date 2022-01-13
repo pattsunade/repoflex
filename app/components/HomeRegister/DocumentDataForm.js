@@ -10,7 +10,7 @@ import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
 
 export default function DocumentDataForm(props) {
-  const { regions, banks, acctype} = props;
+  const { lists } = props;
   const [formData, setFormData] = useState(defaultFormValue());
   const [nameCorrect, setNameCorrect] = useState(2);
   const [snamCorrect, setSnamCorrect] = useState(2);
@@ -22,8 +22,9 @@ export default function DocumentDataForm(props) {
   const [selectValueRegion, setSelectValueRegion] = useState("Region");
   const [selectValueComuna, setSelectValueComuna] = useState("Comuna");
   const [selectValueBanks, setSelectValueBanks] = useState("Banco");
-  const [districtList, setDistrictList] = useState([]);
   // const [selectValueCountry, setSelectValueCountry] = useState("País");
+  const [regiCod, setRegiCod] = useState(null);
+  const [districtObj, setDistrictObj] = useState(null);
   const [selectValueAccountType, setSelectValueAccountType] = useState("Tipo de cuenta");
   const navigation = useNavigation();
   const bankList = [];
@@ -39,29 +40,34 @@ export default function DocumentDataForm(props) {
   const ref_input9 = useRef();
   setLists();
 
-  function setLists()
+  useEffect(()=>
   { console.log("me llamaron");
+    getcom(regiCod);
+  },[regiCod])
+
+  function setLists()
+  { console.log("llamaron a lists");
     let num;
-    let b=banks.length;
-    let r=regions.length;
-    let a=acctype.length
+    let b=lists.bancos.length;
+    let r=lists.regiones.length;
+    let a=lists.actypes.length
     num=r;
     if(num<b)
       num=b;
     if(num<a)
       num=a;
     for(let i=0;i<num;i++)
-    { if(regions[i]!=null)
+    { if(lists.regiones[i]!=null)
         regionList.push(
-          <Picker.Item label={regions[i]["name"]} value={regions[i]["cod"]} key={regions[i]["cod"]} />
+          <Picker.Item label={lists.regiones[i]["name"]} value={lists.regiones[i]["cod"]} key={lists.regiones[i]["cod"]} />
         )
-      if(banks[i]!=null)
+      if(lists.bancos[i]!=null)
         bankList.push(
-          <Picker.Item label={banks[i]["name"]} value={banks[i]["cod"]} key={banks[i]["cod"]} />
+          <Picker.Item label={lists.bancos[i]["name"]} value={lists.bancos[i]["cod"]} key={lists.bancos[i]["cod"]} />
         )
-      if(acctype[i]!=null)
+      if(lists.actypes[i]!=null)
         acctypeList.push(
-          <Picker.Item label={acctype[i]["name"]} value={acctype[i]["cod"]} key={acctype[i]["cod"]} />
+          <Picker.Item label={lists.actypes[i]["name"]} value={lists.actypes[i]["cod"]} key={lists.actypes[i]["cod"]} />
         )
     }
   }
@@ -99,6 +105,26 @@ export default function DocumentDataForm(props) {
   { return{
       reg:regi
     }
+  }
+
+  function getcom(cod)
+  { setLoadingText("Obteniendo comunas...");
+    setLoading(true);
+    BackEndConnect("POST","gecom",gecomFormat(cod)).then((ans)=>
+    { setDistrictObj(ans.ans);
+      setLoading(false);
+    })
+    .catch((ans) => 
+    { console.log(ans);
+      Toast.show(
+        { type: 'error',
+          props: 
+          { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
+          }
+        }
+      );
+      navigation.goBack();
+    });
   }
 
   const onSubmit = () => 
@@ -150,20 +176,9 @@ export default function DocumentDataForm(props) {
   { setFormData({ ...formData, [type]: e });
     if(type=='region')
     { if(e!=='0')
-      { setLoadingText("Obteniendo comunas...");
-        setLoading(true);
-        BackEndConnect("POST","gecom",gecomFormat(e)).then((ans)=>
-        { for(let i=0;i<parseInt(ans.ans.knt);i++)
-          { districtList.push(
-              <Picker.Item label={ans.ans.com[i]["nam"]} value={ans.ans.com[i]["cod"]} key={ans.ans.com[i]["cod"]} />
-            )
-          }
-          setLoadingText("Cargando...");
-          setLoading(false);
-        });
-      }
-      else
-        setDistrictList([]);
+        setRegiCod(e);
+      // else
+      //   setDistrictList([]);
     }
   }
 
@@ -224,6 +239,18 @@ export default function DocumentDataForm(props) {
       }
     }
     setFormData({ ...formData, [type]: e.nativeEvent.text });
+  }
+
+  const renderDistrictList = () =>
+  { let districtList = [];
+    if(districtObj!=null)
+    { for(let i=0;i<parseInt(districtObj.knt);i++)
+      { districtList.push(
+          <Picker.Item label={districtObj.com[i]["nam"]} value={districtObj.com[i]["cod"]} key={districtObj.com[i]["cod"]} />
+        )
+      }
+    }
+    return districtList
   }
 
   return(
@@ -299,10 +326,10 @@ export default function DocumentDataForm(props) {
           selectedValue={selectValueComuna}
           style={styles.inputForm}
           onValueChange={(itemValue,itemIndex) => {setSelectValueComuna(itemValue);onChange(itemValue, "comu") }}
-          enabled={districtList.length>0? (true):(false)}
+          enabled={districtObj!=null? (true):(false)}
         >
           <Picker.Item label="Seleccionar Comuna"  value="x" />
-          {districtList}
+          {renderDistrictList()}
         </Picker>
       </View>
       <Text style={styles.textDescription}>{" "}Dirección</Text>

@@ -13,8 +13,8 @@ export default function LogInStack({route})
 { const {intro} = route.params;
   var value = 'landing';
   if (intro == 1)
-  { value = 'login';
-  }
+    value = 'login';
+  
   return(
     <Stack.Navigator initialRouteName={value}>
       <Stack.Screen

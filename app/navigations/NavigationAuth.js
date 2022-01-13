@@ -11,9 +11,9 @@ import TaskStack from "./TaskStack";
 import AccountStack from "./AccountStack";
 import Loading from "../components/Loading";
 import BackEndConnect from '../utils/BackEndConnect';
-const RootStack = createStackNavigator();
 
 export default function Navigation() {
+  const RootStack = createStackNavigator();
   const [ott, setOtt] = useState();
   const [matrix, setMatrix] = useState();
   const [stp, setStp] = useState();
@@ -22,54 +22,44 @@ export default function Navigation() {
   const [taskData, setTaskData] = useState();
   const [completed, setCompleted] = useState();
   const [intro, setIntro] = useState();
-  const [appIsReady, setAppIsReady] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     async function getOtt()
-    { try
-      { let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp','@intro']).then(async (ans) =>
-        { let mtx;
-          await SplashScreen.preventAutoHideAsync();
-          console.log(ans);
-          setOtt(ans[0][1]);
-          setStp(ans[2][1]);
-          if (ans[1][1] != null)
-          { mtx = (ans[1][1].match(/1/g) || []).length;
-            setMatrix(mtx);
-          }
-          setQuest(JSON.parse(ans[3][1]));
-          setTid(parseInt(ans[4][1]));
-          setTaskData(JSON.parse(ans[5][1]));
-          setCompleted(parseInt(ans[6][1]));
-          setIntro(parseInt(ans[7][1]));
-          await SplashScreen.hideAsync();
-        });
-      }
-      catch (e)
-      { console.warn(e);
-      }
-      finally
-      { setAppIsReady(true);
-      }
-
+    { let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp','@intro']).then(async (ans) =>
+      { let mtx;
+        // console.log(ans);
+        setOtt(ans[0][1]);
+        setStp(ans[2][1]);
+        if (ans[1][1] != null)
+        { mtx = (ans[1][1].match(/1/g) || []).length;
+          setMatrix(mtx);
+        }
+        setQuest(JSON.parse(ans[3][1]));
+        setTid(parseInt(ans[4][1]));
+        setTaskData(JSON.parse(ans[5][1]));
+        setCompleted(parseInt(ans[6][1]));
+        setIntro(parseInt(ans[7][1]));
+        setLoading(false);
+        await SplashScreen.hideAsync();
+      });
     }
     getOtt();
   }, []);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      console.log("me llamaron!");
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
-  if (!appIsReady) {
-    return null;
-  }
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (!loading) {
+  //     console.log("me llamaron!");
+      
+  //   }
+  // }, [loading]);
 
   return(
     <>
-    { ott == null || ott == "null" ?
+    { loading ?
+      ( <Loading isVisible={loading} text="Cargando..."/>
+      ):
+      ott == null || ott == "null" ?
       ( <NavigationContainer>
           <RootStack.Navigator>
             <RootStack.Screen

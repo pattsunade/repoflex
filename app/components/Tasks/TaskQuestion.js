@@ -19,14 +19,8 @@ export default function TaskQuestion (props) {
   const compArr = questions.slice(0,completed);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("Enviando tarea...");
-  // console.log(per);
-  // console.log("taskData en TaskQuestion-->",taskData);
-  // console.log(questions);
-  // console.log("comArr-->",compArr);
   const pendArr = questions.slice(completed+1);
-  // console.log("Questions en TaskQuestion-->",questions);
-  // console.log("Tid en TaskQuestion-->",tid);
-  // console.log("Completed en TaskQuestion-->",completed);
+
   function endTask()
   { setLoading(true);
     BackEndConnect("POST","taska",formato(formData)).then((ans) =>
@@ -53,6 +47,7 @@ export default function TaskQuestion (props) {
       }
     });
   }
+
   function abort()
   { setLoadingText("Abortando tarea...");
     setLoading(true);
@@ -64,10 +59,10 @@ export default function TaskQuestion (props) {
           },
           autohide: false
         });
-        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>{
-          setLoading(false);
-          navigation.reset({
-            index: 0,
+        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
+        { setLoading(false);
+          navigation.reset(
+          { index: 0,
             routes: 
             [ { name: 'login',
               }
@@ -103,17 +98,20 @@ export default function TaskQuestion (props) {
       });
     });
   }
+
   function formato(data) {
     return {
       tid: tid,
       abc: data
     };
   }
+
   function formato2() 
   { return{
       tid: tid
     };
   }
+
   useEffect(() => 
   { console.log(taskData);
     if (taskData!=null || taskData!= undefined)
@@ -124,7 +122,7 @@ export default function TaskQuestion (props) {
         setFormData([...formData,taskData]);
         AsyncStorage.setItem('@taskData',JSON.stringify(taskData));
       }
-      else if (per<100)
+      else if (per<=100)
       { const temp = [...formData,taskData];
         // console.log("temp-->",temp);
         AsyncStorage.setItem('@taskData',JSON.stringify(temp)); 

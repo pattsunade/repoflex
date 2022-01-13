@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 60
+    marginTop: 20
   },
   searchSection: {
     flexDirection: 'row',
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
-    paddingLeft: 0,
+    paddingLeft: 10,
     width: "100%",   
     backgroundColor: '#fff',
     borderRadius: 20,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
-    paddingLeft: 0,
+    paddingLeft: 10,
     marginRight:24,
     width: "100%",   
     backgroundColor: '#fff',

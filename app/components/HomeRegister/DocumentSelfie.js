@@ -48,7 +48,7 @@ const compress = async (uri) => {
 };
 const uploadSelfie = async () =>{
     const resultPermissions = await MediaLibrary.requestPermissionsAsync();
-    const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync()
+    const resultPermissionsCamera = await ImagePicker.requestMediaLibraryPermissionsAsync();
     const roll = await ImagePicker.requestCameraRollPermissionsAsync()
     if (resultPermissions === "denied"){
         toastRef.current.show("Es necesario aceptar los permisos de cámara para subir imagenes")
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         justifyContent:"center"
     },
     title:{
-        marginTop:200,
+        marginTop:40,
         marginHorizontal:20,
         fontSize:20,
         textAlign:"center",

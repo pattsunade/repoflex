@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   texttitle: {
     marginTop:50,
-    marginBottom:50,
+    marginBottom:20 ,
     marginHorizontal:20,
     fontSize: 17,
     textAlign:"justify"

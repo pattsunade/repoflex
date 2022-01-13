@@ -7,6 +7,7 @@ export default function BackEndConnect(method=null, req=null, body=null){
   const ip = "http://104.237.140.131";
   const port = "30000";
   const dir = "/app";
+  
   async function Connect(method, req, body, ott, txi, phid){
     let url = ip + ":" + port + dir;
     if (body == null){
@@ -73,9 +74,9 @@ export default function BackEndConnect(method=null, req=null, body=null){
     else {
       txi = parseInt(ans[1][1]) + 1;
     }
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      console.log(finalStatus);
+    // const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    //   let finalStatus = existingStatus;
+    //   console.log(finalStatus);
     const expoPushToken = await Notifications.getExpoPushTokenAsync({
       experienceId: '@electronico/repoflex',
     });

@@ -9,7 +9,7 @@ import BackEndConnect from "../../utils/BackEndConnect";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {validateEmail} from "../../utils/validations";
 
-export default function EmailVerificationFormA (props) {
+export default function EmailVerificationForm(props) {
   const { rut, psw } = props;
   const [loading, setLoading] = useState(false);
   const [mailCorrect, setMailCorrect] = useState(3);
@@ -23,7 +23,8 @@ export default function EmailVerificationFormA (props) {
   function sndvcDefaultFormValue()
   { return {
       usr: rut,
-      mail: "", 
+      psw: psw,
+      mail: ""
     };
   }
 
@@ -44,6 +45,7 @@ export default function EmailVerificationFormA (props) {
   function sndvcFormat(objeto) {
     return{
       usr: rut,
+      psw: psw,
       mail: objeto.mail
     };
   }
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
-    paddingLeft: 0,
+    paddingLeft: 10,
     width:"100%",   
     backgroundColor: '#fff',
     borderRadius: 20,
@@ -244,7 +246,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
-    paddingLeft: 0,
+    paddingLeft: 10,
     marginRight:112,
     width:"100%",   
     backgroundColor: '#fff',

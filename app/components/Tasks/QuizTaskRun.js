@@ -194,10 +194,10 @@ export default function QuizTaskRun (props) {
     }
     let newChk = [...checked];
     newChk[id-1] = !newChk[id-1];
-    // console.log(newChk)
     setChecked(newChk);
     setDisabledContinue(false);
   }
+
   return(
     <View>
       {showScore ? 
@@ -276,11 +276,13 @@ export default function QuizTaskRun (props) {
                   title="Siguiente"
                   disabled={disabledContinue}
                   onPress={() =>{
-                    let altId="" 
-                    for (let i=1;i<=checked.length;i++){
-                      if(checked[i-1]){
+                    let altId="";
+                    let len=checked.length;
+                    for (let i=1;i<=len;i++)
+                    { if(checked[i-1])
                         altId = altId+i.toString()+"-";
-                      }
+                      if(i==len)
+                        altId = altId.slice(0,-1);
                     }
                     // console.log(altId);
                     handleAnswerOptionClick(altId,questions.qid)

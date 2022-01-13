@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   title: {
-    marginTop:200,
+    marginTop:40,
     marginHorizontal:20,
     fontSize: 20,
     textAlign:"center",

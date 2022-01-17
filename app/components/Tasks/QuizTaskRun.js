@@ -109,10 +109,8 @@ export default function QuizTaskRun (props) {
   }
 
   async function upload()
-  { const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync();
-    const resultPermissions = await MediaLibrary.requestPermissionsAsync();
-    const roll = await ImagePicker.requestCameraRollPermissionsAsync();
-    if (resultPermissions === "denied")
+  { const roll = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (roll === "denied")
     { Toast.show(
       { type: 'error',
         props: {onPress: () => {}, text1: 'Error', text2: "Debes dar permiso para acceder a la cámara."
@@ -122,7 +120,8 @@ export default function QuizTaskRun (props) {
     else
     { const result = await ImagePicker.launchCameraAsync(
       { allowsEditing:true,
-        quality: 1
+        quality: 1,
+        presentationStyle: 0
       });
       if (result.cancelled) 
       { if (!image)

@@ -10,22 +10,18 @@ import EmailVerification from "../screens/LogIn/EmailVerification";
 
 const Stack = createStackNavigator();
 export default function LogInStack({route})
-{ const {intro} = route.params;
-  var value = 'landing';
-  if (intro == 1)
-    value = 'login';
-  
+{ 
   return(
-    <Stack.Navigator initialRouteName={value}>
-      <Stack.Screen
-        name="landing"
-        component={Landing}
-        options={{title: "Bienvenido",headerShown: false}}
-      />
+    <Stack.Navigator>
       <Stack.Screen
         name="login"
         component={Login}
         options={{title: "Iniciar Sesión",headerShown: false}}
+      />
+      <Stack.Screen
+        name="landing"
+        component={Landing}
+        options={{title: "Bienvenido",headerShown: false}}
       />
       <Stack.Screen
         name="register"

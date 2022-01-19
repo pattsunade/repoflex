@@ -1,263 +1,241 @@
-import React, { useState,useRef,useEffect } from "react";
+import React, { useState,useRef,useEffect,useCallback } from "react";
 import { StyleSheet, View, Text,Picker, Switch, Animated, ScrollView,TouchableOpacity,Dimensions,SafeAreaView } from "react-native";
 import { Input, Icon, Button, ListItem} from "react-native-elements";
 import Loading from "../Loading";
 import { size, isEmpty,map } from "lodash";
+import * as Location from 'expo-location';
+import Toast from 'react-native-toast-message';
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackEndConnect from "../../utils/BackEndConnect";
 import moment from "moment";
 
 export default function HomeApp(props) {
   const navigation = useNavigation();
-  const {name, amou, rank, avai, asgn, proc, envi, chck, fini, loca, work, noti, levl} = props;
+  const [name, setName] = useState();
+  const [rank, setRank] = useState();
+  const [amou, setAmou] = useState();
+  const [avai, setAvai] = useState();
+  const [asgn, setAsgn] = useState();
+  const [proc, setProc] = useState();
+  const [envi, setEnvi] = useState();
+  const [chck, setChck] = useState();
+  const [fini, setFini] = useState();
+  const [loca, setLoca] = useState();
+  const [levl, setLevl] = useState();
+  const [noti, setNoti] = useState();
+  const [tenp, setTenp] = useState();
+  const [work, setWork] = useState();
+  const [loading, setLoading] = useState(true);
   const [isEnabled, setIsEnabled] = useState(false);
-  const [newDate, setNewDate] = useState(moment(new Date()).format('DD-MM-YYYY HH:MM'))
+  const [dateObj, setDateObj] = useState(new Date());
+  const [displayDate, setDisplayDate] = useState('');
   const [number, setNumber] = useState(0);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const RZ = String(rank).charAt(0);
   const RR = String(rank).charAt(2);
   const RI = String(rank).charAt(4);
-  const [active, setActive] = useState(false)
-  let transformX = useRef(new Animated.Value(0)).current
 
-  // function refresh()
-  // { setNewDate(moment(new Date()).format('DD-MM-YYYY HH:MM'));
-  //   console.log("hola")
-  // }
+  function formato(lati,longi)
+  { return{
+      lat: lati,
+      lon: longi
+    };
+  }
 
-  // useEffect(()=>
-  // { console.log(moment(new Date()).format('DD-MM-YYYY HH:MM'));
-  //   setNewDate(moment(new Date()).format('DD-MM-YYYY HH:MM'));
-  // },[number])
-
-  // useEffect(() => {
-  //   if (active) {
-  //     Animated.timing(transformX, {
-  //       toValue: 1,
-  //       duration: 300,
-  //       useNativeDriver: true
-  //     }).start()
-  //   } else {
-  //     Animated.timing(transformX, {
-  //       toValue: 0,
-  //       duration: 300,
-  //       useNativeDriver: true
-  //     }).start()
-  //   }
-  // }, [active]);
-
-  // const rotationX = transformX.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: [2, Dimensions.get('screen').width / 2]
-  // })
-  
-  return (
-    <View>
-      <View style={styles.viewContainerInfo}>
-        <View style={{flexDirection:'column'}}>
-          <Text style={styles.texttitle}>Ubicación: {"\n"} <Text style={{fontWeight:'bold'}}> {loca}</Text></Text>
-          <Text style={styles.texttitle2}>Última actualización: {"\n"} <Text style={{fontWeight:'bold'}}> {newDate}</Text></Text>
-          <Text style={styles.texttitleSaludo}>Hola, </Text>
-          <Text style={styles.texttitleNombre}>
-            {name}.
-          </Text>
-        </View>
-        <View style={{flexDirection:'column',justifyContent:'space-around','marginLeft':25}}>
-          <Icon
-            size={40}
-            type="material-community"
-            name="refresh"
-            color= "#5300eb"
-            containerStyle={styles.btnContainer}
-            // onPress={()=>setNumber(1)}
-          />
-          <Icon
-            size={40}
-            type="material-community"
-            name="account-circle"
-            color= "#5300eb"
-            containerStyle={styles.btnContainer}
-            onPress={ () => navigation.navigate("account",
-              { nameuser:name,
-                level:levl
-              })
+  useEffect(async () => 
+    { try 
+      { setLoading(true);
+        setDisplayDate(moment(dateObj).format('YYYY-MM-DD HH:mm'));
+        let location = await Location.getCurrentPositionAsync({});
+        BackEndConnect("POST","house",formato(location.coords.latitude.toString(),
+          location.coords.longitude.toString()))
+        .then((response) => 
+          { const notificaciones = [];
+            for (var i = 0; i < response.ans.noti.length; i++)
+            { var counter = response.ans.noti[i];
+              notificaciones.push(counter);
             }
-          />
-        </View>
-      </View>
-      <View style={styles.wrapperInfo}>
-        <View style = {styles.container}>
-          <View style={styles.circleViewRZ}>
-            <Text style={styles.circleText}>{RZ}</Text>
-          </View>
-          <View style={styles.circleViewRR}>
-            <Text style={styles.circleText}>{RR}</Text>
-          </View>
-          <View style={styles.circleViewRI}>
-            <Text style={styles.circleText}>{RI}</Text>
-          </View>
-        </View>
-      </View>
-      <TouchableOpacity style={styles.customBtn}>
-        <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
-        <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
-        {/*<Icon 
-          size={15}
-          type="material-community"
-          name="information-outline"
-          color= "black"
-          containerStyle={styles.btnContainer}
-          onPress={()=> navigation.navigate("home")}
-        />*/}
-      </TouchableOpacity>
-      <View>
-        <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
-      </View>
-      <View>
-        <ListItem
-          key="1"
-          onPress={()=> navigation.navigate("taskavailable")}
-          Chevron
-          bottomDivider
-        >
-          <Icon name="view-list" color="#6B35E2"/>
-          <ListItem.Content>
-            <ListItem.Title style={styles.menuItem}>Disponibles</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Content>
-            <ListItem.Title style={styles.numberItem}>{avai}</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Chevron color="#6B35E2" />
-        </ListItem>
-        <ListItem
-          key="2"
-          onPress={()=> navigation.navigate("taskassigned")}
-          Chevron
-          bottomDivider
-        >
-          <Icon name="view-list" color="#6B35E2"/>
-          <ListItem.Content>
-            <ListItem.Title style={styles.menuItem}>Asignadas</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Content>
-            <ListItem.Title style={styles.numberItem}>{asgn}</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Chevron color="#6B35E2"/>
-        </ListItem>
-        {/*<ListItem
-          key="3"
-          onPress={()=> navigation.navigate("taskinprogress")}
-          Chevron
-          bottomDivider
-        >
-          <Icon name="view-list" color="#6B35E2"/>
-          <ListItem.Content>
-            <ListItem.Title style={styles.menuItem}>En proceso</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Content>
-            <ListItem.Title style={styles.numberItem}>{proc}</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Chevron color="#6B35E2"/>
-        </ListItem>*/}
-        <ListItem
-          key="3"
-          onPress={()=> navigation.navigate("tasksent")}
-          Chevron
-          bottomDivider
-        >
-          <Icon name="view-list" color="#6B35E2"/>
-          <ListItem.Content>
-            <ListItem.Title style={styles.menuItem}>Enviadas</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Content>
-            <ListItem.Title style={styles.numberItem}>{envi}</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Chevron color="#6B35E2"/>
-        </ListItem>
-        {/*<ListItem
-          key="4"
-          onPress={()=> navigation.navigate("taskinrevision")}
-          Chevron
-          bottomDivider
-        >
-          <Icon name="view-list" color="#6B35E2"/>
-          <ListItem.Content>
-            <ListItem.Title style={styles.menuItem}>En Revisión</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Content>
-            <ListItem.Title style={styles.numberItem}>{chck}</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Chevron color="#6B35E2"/>
-        </ListItem>*/}
-        <ListItem
-          key="5"
-          onPress={()=> navigation.navigate("taskfinished")}
-          Chevron
-          bottomDivider
-        >
-          <Icon name="view-list" color="#6B35E2"/>
-            <ListItem.Content>
-              <ListItem.Title style={styles.menuItem}>Finalizadas</ListItem.Title>
-            </ListItem.Content>
-            <ListItem.Content>
-              <ListItem.Title style={styles.numberItem}>{fini}</ListItem.Title>
-            </ListItem.Content>
-            <ListItem.Chevron color="#6B35E2"/>
-        </ListItem>
-      </View>
-      {/*<SafeAreaView style={{
-          flex: 1,
-          alignItems: 'center',
-          marginTop: 20
-      }}>
-        <View style={{
-          flexDirection: 'row',
-          position: 'relative',
-          height: 50,
-          borderRadius: 10,
-          backgroundColor: '#efebf0',
-          marginHorizontal: 5
-          }}>
-          <Animated.View
-            style={{
-              position: 'absolute',
-              height: 50 - 2*2,
-              top: 2,
-              bottom: 2,
-              borderRadius: 10,
-              width: Dimensions.get('screen').width / 2 - 2 - 5*2 - 80,
-              transform: [
-                {
-                  translateX: rotationX
+            setAmou(response.ans.amou);
+            setName(response.ans.name);
+            setRank(response.ans.rank);
+            setAvai(response.ans.avai);
+            setAsgn(response.ans.asgn);
+            setProc(response.ans.proc);
+            setEnvi(response.ans.envi);
+            setChck(response.ans.chck);
+            setFini(response.ans.fini);
+            setLoca(response.ans.loca);
+            setLevl(response.ans.levl);
+            setNoti(notificaciones);
+            setWork(response.ans.work);
+            setLoading(false);
+          })
+        .catch((ans) => 
+          { console.log(ans);
+            Toast.show(
+              { type: 'error',
+                props: 
+                { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor inicia sesión nuevamente"
+                }
+              }
+            );
+            navigation.reset(
+            { index: 0,
+              routes: [
+                { name: 'login',
                 }
               ],
-              backgroundColor: active ? "#1273DE":"#bedadc"
-            }}
-          >
-          </Animated.View>
-          <TouchableOpacity style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            marginLeft:45
-          }} onPress={() => setActive(false)}>
-            <Text style={styles.switchText}>
-              off
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            marginRight:45
-          }} onPress={() => setActive(true)}>
-            <Text style={styles.switchText}>
-              on
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>*/}
-    </View>
+            });
+          }
+        );
+      }
+      catch(e)
+      { console.error(e);
+        Toast.show(
+        { type: 'error',
+          props: 
+          { onPress: () => {}, text1: 'Error', text2: "Error desconocido."
+          }
+        });
+        setLoading(false);
+      }
+    }
+  ,[dateObj]);
+  
+  return (
+    <>
+      { loading ? 
+        ( <Loading isVisible={loading} text="Cargando..." />
+        ):
+        ( <>
+            <View style={styles.viewContainerInfo}>
+              <View style={{flexDirection:'column'}}>
+                <Text style={styles.texttitle}>Ubicación:</Text>
+                <Text style={{fontWeight:'bold'}}> {loca}</Text>
+                <Text style={styles.texttitle2}>Última actualización:</Text>
+                <Text style={{fontWeight:'bold'}}> {displayDate}</Text>
+                <Text style={styles.texttitleSaludo}>Hola, </Text>
+                <Text style={styles.texttitleNombre}>
+                  {name}.
+                </Text>
+              </View>
+              <View style={{flexDirection:'column',justifyContent:'space-around','marginLeft':25}}>
+                <Icon
+                  size={40}
+                  type="material-community"
+                  name="refresh"
+                  color= "#5300eb"
+                  containerStyle={styles.btnContainer}
+                  onPress={()=>setDateObj(new Date())}
+                />
+                <Icon
+                  size={40}
+                  type="material-community"
+                  name="account-circle"
+                  color= "#5300eb"
+                  containerStyle={styles.btnContainer}
+                  onPress={ () => navigation.navigate("account",
+                    { nameuser:name,
+                      level:levl
+                    })
+                  }
+                />
+              </View>
+            </View>
+            <View style={styles.wrapperInfo}>
+              <View style = {styles.container}>
+                <View style={styles.circleViewRZ}>
+                  <Text style={styles.circleText}>{RZ}</Text>
+                </View>
+                <View style={styles.circleViewRR}>
+                  <Text style={styles.circleText}>{RR}</Text>
+                </View>
+                <View style={styles.circleViewRI}>
+                  <Text style={styles.circleText}>{RI}</Text>
+                </View>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.customBtn}>
+              <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
+              <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
+              {/*<Icon 
+                size={15}
+                type="material-community"
+                name="information-outline"
+                color= "black"
+                containerStyle={styles.btnContainer}
+                onPress={()=> navigation.navigate("home")}
+              />*/}
+            </TouchableOpacity>
+            <View>
+              <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
+            </View>
+            <View>
+              <ListItem
+                key="1"
+                onPress={()=> navigation.navigate("taskavailable")}
+                Chevron
+                bottomDivider
+              >
+                <Icon name="view-list" color="#6B35E2"/>
+                <ListItem.Content>
+                  <ListItem.Title style={styles.menuItem}>Disponibles</ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Content>
+                  <ListItem.Title style={styles.numberItem}>{avai}</ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Chevron color="#6B35E2" />
+              </ListItem>
+              <ListItem
+                key="2"
+                onPress={()=> navigation.navigate("taskassigned")}
+                Chevron
+                bottomDivider
+              >
+                <Icon name="view-list" color="#6B35E2"/>
+                <ListItem.Content>
+                  <ListItem.Title style={styles.menuItem}>Asignadas</ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Content>
+                  <ListItem.Title style={styles.numberItem}>{asgn}</ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Chevron color="#6B35E2"/>
+              </ListItem>
+              <ListItem
+                key="3"
+                onPress={()=> navigation.navigate("tasksent")}
+                Chevron
+                bottomDivider
+              >
+                <Icon name="view-list" color="#6B35E2"/>
+                <ListItem.Content>
+                  <ListItem.Title style={styles.menuItem}>Enviadas</ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Content>
+                  <ListItem.Title style={styles.numberItem}>{envi}</ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Chevron color="#6B35E2"/>
+              </ListItem>
+              <ListItem
+                key="5"
+                onPress={()=> navigation.navigate("taskfinished")}
+                Chevron
+                bottomDivider
+              >
+                <Icon name="view-list" color="#6B35E2"/>
+                  <ListItem.Content>
+                    <ListItem.Title style={styles.menuItem}>Finalizadas</ListItem.Title>
+                  </ListItem.Content>
+                  <ListItem.Content>
+                    <ListItem.Title style={styles.numberItem}>{fini}</ListItem.Title>
+                  </ListItem.Content>
+                  <ListItem.Chevron color="#6B35E2"/>
+              </ListItem>
+          </View>
+        </>
+        )
+      }
+    </>    
   );
 }
 const styles = StyleSheet.create(

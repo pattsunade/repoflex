@@ -1,12 +1,12 @@
 import React, { useRef,useState } from "react";
-import { StyleSheet,StatusBar, Text, View, ScrollView, TextInput,TouchableOpacity ,Dimensions,SafeAreaView, Image} from 'react-native';
-import { Input, Divider, Icon, Button, CheckBox } from "react-native-elements";
+import { StyleSheet,StatusBar, Text, View, ScrollView, TextInput,TouchableOpacity ,Dimensions,SafeAreaView, Image, Platform} from 'react-native';
+import { Input, Divider, Icon, Button, CheckBox} from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { Rating, AirbnbRating } from 'react-native-ratings';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
@@ -23,10 +23,14 @@ export default function QuizTaskRun (props) {
   const [checked, setChecked] = useState([]);
   const [stars, setStars] = useState();
   const [image, setImage] = useState("");
-  const [date, setDate] = useState();
-  const [showDate, setShowDate] = useState(null);
-  const [disabledContinue, setDisabledContinue] = useState(true);
+  const [date, setDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
   const [show, setShow] = useState(false);
+  const [mode, setMode] = useState("date");
+  const [displayDate, setDisplayDate] = useState(null);
+  const [displayTime, setDisplayTime] = useState(null);
+  const [disabledContinue, setDisabledContinue] = useState(true);
   const [qid, setQid] = useState(0);
   const [formData, setFormData] = useState([]);
   const [formDataPic, setFormDataPic] = useState(defaultFormValuePic());
@@ -50,10 +54,10 @@ export default function QuizTaskRun (props) {
     };
   }
 
-  function onChange(e) 
-  { setInput(e.nativeEvent.text);
-    setDisabledContinue(false);
-  }
+  // function onChange(e) 
+  // { setInput(e.nativeEvent.text);
+  //   setDisabledContinue(false);
+  // }
 
   function handleAnswerOptionClickPic(qidd) 
   { setLoading(true);
@@ -169,17 +173,36 @@ export default function QuizTaskRun (props) {
     }
   }
 
-  const handleConfirm = (date) => {
-    // console.warn("A date has been picked: ", moment(date).format('YYMMDDHHMM'));
-    setDate(moment(date).format('YYMMDDHHMM'));
-    setShowDate(moment(date).format('DD-MM-YYYY HH:MM'))
-    hideDatePicker(false);
-    setDisabledContinue(false);
+  const handleConfirm = (event, selectedDate) =>
+  { const currentDate = selectedDate || date;
+    if(Platform.OS === 'ios')
+      setSelectedDate(moment(currentDate).format('YYMMDDHHmm'));
+    else
+    { setShow(false);
+      if(mode=='date')
+      { setSelectedDate(moment(currentDate).format('YYMMDD'));
+        setDisplayDate(moment(currentDate).format('DD [de] MMMM [del] YYYY'));
+      }
+      else
+      { setSelectedTime(moment(currentDate).format('HHmm'));
+        setDisplayTime(moment(currentDate).format('HH:mm'));
+      }
+    }
   };
-  const hideDatePicker = () =>
-    setShow(false);
-  const showDatepicker = () => 
+
+  const showMode = (currentMode) => {
     setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatePicker = () =>
+  { showMode('date');
+  };
+
+  const showTimePicker = () =>
+  { showMode('time');
+  };  
+
   function ratingFinish(e)
   { setStars(e);
     setDisabledContinue(false);
@@ -349,29 +372,57 @@ export default function QuizTaskRun (props) {
             </View>
           </>
         ):questions.aty == 6 ?
-        ( <View style={styles.viewContainer}>
-            <Text style={styles.title}>{questions.tiq}</Text>
-            <Text style={styles.text}>Actividad {completed + 1} </Text>
-            <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate} onPress={showDatepicker} title="Seleccionar fecha y hora"/>
-            { showDate ? ( <Text style={styles.text}>{showDate}</Text>):(<></>)
-            }
-            <DateTimePickerModal
-              isVisible={show}
-              mode={"datetime"}
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-            />
-            <Button 
-              containerStyle={styles.btnContainer}
-              buttonStyle={styles.btn}
-              title="Siguiente"
-              disabled={disabledContinue}
-              onPress={() => handleAnswerOptionClick(date,questions.qid)}
-            />
-          </View>
-        ):
+        ( Platform.OS === 'ios' ?( 
+              <View style={styles.viewContainerIos}>
+                <Text style={styles.title}>{questions.tiq}</Text>
+                <Text style={styles.text}>Actividad {completed + 1} </Text>
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={date}
+                  is24Hour={true}
+                  mode='datetime'
+                  onChange={handleConfirm}
+                />
+                <View style={{ alignItems: 'center',
+                               justifyContent: 'center'}}>
+                  <Button 
+                    containerStyle={styles.btnContainer}
+                    buttonStyle={styles.btn}
+                    title="Siguiente"
+                    onPress={() => handleAnswerOptionClick(selectedDate,questions.qid)}
+                  />
+                </View>
+              </View>
+            ):( <View style={styles.viewContainer}>
+                  <Text style={styles.title}>{questions.tiq}</Text>
+                  <Text style={styles.text}>Actividad {completed + 1} </Text>
+                  <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
+                        onPress={showDatePicker} title="Seleccionar fecha"/>
+                  <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
+                        onPress={showTimePicker} title="Seleccionar hora"/>
+                  { show && ( <DateTimePicker
+                                testID="dateTimePicker"
+                                value={date}
+                                mode={mode}
+                                is24Hour={true}
+                                display="default"
+                                onChange={handleConfirm}
+                              />)
+                  }
+                  <Text style={styles.textDate}>Fecha: {displayDate}</Text>
+                  <Text style={styles.textDate}>Hora:  {displayTime}</Text>
+                  <Button 
+                    containerStyle={styles.btnContainer}
+                    buttonStyle={styles.btn}
+                    title="Siguiente"
+                    disabled={displayDate!= null && displayTime != null ? false:true}
+                    onPress={() => handleAnswerOptionClick(selectedDate+selectedTime,questions.qid)}
+                  />
+                </View>
+              )
+        ):(
         <>
-        </>
+        </>)
       }
       <Loading isVisible={loading} text={loadingText}/>
     </View>
@@ -381,7 +432,6 @@ export default function QuizTaskRun (props) {
 const styles = StyleSheet.create(
 { title:
   { marginTop:50,
-    marginBottom:80,
     marginHorizontal:20,
     fontSize: 30,
     textAlign:"center",
@@ -394,13 +444,26 @@ const styles = StyleSheet.create(
     fontSize: 20,
     textAlign:"center"
   },
+  textDate:
+  { marginTop:10,
+    marginHorizontal:20,
+    fontSize: 20,
+    textAlign:"center"
+  },
   viewContainer:
-  { marginRight: 40,
-    marginLeft: 40,
+  { marginRight: 30,
+    marginLeft: 30,
     marginTop: 15,
     marginBottom:5,
     justifyContent: "center",
     alignItems: "center"
+  },
+  viewContainerIos:
+  { marginRight: 30,
+    marginLeft: 30,
+    marginTop: 15,
+    marginBottom:5,
+    justifyContent: "center",
   },
   logo:
   { width:"100%",
@@ -466,7 +529,7 @@ const styles = StyleSheet.create(
   { flex: 1
   },
   btnContainer:
-  { marginTop: 20,
+  { marginTop: 10,
     width: "80%",
   },
   btn:

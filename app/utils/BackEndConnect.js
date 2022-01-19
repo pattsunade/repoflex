@@ -74,9 +74,6 @@ export default function BackEndConnect(method=null, req=null, body=null){
     else {
       txi = parseInt(ans[1][1]) + 1;
     }
-    // const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    //   let finalStatus = existingStatus;
-    //   console.log(finalStatus);
     const expoPushToken = await Notifications.getExpoPushTokenAsync({
       experienceId: '@electronico/repoflex',
     });

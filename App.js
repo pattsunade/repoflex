@@ -31,7 +31,6 @@ const toastConfig = {
       style={{ borderLeftColor: 'green' }}
       contentContainerStyle={{ paddingHorizontal: 15 }}
       leadingIcon={require("./assets/ok-24.png")}
-      
       text1={props.text1}
       text2={props.text2}
     />
@@ -48,19 +47,6 @@ export default function App() {
       shouldSetBadge: false,
       }),
   });
-  // Notifications.scheduleNotificationAsync({
-  //   content: {
-  //     title: "Time's up!",
-  //     body: 'Change sides!',
-  //   },
-  //   trigger: {
-  //     seconds: 5,
-  //   },
-  // }).then((ans)=>{
-  //   console.log(ans);
-  // }).catch((e)=>{
-  //   console.log(e);
-  // });
   return(
     <>
       <Navigation/>

@@ -42,9 +42,18 @@ export default function TaskQuestion (props) {
         });
       }
       else
-      { setLoading(false);
-        console.log("Algo salio mal en taska");
+      { Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: "Error de comunicación, por favor intenta nuevamente."
+          }
+        });
       }
+    }).catch((ans)=>
+    { Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Éxito', text2: "Error interno, por favor intenta nuevamente."
+          }
+        });
     });
   }
 

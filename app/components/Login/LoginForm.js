@@ -46,6 +46,16 @@ export default function LoginForm()
           });
           setLoading(false);
         }
+        else if(response.ans.stx === "rk")
+        { navigation.reset({ 
+          index: 0,
+            routes: 
+            [ { name: 'rejected'
+              }
+            ],
+          });
+          setLoading(false);
+        }
         else
         { let matrix = response.hdr.mtx;
           let stp = response.ans.stp;
@@ -205,79 +215,82 @@ export default function LoginForm()
   }
 
   return(
-    <View style={styles.formContainer}>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder="Ingrese su rut"
-          placeholderTextColor="#AC9DC9"
-          style={styles.inputForm2}
-          onEndEditing={(e) => onEnd(e,"rut")}
-          maxLength={12}
-          onChangeText={(e) => format(e)}
-          returnKeyType="next"
-          onSubmitEditing={() => { ref_input2.current.focus()}}
-          blurOnSubmit={false}
-          value={changedRut}
-          secureTextEntry={Platform.OS === 'ios' ? false : true}
-          keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
-          autoCapitalize="none"
-        />
-      </View>
-      <View style={styles.viewError}>
-        { rutCorrect == 0 ?
-          (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
-          rutCorrect == 3 ?
-          (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
-          (<></>)
-        }
-      </View>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder="Contraseña"
-          placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
-          ref={ref_input2}
-          inputContainerStyle={{borderBottomWidth:0}}
-          password={true}
-          secureTextEntry={showPassword ? false : true}
-          onEndEditing={(e) => onEnd(e, "psw")}
-          maxLength={15}
-        />
-        <Icon
-          type="material-community"
-          name={showPassword ? "eye-outline" : "eye-off-outline"}
-          iconStyle={styles.iconRight}
-          onPress={() => setShowPassword(!showPassword)}
-        />
-      </View>
-      <View style={styles.viewError}>
-        { passCorrect == 0 ?
-          (<Text style={styles.textDescriptionError}>{" "}Su contraseña debe ser mayor a 5 y menor a 16 caracteres.</Text>):
-          (<></>)
-        }
-      </View>
-      <RecoverPassword/>
-      { rutCorrect==1 && passCorrect==1 ? (
-          <Button
-            title="Iniciar sesión"
-            containerStyle={styles.btnContainerLogin}
-            buttonStyle={styles.btnLogin}
-            onPress={onSubmit}
-            disabled={loading}
-          />
-        ):(
-          <Button
-            title="Iniciar sesión"
-            containerStyle={styles.btnContainerLogin}
-            buttonStyle={styles.btnLogin}
-            onPress={onSubmit}
-            disabled={true}
-          />
-        )
-      }
-      <CreateAccount/> 
-      <Loading isVisible={loading} text="Iniciando sesión"/>
-    </View>
+    <>
+    { loading ? (<Loading text="Iniciando sesión"/>)
+      :(<View style={styles.formContainer}>
+          <View style={styles.searchSection}>
+            <TextInput
+              placeholder="Ingrese su rut"
+              placeholderTextColor="#AC9DC9"
+              style={styles.inputForm2}
+              onEndEditing={(e) => onEnd(e,"rut")}
+              maxLength={12}
+              onChangeText={(e) => format(e)}
+              returnKeyType="next"
+              onSubmitEditing={() => { ref_input2.current.focus()}}
+              blurOnSubmit={false}
+              value={changedRut}
+              secureTextEntry={Platform.OS === 'ios' ? false : true}
+              keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
+              autoCapitalize="none"
+            />
+          </View>
+          <View style={styles.viewError}>
+            { rutCorrect == 0 ?
+              (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
+              rutCorrect == 3 ?
+              (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
+              (<></>)
+            }
+          </View>
+          <View style={styles.searchSection}>
+            <TextInput
+              placeholder="Contraseña"
+              placeholderTextColor="#AC9DC9"
+              style={styles.inputForm}
+              ref={ref_input2}
+              inputContainerStyle={{borderBottomWidth:0}}
+              password={true}
+              secureTextEntry={showPassword ? false : true}
+              onEndEditing={(e) => onEnd(e, "psw")}
+              maxLength={15}
+            />
+            <Icon
+              type="material-community"
+              name={showPassword ? "eye-outline" : "eye-off-outline"}
+              iconStyle={styles.iconRight}
+              onPress={() => setShowPassword(!showPassword)}
+            />
+          </View>
+          <View style={styles.viewError}>
+            { passCorrect == 0 ?
+              (<Text style={styles.textDescriptionError}>{" "}Su contraseña debe ser mayor a 5 y menor a 16 caracteres.</Text>):
+              (<></>)
+            }
+          </View>
+          <RecoverPassword/>
+          { rutCorrect==1 && passCorrect==1 ? (
+              <Button
+                title="Iniciar sesión"
+                containerStyle={styles.btnContainerLogin}
+                buttonStyle={styles.btnLogin}
+                onPress={onSubmit}
+                disabled={loading}
+              />
+            ):(
+              <Button
+                title="Iniciar sesión"
+                containerStyle={styles.btnContainerLogin}
+                buttonStyle={styles.btnLogin}
+                onPress={onSubmit}
+                disabled={true}
+              />
+            )
+          }
+          <CreateAccount/> 
+        </View>)
+    }
+    </>
   );
 }
 

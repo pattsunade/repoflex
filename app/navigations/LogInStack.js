@@ -5,6 +5,7 @@ import Login from "../screens/LogIn/Login";
 import Register from "../screens/LogIn/Register";
 import RecoverPassword from "../screens/LogIn/RecoverPassword";
 import NewPassword from "../screens/LogIn/NewPassword";
+import Rejected from "../screens/LogIn/Rejected";
 import EmailVerification from "../screens/LogIn/EmailVerification";
 // import EmailVerificationA from "../screens/LogIn/EmailVerificationA";
 
@@ -41,6 +42,12 @@ export default function LogInStack({route})
         name="emailverification"
         component={EmailVerification}
         options={{title: "Verificar Email"}}
+        //options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="rejected"
+        component={Rejected}
+        options={{title: "Rechazado"}}
         //options={{headerShown: false}}
       />
       {/*<Stack.Screen

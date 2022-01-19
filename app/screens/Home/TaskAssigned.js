@@ -9,7 +9,8 @@ import Toast from 'react-native-toast-message';
 import ListTaskAssigned from "../../components/Home/ListTaskAssigned";
 import ListTaskInProgress from "../../components/Home/ListTaskInProgress";
 
-export default function TaskAssigned() {
+export default function TaskAssigned({route}) {
+  const {lati,long} = route.params;
   const navigation = useNavigation();
   const Tab = createMaterialTopTabNavigator();
   const [dataPending, setDataPending] = useState([]);
@@ -21,8 +22,8 @@ export default function TaskAssigned() {
   function formato() {
     return{
       tat: 23,
-      lat: 12345,
-      lon: 54321
+      lat: lati,
+      lon: long
     };
   }
 

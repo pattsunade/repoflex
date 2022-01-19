@@ -8,7 +8,8 @@ import BackEndConnect from "../../utils/BackEndConnect";
 import ListTaskSent from "../../components/Home/ListTaskSent";
 import ListTaskInRevision from "../../components/Home/ListTaskInRevision";
 
-export default function TaskSent() {
+export default function TaskSent({route}) {
+  const {lati,long} = route.params;
   const navigation = useNavigation();
   const Tab = createMaterialTopTabNavigator();
   const [dataSent, setDataSent] = useState([]);
@@ -20,8 +21,8 @@ export default function TaskSent() {
   function formato() {
     return{
       tat: 45,
-      lat: 12345,
-      lon: 54321
+      lat: lati,
+      lon: long
     };
   }
 

@@ -22,7 +22,7 @@ export default function Login() {
       <Divider style={styles.divider} />
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>
-        <Text>Version v0.61.0</Text>
+        <Text>Versión v0.61.0</Text>
       </View>
     </ScrollView>
   )

@@ -26,6 +26,8 @@ export default function HomeApp(props) {
   const [noti, setNoti] = useState();
   const [tenp, setTenp] = useState();
   const [work, setWork] = useState();
+  const [lati, setLati] = useState();
+  const [long, setLong] = useState();
   const [loading, setLoading] = useState(true);
   const [isEnabled, setIsEnabled] = useState(false);
   const [dateObj, setDateObj] = useState(new Date());
@@ -47,29 +49,31 @@ export default function HomeApp(props) {
       { setLoading(true);
         setDisplayDate(moment(dateObj).format('YYYY-MM-DD HH:mm'));
         let location = await Location.getCurrentPositionAsync({});
-        BackEndConnect("POST","house",formato(location.coords.latitude.toString(),
-          location.coords.longitude.toString()))
-        .then((response) => 
-          { const notificaciones = [];
-            for (var i = 0; i < response.ans.noti.length; i++)
-            { var counter = response.ans.noti[i];
-              notificaciones.push(counter);
-            }
-            setAmou(response.ans.amou);
-            setName(response.ans.name);
-            setRank(response.ans.rank);
-            setAvai(response.ans.avai);
-            setAsgn(response.ans.asgn);
-            setProc(response.ans.proc);
-            setEnvi(response.ans.envi);
-            setChck(response.ans.chck);
-            setFini(response.ans.fini);
-            setLoca(response.ans.loca);
-            setLevl(response.ans.levl);
-            setNoti(notificaciones);
-            setWork(response.ans.work);
-            setLoading(false);
-          })
+        let latitude = location.coords.latitude.toString();
+        let longitude = location.coords.longitude.toString();
+        setLati(latitude);
+        setLong(longitude);
+        BackEndConnect("POST","house",formato(latitude,longitude)).then((response) => 
+        { const notificaciones = [];
+          for (var i = 0; i < response.ans.noti.length; i++)
+          { var counter = response.ans.noti[i];
+            notificaciones.push(counter);
+          }
+          setAmou(response.ans.amou);
+          setName(response.ans.name);
+          setRank(response.ans.rank);
+          setAvai(response.ans.avai);
+          setAsgn(response.ans.asgn);
+          setProc(response.ans.proc);
+          setEnvi(response.ans.envi);
+          setChck(response.ans.chck);
+          setFini(response.ans.fini);
+          setLoca(response.ans.loca);
+          setLevl(response.ans.levl);
+          setNoti(notificaciones);
+          setWork(response.ans.work);
+          setLoading(false);
+        })
         .catch((ans) => 
           { console.log(ans);
             Toast.show(
@@ -173,7 +177,7 @@ export default function HomeApp(props) {
             <View>
               <ListItem
                 key="1"
-                onPress={()=> navigation.navigate("taskavailable")}
+                onPress={()=> navigation.navigate("taskavailable",{lati,long})}
                 Chevron
                 bottomDivider
               >
@@ -188,7 +192,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key="2"
-                onPress={()=> navigation.navigate("taskassigned")}
+                onPress={()=> navigation.navigate("taskassigned",{lati,long})}
                 Chevron
                 bottomDivider
               >
@@ -203,7 +207,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key="3"
-                onPress={()=> navigation.navigate("tasksent")}
+                onPress={()=> navigation.navigate("tasksent",{lati,long})}
                 Chevron
                 bottomDivider
               >
@@ -218,7 +222,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key="5"
-                onPress={()=> navigation.navigate("taskfinished")}
+                onPress={()=> navigation.navigate("taskfinished",{lati,long})}
                 Chevron
                 bottomDivider
               >

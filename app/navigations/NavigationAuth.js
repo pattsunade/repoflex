@@ -35,11 +35,9 @@ export default function Navigation() {
     async function getOtt()
     { let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp','@intro']).then(async (ans) =>
       { let mtx;
-        console.log(ans);
+        // console.log(ans);
         setOtt(ans[0][1]);
         setStp(ans[2][1]);
-        let { locationStatus } = await Location.requestForegroundPermissionsAsync();
-        let { notificationStatus } = await Notifications.getPermissionsAsync();
         if (ans[1][1] != null)
         { mtx = (ans[1][1].match(/1/g) || []).length;
           setMatrix(mtx);

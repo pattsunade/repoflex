@@ -8,7 +8,8 @@ import { useNavigation } from "@react-navigation/native";
 import BackEndConnect from "../../utils/BackEndConnect";
 import ListTaskFinished from "../../components/Home/ListTaskFinished";
 
-export default function TaskEnded() {
+export default function TaskEnded({route}) {
+  const {lati,long} = route.params;
   const navigation = useNavigation();
   const Tab = createMaterialTopTabNavigator();
   const [dataFinished, setDataFinished] = useState([]);
@@ -20,8 +21,8 @@ export default function TaskEnded() {
   function formato() {
     return{
       tat: 67,
-      lat: 12345,
-      lon: 54321
+      lat: lati,
+      lon: long
     };
   }
 

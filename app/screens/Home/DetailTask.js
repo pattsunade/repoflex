@@ -41,80 +41,84 @@ export default function DetailTask({route,navigation})
       setLoading(false);
     });
   }
-  return( 
-    <View style={styles.viewForm}>
-      <KeyboardAwareScrollView >
-        <TouchableOpacity style={styles.TouchTask}>
-          <View style={styles.viewTareas}>
-            <View style={styles.circleViewRZ}>
-              <Text style={styles.circleText}>{sig}</Text>
-            </View>
-            <Text style={styles.textTypeTask}>{typ}</Text>
-          </View>
-          <View style={styles.viewTareas}>
-            <Text style={styles.textTitleTask}>{tit}</Text>
-          </View>
-          <View>
-            <Text style={styles.idText}>id:{tid}</Text>
-          </View>
-          <Divider style= {styles.divider} />
-          <View style={styles.viewTareasTexto}>
-            <View>
-              <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
-            </View>
-          </View>
-          <View style={styles.viewTareasDetalle}>
-            <View>
-              <Text style={styles.textTaskDetalle}>Detalle: <Text style={styles.textRDetalle}>{det} </Text></Text>
-            </View>
-          </View>
-          <View style={styles.viewTareasTexto}>
-            <View>
-              <Text style={styles.textTask2}>A pagar: <Text style={styles.textRTask}>$ {amo}</Text></Text>
-            </View>
-          </View>
-          <View style={styles.viewTareasTexto}>
-            <View>
-              <Text style={styles.textTask}>Tiempo de resolución: <Text style={styles.textRTask}>{tim} min</Text></Text>
-            </View>
-          </View>
-          <Divider style= {styles.divider}/>
-          <Text style={styles.textTitle}>DETALLE DE ACTIVIDADES</Text>
-          <Text style={styles.textDetalles}>{nqu}     Preguntas</Text>
-          <Text style={styles.textDetalles}>{npi}     Fotografías</Text>
-          <Text style={styles.textDetalles}>{nre}     Reposición</Text>
-          <View style={styles.viewTareasTexto}>
-            <View>
-              <Button
-                title="      Asignar      "
-                containerStyle={styles.btnContainer2}
-                buttonStyle={styles.btn2}
-                onPress={() =>assing()
-                }
-              />
-            </View>
-            <View>
-              <Button
-                title="         Iniciar         "
-                containerStyle={styles.btnContainer2}
-                buttonStyle={styles.btn2}
-                onPress={() => 
-                  navigation.reset({ 
-                    index: 0,
-                    routes: 
-                    [ { name: 'task',
-                        params: {tid:tid,completed:0}
-                      }
-                    ],
-                  })
-                }
-              />
-            </View>
-          </View>
-        </TouchableOpacity>
-      </KeyboardAwareScrollView>
-      <Loading isVisible={loading} text="Asignando tarea..."/>
-    </View>
+  return(
+  <>
+    { loading ? (<Loading text="Asignando tarea..."/>)
+      :(<View style={styles.viewForm}>
+          <KeyboardAwareScrollView >
+            <TouchableOpacity style={styles.TouchTask}>
+              <View style={styles.viewTareas}>
+                <View style={styles.circleViewRZ}>
+                  <Text style={styles.circleText}>{sig}</Text>
+                </View>
+                <Text style={styles.textTypeTask}>{typ}</Text>
+              </View>
+              <View style={styles.viewTareas}>
+                <Text style={styles.textTitleTask}>{tit}</Text>
+              </View>
+              <View>
+                <Text style={styles.idText}>id:{tid}</Text>
+              </View>
+              <Divider style= {styles.divider} />
+              <View style={styles.viewTareasTexto}>
+                <View>
+                  <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
+                </View>
+              </View>
+              <View style={styles.viewTareasDetalle}>
+                <View>
+                  <Text style={styles.textTaskDetalle}>Detalle: <Text style={styles.textRDetalle}>{det} </Text></Text>
+                </View>
+              </View>
+              <View style={styles.viewTareasTexto}>
+                <View>
+                  <Text style={styles.textTask2}>A pagar: <Text style={styles.textRTask}>$ {amo}</Text></Text>
+                </View>
+              </View>
+              <View style={styles.viewTareasTexto}>
+                <View>
+                  <Text style={styles.textTask}>Tiempo de resolución: <Text style={styles.textRTask}>{tim} min</Text></Text>
+                </View>
+              </View>
+              <Divider style= {styles.divider}/>
+              <Text style={styles.textTitle}>DETALLE DE ACTIVIDADES</Text>
+              <Text style={styles.textDetalles}>{nqu}     Preguntas</Text>
+              <Text style={styles.textDetalles}>{npi}     Fotografías</Text>
+              <Text style={styles.textDetalles}>{nre}     Reposición</Text>
+              <View style={styles.viewTareasTexto}>
+                <View>
+                  <Button
+                    title="      Asignar      "
+                    containerStyle={styles.btnContainer2}
+                    buttonStyle={styles.btn2}
+                    onPress={() =>assing()
+                    }
+                  />
+                </View>
+                <View>
+                  <Button
+                    title="         Iniciar         "
+                    containerStyle={styles.btnContainer2}
+                    buttonStyle={styles.btn2}
+                    onPress={() => 
+                      navigation.reset({ 
+                        index: 0,
+                        routes: 
+                        [ { name: 'task',
+                            params: {tid:tid,completed:0}
+                          }
+                        ],
+                      })
+                    }
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
+          </KeyboardAwareScrollView>
+        </View>
+      )
+    }    
+  </>
   );
 }
 

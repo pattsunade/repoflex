@@ -8,31 +8,25 @@ import { useNavigation } from "@react-navigation/native";
 import BackEndConnect from "../../utils/BackEndConnect";
 import ListTaskAvailable from "../../components/Home/ListTaskAvailable";
 
-export default function TaskAvailable() {
+export default function TaskAvailable({route}) {
+  const {lati,long} = route.params;
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
 
-  function formato(lati,longi) {
+  function formato() {
     return{
       tat: 1,
       lat: lati,
-      lon: longi
+      lon: long
     };
   }
 
   useFocusEffect(
     useCallback(() => 
-    { (async () => 
-      { let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setErrorMsg('Permission to access location was denied');
-          return;
-        }
-        let location = await Location.getCurrentPositionAsync({});
-        BackEndConnect("POST","tasks",formato(location.coords.latitude.toString(),
-          location.coords.longitude.toString())).then(async (response) =>
+    { (() => 
+      { BackEndConnect("POST","tasks",formato()).then(async (response) =>
         { const array = response.ans.tas;
           setMsg(response.ans.msg);
           setData(array);

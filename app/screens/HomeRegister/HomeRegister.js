@@ -91,7 +91,17 @@ export default function Home () {
         }
         else
         { var mtx = ans.hdr.mtx;
-          setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
+          if('-' in ans.hdr.mtx)
+          { navigation.reset({ 
+              index: 0,
+                routes: 
+                [ { name: 'rejected'
+                  }
+                ],
+              });
+          }
+          else
+            setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
           setLoading(false);
         }
       })

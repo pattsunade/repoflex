@@ -7,7 +7,8 @@ import { useNavigation } from "@react-navigation/native";
 import BackEndConnect from "../../utils/BackEndConnect";
 import ListTaskInProgress from "../../components/Home/ListTaskInProgress";
 
-export default function TaskInProgress() {
+export default function TaskInProgress({route}) {
+  const {lati,long} = route.params;
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,8 +16,8 @@ export default function TaskInProgress() {
   function formato() {
     return{
       tat: 3,
-      lat: 12345,
-      lon: 54321
+      lat: lati,
+      lon: long
     };
   }
   useFocusEffect(
@@ -30,6 +31,7 @@ export default function TaskInProgress() {
     },
     [])
   );
+  
   return(
     <>
       { loading ? 

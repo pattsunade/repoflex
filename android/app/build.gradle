@@ -136,8 +136,8 @@ android {
         applicationId 'com.electronico.repoflex'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "0.61.0"
+        versionCode 7
+        versionName "0.62.0"
     }
     splits {
         abi {

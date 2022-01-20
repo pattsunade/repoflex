@@ -54,10 +54,10 @@ export default function QuizTaskRun (props) {
     };
   }
 
-  // function onChange(e) 
-  // { setInput(e.nativeEvent.text);
-  //   setDisabledContinue(false);
-  // }
+  function onChange(e)
+  { setInput(e.nativeEvent.text);
+    setDisabledContinue(false);
+  }
 
   function handleAnswerOptionClickPic(qidd) 
   { setLoading(true);
@@ -113,8 +113,8 @@ export default function QuizTaskRun (props) {
   }
 
   async function upload()
-  { const roll = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (roll === "denied")
+  { const roll = await ImagePicker.requestCameraPermissionsAsync();
+    if (roll === "denied" || roll===false)
     { Toast.show(
       { type: 'error',
         props: {onPress: () => {}, text1: 'Error', text2: "Debes dar permiso para acceder a la cámara."
@@ -424,7 +424,8 @@ export default function QuizTaskRun (props) {
         <>
         </>)
       }
-      <Loading isVisible={loading} text={loadingText}/>
+      { loading && (<Loading text={loadingText}/>)
+      }
     </View>
   );
 }

@@ -171,7 +171,9 @@ export default function RegisterForm() {
   }
 
   return(
-    <ScrollView style={styles.formContainer}>
+  <>
+    { loading ? (<Loading text="Creando cuenta" />):
+      (<ScrollView style={styles.formContainer}>
       <Text style={styles.textDescription}>{" "}Ingresa tu rut</Text>
       <View style={styles.searchSection}>
         <TextInput
@@ -286,8 +288,9 @@ export default function RegisterForm() {
           />
         )
       }
-      <Loading isVisible={loading} text="Creando cuenta" />
-    </ScrollView>
+    </ScrollView>)
+    }
+  </>
   );
 }
 

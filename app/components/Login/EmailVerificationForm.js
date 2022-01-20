@@ -220,7 +220,8 @@ export default function EmailVerificationForm(props) {
           />
         )
       }
-      <Loading isVisible={loading} text={loadingText}/>
+      { loading && (<Loading text={loadingText}/>)
+      }
     </View>
   )
 }

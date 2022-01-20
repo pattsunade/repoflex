@@ -145,11 +145,26 @@ export default function TaskQuestion (props) {
 
   return(
     <ScrollView>
+      { loading && (<Loading text={loadingText}/>)
+      }
       <View style={styles.viewContainer}>
         <Text style={styles.title}>Progreso de la tarea</Text>
         <Progress.Bar progress={per/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
         <Text>{per} %</Text>
       </View>
+      { per==100 ?
+          ( <View style={styles.viewContainer2}>
+              <Text style={styles.subtitle}> ¡Ya finalizaste todas las actividades!</Text>
+              <Button
+                title="Finalizar tarea"
+                containerStyle={styles.btnContainer}
+                buttonStyle={styles.btnFinish}
+                onPress={endTask}
+              />
+            </View>
+          )
+          :(<></>)
+        }
       <View style={styles.viewContainer2}>
         { completed<questions.length ?
           (<>
@@ -175,7 +190,7 @@ export default function TaskQuestion (props) {
             </View>
             </TouchableOpacity>
           </>
-          ):(<Text style={styles.subtitle}> ¡Ya finalizaste todas las actividades!</Text>)
+          ):(<></>)
         }
         { pendArr.map((arr,index) =>
             { return(
@@ -246,16 +261,6 @@ export default function TaskQuestion (props) {
         }
       </View>
       <View style={styles.wrapper}>
-        { per==100 ?
-          ( <Button
-              title="Finalizar tarea"
-              containerStyle={styles.btnContainer}
-              buttonStyle={styles.btnFinish}
-              onPress={endTask}
-            />
-          )
-          :(<></>)
-        }
         <Button
           title="Abortar tarea"
           containerStyle={styles.btnContainer}
@@ -263,7 +268,6 @@ export default function TaskQuestion (props) {
           onPress={abort}
         />
       </View>
-      <Loading isVisible={loading} text={loadingText}/>
     </ScrollView>
   )
 }

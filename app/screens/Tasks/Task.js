@@ -61,7 +61,7 @@ export default function Task ({route}) {
     }
   },[questions])
   if (loading)
-  { return <Loading isVisible={true} text="Iniciando tarea..." />
+  { return <Loading text="Iniciando tarea..." />
   }
   else
   { if (error)
@@ -77,7 +77,8 @@ export default function Task ({route}) {
           <View style={styles.viewZolbit}>
             <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
           </View>
-          <Loading isVisible={loading} text="Iniciando tarea..."/>
+          { loading && (<Loading text={loadingText}/>)
+          }
         </ScrollView>
       )
     }

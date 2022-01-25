@@ -20,7 +20,7 @@ export default function ListTaskAvailable(props){
 function Tarea(props){ 
   const navigation = useNavigation();
   const {lista} = props;
-  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = lista.item;
+  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig,wen} = lista.item;
   const goTask = () =>
   { 
   }
@@ -40,9 +40,10 @@ function Tarea(props){
       </View>
       <Divider style= {styles.divider}/>
       <View style={styles.viewTareasTexto}>
-        <View>
-          <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
-        </View>
+        <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
+      </View>
+      <View style={styles.viewTareasTexto}>
+        <Text style={styles.textTask}>Fecha: <Text style={styles.textRTask}>{wen.substring(4,6)}/{wen.substring(2,4)}/{wen.substring(0,2)} {wen.substring(6,8)}:{wen.substring(8,10)}</Text></Text>
       </View>
       <View style={styles.viewTareasTexto}>
         <View>
@@ -130,8 +131,7 @@ const styles = StyleSheet.create({
   },
   textRTask:{
     marginLeft:5,
-    fontSize: 20,
-    fontWeight: "bold"
+    fontSize: 20
   },
   circleViewRZ: {
     width: 35,

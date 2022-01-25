@@ -136,8 +136,8 @@ android {
         applicationId 'com.electronico.repoflex'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
-        versionName "0.62.0"
+        versionCode 8
+        versionName "0.63.0"
     }
     splits {
         abi {
@@ -149,10 +149,10 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('repoflex.jks')
+            storePassword 'cc09d49325d446138c950d0a29f68b58'
+            keyAlias 'QGVsZWN0cm9uaWNvL3JlcG9mbGV4'
+            keyPassword 'fe8ff529ccc144a29db624aef2bea437'
         }
     }
     buildTypes {
@@ -165,6 +165,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            debuggable = false
         }
     }
 

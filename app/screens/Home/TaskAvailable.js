@@ -67,10 +67,8 @@ export default function TaskAvailable({route}) {
           <Text style={styles.title}>{msg}</Text>
         </View>
       ):
-      ( <View>
-          <View style={styles.viewForm}>
-            <ListTaskAvailable data={data}/>
-          </View>
+      ( <View style={styles.viewForm}>
+          <ListTaskAvailable data={data}/>
         </View>
       )
     }
@@ -85,8 +83,8 @@ const styles = StyleSheet.create({
     marginTop: 20,  
   },
   viewForm: {
-    marginRight: 40,
-    marginLeft: 40,
+    marginRight: 20,
+    marginLeft: 20,
   },
   loaderTask: {
     marginTop:100,

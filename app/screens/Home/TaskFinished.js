@@ -6,7 +6,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useNavigation } from "@react-navigation/native";
 
 import BackEndConnect from "../../utils/BackEndConnect";
-import ListTaskFinished from "../../components/Home/ListTaskFinished";
+import ListTask from "../../components/Home/ListTask";
 
 export default function TaskEnded({route}) {
   const {lati,long} = route.params;
@@ -67,10 +67,8 @@ export default function TaskEnded({route}) {
               <Text style={styles.title}>{msg}</Text>
             </View>
           ):
-          ( <View>
-              <View style={styles.viewForm}>
-                <ListTaskFinished data={dataFinished}/>
-              </View>
+          ( <View style={styles.viewForm}>
+              <ListTask data={dataFinished}/>
             </View>
           )
         }
@@ -86,10 +84,8 @@ export default function TaskEnded({route}) {
               <Text style={styles.title}>{msp}</Text>
             </View>
           ):
-          ( <View>
-              <View style={styles.viewForm}>
-                <ListTaskFinished data={dataPaid}/>
-              </View>
+          ( <View style={styles.viewForm}>
+              <ListTask data={dataPaid}/>
             </View>
           )
         }
@@ -120,8 +116,8 @@ const styles = StyleSheet.create({
     marginTop: 20,  
   },
   viewForm: {
-    marginRight: 40,
-    marginLeft: 40,
+    marginRight: 10,
+    marginLeft: 10,
   },
   loaderTask: {
     marginTop:100,

@@ -47,7 +47,7 @@ export default function HomeApp(props) {
   useEffect(async () => 
     { try 
       { setLoading(true);
-        setDisplayDate(moment(dateObj).format('YYYY-MM-DD HH:mm'));
+        setDisplayDate(moment(dateObj).format('DD/MM/YY HH:mm'));
         let location = await Location.getCurrentPositionAsync({});
         let latitude = location.coords.latitude.toString();
         let longitude = location.coords.longitude.toString();

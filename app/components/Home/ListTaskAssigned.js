@@ -50,7 +50,7 @@ function Tarea(props){
           title="Ver detalles"
           containerStyle={styles.btnContainer2}
           buttonStyle={styles.btn2}
-          onPress={() => navigation.navigate("assigneddetail",{
+          onPress={() => navigation.navigate("detailtask",{
             tit:tit,
             typ:typ,
             tid:tid,
@@ -61,7 +61,8 @@ function Tarea(props){
             nqu:nqu,
             npi:npi,
             nre:nre,
-            sig:sig
+            sig:sig,
+            start:true
           })}
         />
       </View>

@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import { useNavigation } from "@react-navigation/native";
 
 import BackEndConnect from "../../utils/BackEndConnect";
-import ListTaskAvailable from "../../components/Home/ListTaskAvailable";
+import ListTask from "../../components/Home/ListTask";
 
 export default function TaskAvailable({route}) {
   const {lati,long} = route.params;
@@ -54,13 +54,12 @@ export default function TaskAvailable({route}) {
     },[])
   );
 
-
   return(
   <>
     { loading ? 
       ( <View style={styles.loaderTask}>
           <ActivityIndicator  size="large" color="#0000ff"/>
-          <Text>Cargando Tareas</Text>
+          <Text>Cargando Tareas...</Text>
         </View>):
       data == null ?
       ( <View>
@@ -68,7 +67,7 @@ export default function TaskAvailable({route}) {
         </View>
       ):
       ( <View style={styles.viewForm}>
-          <ListTaskAvailable data={data}/>
+          <ListTask data={data} start={true} assign={true}/>
         </View>
       )
     }
@@ -83,8 +82,8 @@ const styles = StyleSheet.create({
     marginTop: 20,  
   },
   viewForm: {
-    marginRight: 20,
-    marginLeft: 20,
+    marginRight: 10,
+    marginLeft: 10,
   },
   loaderTask: {
     marginTop:100,

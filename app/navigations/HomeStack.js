@@ -10,9 +10,9 @@ import TaskInRevision from "../screens/Home/TaskInRevision";
 import TaskSent from "../screens/Home/TaskSent";
 import Notification from "../screens/Home/Notification";
 import DetailTask from "../screens/Home/DetailTask";
-import DetailTaskInProgress from "../screens/Home/DetailTaskInProgress";
-import TaskDetail from "../screens/Home/TaskDetail";
-import AssignedDetail from "../screens/Home/AssignedDetail";
+// import DetailTaskInProgress from "../screens/Home/DetailTaskInProgress";
+// import TaskDetail from "../screens/Home/TaskDetail";
+// import AssignedDetail from "../screens/Home/AssignedDetail";
 
 const Stack = createStackNavigator();
 
@@ -69,7 +69,7 @@ export default function HomeStack({route})
         options={{title: "Detalle de la Tarea"}}
         //options={{headerShown: false}}
       />
-      <Stack.Screen
+      {/*<Stack.Screen
         name="detailtaskinprogress"
         component={DetailTaskInProgress}
         options={{title: "Detalle de la Tarea"}}
@@ -86,7 +86,7 @@ export default function HomeStack({route})
         component={AssignedDetail}
         options={{title: "Iniciar tarea asignada"}}
         //options={{headerShown: false}}
-      />
+      />*/}
     </Stack.Navigator>
   )
 }

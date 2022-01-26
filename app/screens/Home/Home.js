@@ -5,7 +5,7 @@ import { Icon } from "react-native-elements";
 import HomeApp from "../../components/Home/HomeApp";
 import * as Location from 'expo-location';
 
-export default function Home() {  
+export default function Home() {
   const navigation = useNavigation();
   const [auth, setAuth] = useState(null);
   const [check, setCheck] = useState(false);
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   viewForm: {
-    marginRight: 40,
-    marginLeft: 40
+    marginRight: 30,
+    marginLeft: 30
   },
   loaderTask: {
     marginTop:100,

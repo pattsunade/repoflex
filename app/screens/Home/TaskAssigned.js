@@ -6,8 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
-import ListTaskAssigned from "../../components/Home/ListTaskAssigned";
-import ListTaskInProgress from "../../components/Home/ListTaskInProgress";
+import ListTask from "../../components/Home/ListTask";
 
 export default function TaskAssigned({route}) {
   const {lati,long} = route.params;
@@ -70,7 +69,7 @@ export default function TaskAssigned({route}) {
           ):
           ( <View>
               <View style={styles.viewForm}>
-                <ListTaskAssigned data={dataPending}/>
+                <ListTask data={dataPending} start={true}/>
               </View>
             </View>
           )
@@ -89,7 +88,7 @@ export default function TaskAssigned({route}) {
           ):
           ( <View>
               <View style={styles.viewForm}>
-                <ListTaskInProgress data={dataInProgress}/>
+                <ListTask data={dataInProgress} start={true} abort={true}/>
               </View>
             </View>
           )
@@ -121,8 +120,8 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   viewForm: {
-    marginRight: 40,
-    marginLeft: 40
+    marginRight: 10,
+    marginLeft: 10
   },
   loaderTask: {
     marginTop:100,

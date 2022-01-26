@@ -51,7 +51,7 @@ function Tarea(props){
           title="Ver detalles"
           containerStyle={styles.btnContainer}
           buttonStyle={styles.btn}
-          onPress={() => navigation.navigate("taskdetail",
+          onPress={() => navigation.navigate("detailtask",
           { tit:tit,
             typ:typ,
             tid:tid,

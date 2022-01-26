@@ -17,11 +17,13 @@ export default function Task ({route}) {
   const [error, setError] = useState(false);
   const [questions, setQuestions] = useState(quest);
   const [loading, setLoading] = useState(true);
+  
   function formato() 
   { return{
       tid: tid
     };
   }
+
   useEffect(() => 
   { if(questions===undefined || questions === null)
     { BackEndConnect("POST","detai",formato()).then(async (response) =>
@@ -83,6 +85,7 @@ export default function Task ({route}) {
       )
     }
   }
+  
 }
 const styles = StyleSheet.create({
   viewContainer:{

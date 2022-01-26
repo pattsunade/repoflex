@@ -5,8 +5,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from "@react-navigation/native";
 import BackEndConnect from "../../utils/BackEndConnect";
-import ListTaskSent from "../../components/Home/ListTaskSent";
-import ListTaskInRevision from "../../components/Home/ListTaskInRevision";
+import ListTask from "../../components/Home/ListTask";
 
 export default function TaskSent({route}) {
   const {lati,long} = route.params;
@@ -69,7 +68,7 @@ export default function TaskSent({route}) {
         ):
         ( <View>
             <View style={styles.viewForm}>
-              <ListTaskSent data={dataSent}/>
+              <ListTask data={dataSent}/>
             </View>
           </View>
         )
@@ -88,7 +87,7 @@ export default function TaskSent({route}) {
         ):
         ( <View>
             <View style={styles.viewForm}>
-              <ListTaskInRevision data={dataInRevision}/>
+              <ListTask data={dataInRevision}/>
             </View>
           </View>
         )
@@ -120,8 +119,8 @@ const styles = StyleSheet.create({
     marginTop: 20,  
   },
   viewForm: {
-    marginRight: 40,
-    marginLeft: 40,
+    marginRight: 10,
+    marginLeft: 10,
   },
   loaderTask: {
     marginTop:100,

@@ -66,7 +66,7 @@ function Tarea(props){
               nqu:nqu,
               npi:npi,
               nre:nre,
-              sig:sig
+              sig:sig,
             })}
           />
         </View>
@@ -75,7 +75,7 @@ function Tarea(props){
             title="Reanudar/Abortar"
             containerStyle={styles.btnContainer2}
             buttonStyle={styles.btn2}
-            onPress={() => navigation.navigate("detailtaskinprogress",
+            onPress={() => navigation.navigate("detailtask",
             { tit:tit,
               typ:typ,
               tid:tid,
@@ -86,7 +86,9 @@ function Tarea(props){
               nqu:nqu,
               npi:npi,
               nre:nre,
-              sig:sig
+              sig:sig,
+              start:true,
+              abort:true
             })}
           />
         </View>

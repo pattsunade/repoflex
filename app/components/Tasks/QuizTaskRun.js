@@ -389,7 +389,10 @@ export default function QuizTaskRun (props) {
                     containerStyle={styles.btnContainer}
                     buttonStyle={styles.btn}
                     title="Siguiente"
-                    onPress={() => handleAnswerOptionClick(selectedDate,questions.qid)}
+                    onPress={selectedDate == null ?
+                        () => handleAnswerOptionClick(moment(date).format('YYMMDDHHmm'),questions.qid):
+                        () => handleAnswerOptionClick(selectedDate,questions.qid)                        
+                      }
                   />
                 </View>
               </View>

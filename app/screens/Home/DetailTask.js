@@ -1,24 +1,25 @@
-import React, { useState,useRef,useCallback } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text,TouchableOpacity} from 'react-native';
 import { Card } from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import Toast from 'react-native-easy-toast';
 import { useNavigation } from '@react-navigation/native';
 import { Divider, Button } from 'react-native-elements';
 import BackEndConnect from '../../utils/BackEndConnect';
 import Loading from '../../components/Loading';
 
 export default function DetailTask({route,navigation}) 
-{ const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = route.params;
+{ const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig,wen,start,abort,assign} = route.params;
   const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState('');
+
   function formato() 
   { return{
       tid: tid,
     };
   }
-  function assing()
-  { setLoading(true);
+
+  function assingFun()
+  { setLoadingText('Asignando tarea...');
+    setLoading(true);
     BackEndConnect('POST','assgn',formato()).then(async (response) => 
     { if(response.ans.stx!='ok'){
       Toast.show(
@@ -42,9 +43,54 @@ export default function DetailTask({route,navigation})
       setLoading(false);
     });
   }
+
+  function startFun()
+  { navigation.reset(
+    { index: 0,
+      routes: 
+      [ { name: 'task',
+          params: {tid:tid,completed:0}
+        }
+      ],
+    })
+  }
+
+  function abortFun()
+  { setLoadingText('Asignando tarea...')
+    setLoading(true);
+    BackEndConnect("POST","abort",formato()).then(async (response) => 
+    { if(response.ans.stx!="ok")
+    { Toast.show(
+      {
+        type: 'error',
+        props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+        },
+        autohide: false
+      });
+    }
+      navigation.reset({
+      index: 0,
+      routes: 
+      [ {
+          name: 'home',
+        }
+      ],
+      })
+    })
+    .catch((ans) =>
+    { console.log(ans);
+      Toast.show(
+      { type: 'error',
+        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente'+ans1.ans.msg
+        },
+        autohide: false
+      });
+    });
+  }
+
   return(
   <>
-    { loading ? (<Loading text='Asignando tarea...'/>)
+    { loading ? (<Loading text={loadingText}/>)
       :(<Card style={styles.parentView}>
           <View style={styles.taskTypeView}>
             <View style={styles.circleView}>
@@ -55,8 +101,9 @@ export default function DetailTask({route,navigation})
           <Text style={styles.taskTitleText}>{tit}</Text>
           <Text style={styles.textId}>id:{tid}</Text>
           <Divider style= {styles.divider} />
-          <View style={styles.viewTareasTexto}>            
+          <View style={styles.taskTextView}>            
             <Text style={styles.taskText}>Lugar: <Text style={styles.taskDetail}>{pla}</Text></Text>
+            <Text style={styles.taskText}>Fecha: <Text style={styles.textDetail}>{wen.substring(4,6)}/{wen.substring(2,4)}/{wen.substring(0,2)} {wen.substring(6,8)}:{wen.substring(8,10)}</Text></Text>
             <Text style={styles.taskText}>Detalle: <Text style={styles.taskDetail}>{det} </Text></Text>
             <Text style={styles.taskText}>A pagar: <Text style={styles.boldTaskDetail}>$ {amo}</Text></Text>
             <Text style={styles.taskText}>Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text></Text>
@@ -69,27 +116,33 @@ export default function DetailTask({route,navigation})
             <Text style={styles.activityDetailNumber}>{nre} <Text>Reposición</Text></Text>
           </View>
           <View style={styles.btnView}>
-            <Button
-              title='Asignar'
-              containerStyle={styles.btnContainer2}
-              buttonStyle={styles.btn2}
-              onPress={() =>assing()}
-            />
-            <Button
-              title='Iniciar'
-              containerStyle={styles.btnContainer2}
-              buttonStyle={styles.btn2}
-              onPress={() => 
-                navigation.reset({ 
-                  index: 0,
-                  routes: 
-                  [ { name: 'task',
-                      params: {tid:tid,completed:0}
-                    }
-                  ],
-                })
-              }
-            />
+            { assign && (
+                <Button
+                  title='Asignar'
+                  containerStyle={styles.btnContainer}
+                  buttonStyle={styles.btn}
+                  onPress={() =>assingFun()}
+                />
+              )
+            }
+            { abort && (
+                <Button
+                  title="Abortar"
+                  containerStyle={styles.btnContainer}
+                  buttonStyle={styles.btn}
+                  onPress={() =>abortFun()}
+                />
+              )
+            }
+            { start && (
+                <Button
+                  title='Iniciar'
+                  containerStyle={styles.btnContainer}
+                  buttonStyle={styles.btn}
+                  onPress={() => startFun()}
+                />
+              )
+            }
           </View>
         </Card>
       )
@@ -99,7 +152,7 @@ export default function DetailTask({route,navigation})
 }
 
 const styles = StyleSheet.create(
-{ parentView: 
+{ parentView:
   { marginRight: 10,
     marginLeft: 10,
     marginTop:20,
@@ -128,7 +181,7 @@ const styles = StyleSheet.create(
   taskTypeText:
   { marginTop:8
   },
-  viewTareasTexto:
+  taskTextView:
   { flexDirection:'column',
     margin:1,
     borderRadius:1
@@ -180,11 +233,11 @@ const styles = StyleSheet.create(
     flexDirection:'column',
     alignItems:'center'
   },
-  btnContainer2:
+  btnContainer:
   { marginTop:20,
     width:'50%'
   },
-  btn2:
+  btn:
   { backgroundColor:'#68BB6D',
     borderRadius:50,
     marginHorizontal:8,

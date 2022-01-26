@@ -19,6 +19,7 @@ export default function DocumentDataForm(props) {
   const [acnuCorrect, setAcnuCorrect] = useState(2);
   const [loadingText, setLoadingText] = useState("Cargando...");
   const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
   const [selectValueRegion, setSelectValueRegion] = useState("Region");
   const [selectValueComuna, setSelectValueComuna] = useState("Comuna");
   const [selectValueBanks, setSelectValueBanks] = useState("Banco");
@@ -38,19 +39,26 @@ export default function DocumentDataForm(props) {
   const ref_input7 = useRef();
   const ref_input8 = useRef();
   const ref_input9 = useRef();
+
   setLists();
 
   useEffect(()=>
   { console.log("me llamaron");
-    getcom(regiCod);
+    if (regiCod!=null)
+      getcom(regiCod);
   },[regiCod])
+
+  // useEffect(()=>
+  // { console.log("me llamaron2");
+  //   setLists();
+  // },[])
 
   function setLists()
   { console.log("llamaron a lists");
     let num;
     let b=lists.bancos.length;
     let r=lists.regiones.length;
-    let a=lists.actypes.length
+    let a=lists.actypes.length;
     num=r;
     if(num<b)
       num=b;
@@ -109,10 +117,10 @@ export default function DocumentDataForm(props) {
 
   function getcom(cod)
   { setLoadingText("Obteniendo comunas...");
-    setLoading(true);
+    setLoading2(true);
     BackEndConnect("POST","gecom",gecomFormat(cod)).then((ans)=>
     { setDistrictObj(ans.ans);
-      setLoading(false);
+      setLoading2(false);
     })
     .catch((ans) => 
     { console.log(ans);
@@ -123,12 +131,14 @@ export default function DocumentDataForm(props) {
           }
         }
       );
+      setLoading2(false);
       navigation.goBack();
     });
   }
 
   const onSubmit = () => 
-  { setLoading(true);
+  { setLoadingText("Enviando datos");
+    setLoading(true);
     if ( isEmpty(formData.name) || isEmpty(formData.snam) || isEmpty(formData.ndoc) ||
          isEmpty(formData.addr) || !isInteger(formData.comu) || !isInteger(formData.bank) ||
          !isInteger(formData.acty) || isEmpty(formData.acnu))
@@ -254,7 +264,9 @@ export default function DocumentDataForm(props) {
   }
 
   return(
-    <ScrollView style={styles.formContainer}>
+  <>
+    { loading ? (<Loading text={loadingText} />):
+      (<ScrollView style={styles.formContainer}>
       <Text style={styles.textDescription}>{" "}Nombres</Text>
       <View style={styles.searchSection}>
         <TextInput
@@ -321,17 +333,19 @@ export default function DocumentDataForm(props) {
         </Picker>
       </View>
       <Text style={styles.textDescription}>{" "}Comuna</Text>
-      <View style={styles.card}>
-        <Picker
-          selectedValue={selectValueComuna}
-          style={styles.inputForm}
-          onValueChange={(itemValue,itemIndex) => {setSelectValueComuna(itemValue);onChange(itemValue, "comu") }}
-          enabled={districtObj!=null? (true):(false)}
-        >
-          <Picker.Item label="Seleccionar Comuna"  value="x" />
-          {renderDistrictList()}
-        </Picker>
-      </View>
+      { loading2 ? (<Loading text={loadingText} />):
+        (<View style={styles.card}>
+          <Picker
+            selectedValue={selectValueComuna}
+            style={styles.inputForm}
+            onValueChange={(itemValue,itemIndex) => {setSelectValueComuna(itemValue);onChange(itemValue, "comu") }}
+            enabled={districtObj!=null? (true):(false)}
+          >
+            <Picker.Item label="Seleccionar Comuna"  value="x" />
+            {renderDistrictList()}
+          </Picker>
+        </View>)
+      }
       <Text style={styles.textDescription}>{" "}Dirección</Text>
       <View style={styles.searchSection}>
         <TextInput
@@ -393,8 +407,9 @@ export default function DocumentDataForm(props) {
         buttonStyle={styles.btnRegister}
         onPress={onSubmit}
       />
-      <Loading isVisible={loading} text={loadingText} />
-    </ScrollView>
+    </ScrollView>)
+    }
+  </>
   );
 }
 

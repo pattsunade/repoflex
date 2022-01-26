@@ -7,10 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
 
 export default function InfoUser(props) {
-  const {
-    nameuser,
-    level
-  } = props;
+  const {nameuser,level} = props;
   const changeAvatar = async () => {
     const resultPermission = await Permissions.askAsync(
       Permissions.CAMERA_ROLL

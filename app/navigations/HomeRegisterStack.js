@@ -15,6 +15,7 @@ import Firm from "../screens/HomeRegister/Firm";
 import EndRegister from "../screens/HomeRegister/EndRegister";
 import GoodTraining from "../screens/HomeRegister/GoodTraining";
 import BadTraining from "../screens/HomeRegister/BadTraining";
+import Rejected from "../screens/HomeRegister/Rejected";
  
 const Stack = createStackNavigator();
 
@@ -109,6 +110,12 @@ export default function HomeRegisterStack(){
         name="endregister"
         component={EndRegister}
         options={{title: "Final del registro"}}
+        //options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="rejected"
+        component={Rejected}
+        options={{title: "Rechazado"}}
         //options={{headerShown: false}}
       />
     </Stack.Navigator>

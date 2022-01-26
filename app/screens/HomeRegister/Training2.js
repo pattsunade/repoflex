@@ -18,11 +18,29 @@ export default function Training2 () {
     useCallback(() =>
     { setLoading(true);
       BackEndConnect("POST","quest").then(async (response) =>
-      { var questions = response.ans.test;
-        var tid = response.ans.tid;
-        setQuestion(questions);
-        setTid(tid);
-        setLoading(false);
+      { if (response.ans.stx!='ok')
+        { Toast.show(
+            { type: 'error',
+              props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
+              },
+              autohide: false
+            });
+          navigation.reset({
+            index: 0,
+            routes: 
+            [ { name: 'login',
+              }
+            ],
+          })
+          setLoading(false);
+        }
+        else
+        { var questions = response.ans.test;
+          var tid = response.ans.tid;
+          setQuestion(questions);
+          setTid(tid);
+          setLoading(false);
+        }
       })
       .catch((ans) =>
       { console.log(ans);
@@ -47,16 +65,20 @@ export default function Training2 () {
     }, [])
   );
   return (
-    <ScrollView>    
-      <View>
-        <TrainingQuestions navigation={navigation} questions={questions} tid={tid}/>
-      </View>
-      <Divider style= {styles.divider} />
-      <View style={styles.viewZolbit}>
-        <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
-      </View>
-      <Loading isVisible={loading} text="Cargando preguntas"/>
-    </ScrollView>
+  <>
+    { loading ? (<Loading text="Cargando preguntas..."/>):
+      ( <ScrollView>    
+          <View>
+            <TrainingQuestions navigation={navigation} questions={questions} tid={tid}/>
+          </View>
+          <Divider style= {styles.divider} />
+          <View style={styles.viewZolbit}>
+            <Text >Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+          </View>
+        </ScrollView>
+      )  
+    }
+  </>
   )
 }
 

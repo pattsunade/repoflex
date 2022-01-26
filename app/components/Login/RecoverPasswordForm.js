@@ -120,46 +120,41 @@ export default function RecoverPasswordForm () {
   }
 
   return (
-    <View style={styles.formContainer}>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder="Ingrese su rut"
-          placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
-          onEndEditing={(e) => onEnd(e,"usr")}
-          maxLength={12}
-          onChangeText={(e) => format(e)}
-          secureTextEntry={Platform.OS === 'ios' ? false : true}
-          keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
-          autoCapitalize="none"
-          value={changedRut}
+  <>
+    { loading ? (<Loading text="Cargando"/>):
+      (<View style={styles.formContainer}>
+        <View style={styles.searchSection}>
+          <TextInput
+            placeholder="Ingrese su rut"
+            placeholderTextColor="#AC9DC9"
+            style={styles.inputForm}
+            onEndEditing={(e) => onEnd(e,"usr")}
+            maxLength={12}
+            onChangeText={(e) => format(e)}
+            secureTextEntry={Platform.OS === 'ios' ? false : true}
+            keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
+            autoCapitalize="none"
+            value={changedRut}
+          />
+        </View>
+        <View style={styles.viewError}>
+        { rutCorrect == 0 ?
+          (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
+          rutCorrect == 3 ?
+          (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
+          (<></>)
+        }
+        </View>
+        <Button
+          title="Recuperar contraseña"
+          containerStyle={styles.btnContainerLogin}
+          buttonStyle={styles.btnLogin}
+          onPress={onSubmit}
+          disabled={rutCorrect != 1 ? (true):(false)}
         />
-      </View>
-      <View style={styles.viewError}>
-      { rutCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
-        rutCorrect == 3 ?
-        (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
-        (<></>)
-      }
-      </View>
-      <Button
-        title="Recuperar contraseña"
-        containerStyle={styles.btnContainerLogin}
-        buttonStyle={styles.btnLogin}
-        onPress={onSubmit}
-        disabled={rutCorrect != 1 ? (true):(false)}
-      />
-    <Loading isVisible={loading} text="Cargando"/>
-    </View>
-    /*<View style={styles.formContainer}>
-      <Button
-        title="Recuperar contraseña"
-        containerStyle={styles.btnContainerLogin}
-        buttonStyle={styles.btnLogin}
-      />
-      
-  </View>*/
+      </View>)
+    }
+  </>
   )
 }
 

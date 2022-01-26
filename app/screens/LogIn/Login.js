@@ -1,12 +1,28 @@
-import React, {useRef,useState} from "react";
+import React, {useEffect,useState} from "react";
 import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import LoginForm from "../../components/Login/LoginForm";
 import Toast from 'react-native-toast-message';
+import * as Notifications from 'expo-notifications';
 
 export default function Login() {
+
+  const [check, setCheck] = useState(false);
+  useEffect(() => {
+    (async () => {
+      let permisions = await Notifications.requestPermissionsAsync({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+        allowAnnouncements: true,
+        },
+      });
+    })();
+  }, [check]);
+
   return(
     <ScrollView>
       <Image 
@@ -22,7 +38,7 @@ export default function Login() {
       <Divider style={styles.divider} />
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>
-        <Text>Versión v0.62.0</Text>
+        <Text>Versión v0.64.0</Text>
       </View>
     </ScrollView>
   )

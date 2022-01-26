@@ -50,93 +50,97 @@ export default function Training ({ navigation, route }) {
     )
   }
   return (
-    <ScrollView scrollEnabled={!inFullScreen}
-      ref={refScrollView}
-      onContentSizeChange={() => {
-        if (inFullScreen) {
-          refScrollView.current.scrollToEnd({ animated: true })
-          navigation.setOptions({headerShown: value})
-        }
-      }}
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      >
-      {!inFullScreen ? (
-      <>
-        <Card>
-          <Card.Title style={styles.cardTitleText}>Video</Card.Title>
-          <Card.Divider/>
-          <Text style={styles.cardText}>
-            Video introductorio, se te realizará un test terminado el video.
-          </Text>
-          <View style={styles.player}>
-            <VideoPlayer
-              videoProps={{
-                shouldPlay: false,
-                resizeMode: Video.RESIZE_MODE_CONTAIN,
-                source: {
-                  uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                },
-                ref: refVideo,
-              }}
-              fullscreen={{
-                inFullscreen: inFullScreen,
-                enterFullscreen: async () => {
-                  setStatusBarHidden(true, 'fade');
-                  setValue(false)
-                  setInFullsreen(!inFullScreen);
-                  await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-                  refVideo.current.setStatusAsync({
-                    shouldPlay: true,
-                  });
-                },
-              }}
-              style={{
-                videoBackgroundColor: 'black',
-                height:160,
-                width:320
-              }}
+  <>
+    { loading ? (<Loading isVisible={loading} text="Cargando..."/>):
+      (<ScrollView scrollEnabled={!inFullScreen}
+        ref={refScrollView}
+        onContentSizeChange={() => {
+          if (inFullScreen) {
+            refScrollView.current.scrollToEnd({ animated: true })
+            navigation.setOptions({headerShown: value})
+          }
+        }}
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        >
+        {!inFullScreen ? (
+        <>
+          <Card>
+            <Card.Title style={styles.cardTitleText}>Video</Card.Title>
+            <Card.Divider/>
+            <Text style={styles.cardText}>
+              Video introductorio, se te realizará un test terminado el video.
+            </Text>
+            <View style={styles.player}>
+              <VideoPlayer
+                videoProps={{
+                  shouldPlay: false,
+                  resizeMode: Video.RESIZE_MODE_CONTAIN,
+                  source: {
+                    uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                  },
+                  ref: refVideo,
+                }}
+                fullscreen={{
+                  inFullscreen: inFullScreen,
+                  enterFullscreen: async () => {
+                    setStatusBarHidden(true, 'fade');
+                    setValue(false)
+                    setInFullScreen(!inFullScreen);
+                    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+                    refVideo.current.setStatusAsync({
+                      shouldPlay: true,
+                    });
+                  },
+                }}
+                style={{
+                  videoBackgroundColor: 'black',
+                  height:160,
+                  width:320
+                }}
+              />
+            </View>
+            <Button
+              title="Empezar Prueba"
+              containerStyle={styles.btnContainer}
+              buttonStyle={styles.btn}
+              onPress={onSubmit}
             />
+          </Card>
+          <View style={styles.viewZolbit}>
+            <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
           </View>
-          <Button
-            title="Empezar Prueba"
-            containerStyle={styles.btnContainer}
-            buttonStyle={styles.btn}
-            onPress={onSubmit}
+        </>
+          ) :(
+          <VideoPlayer
+            videoProps={{
+              shouldPlay: false,
+              resizeMode: Video.RESIZE_MODE_CONTAIN,
+              source: {
+                uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+              },
+              ref: refVideo,
+            }}
+            fullscreen={{
+              inFullscreen: inFullScreen,
+              exitFullscreen: async () => {
+                setStatusBarHidden(false, 'fade')
+                setValue(true)
+                setInFullsreen(!inFullScreen)
+                await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT)
+              },
+            }}
+            style={{
+              videoBackgroundColor: 'black',
+              height: Dimensions.get('window').width,
+              width: Dimensions.get('window').height
+            }}
           />
-        </Card>
-        <View style={styles.viewZolbit}>
-          <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
-        </View>
-        <Loading isVisible={loading} text="Cargando..."/>
-      </>
-        ) :(
-        <VideoPlayer
-          videoProps={{
-            shouldPlay: false,
-            resizeMode: Video.RESIZE_MODE_CONTAIN,
-            source: {
-              uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-            },
-            ref: refVideo,
-          }}
-          fullscreen={{
-            inFullscreen: inFullScreen,
-            exitFullscreen: async () => {
-              setStatusBarHidden(false, 'fade')
-              setValue(true)
-              setInFullsreen(!inFullScreen)
-              await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT)
-            },
-          }}
-          style={{
-            videoBackgroundColor: 'black',
-            height: Dimensions.get('window').width,
-            width: Dimensions.get('window').height
-          }}
-        />
-        )}
-    </ScrollView>
+          )}
+      </ScrollView>
+      )
+    }
+  </>
   )
 }
 

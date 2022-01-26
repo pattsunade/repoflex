@@ -47,9 +47,7 @@ const compress = async (uri) => {
     onChange(manipResult.base64,"file");
 };
 const uploadSelfie = async () =>{
-    const resultPermissions = await MediaLibrary.requestPermissionsAsync();
-    const resultPermissionsCamera = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    const roll = await ImagePicker.requestCameraRollPermissionsAsync()
+    const resultPermissions = await ImagePicker.requestCameraPermissionsAsync();
     if (resultPermissions === "denied"){
         toastRef.current.show("Es necesario aceptar los permisos de cámara para subir imagenes")
     }
@@ -57,7 +55,8 @@ const uploadSelfie = async () =>{
         const result = await ImagePicker.launchCameraAsync({          
             allowsEditing:true,
             aspect: [4, 3],
-            quality: 1
+            quality: 1,
+            presentationStyle: 0
         });
         if (result.cancelled) {
             if (!imageSelfie){
@@ -84,49 +83,53 @@ const uploadDocuments = () =>{
     }
 };
 return(
-  <ScrollView>
-    <View style={styles.viewContainer}>
-      <Text style={styles.title}>Fotografía Frontal</Text>
-      <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
-      <View style={styles.wrapper}>
-        <View style={styles.container}>
-          <View>
-            <Button
-              title={ !imageSelfie ? "Toma tu foto aquí" : "Cambiar Foto"}
-              containerStyle={styles.btnContainer}
-              buttonStyle={ !imageSelfie ? styles.btn : styles.btnCheck}
-              onPress={uploadSelfie}
+  <>
+    { loading ? (<Loading text="Subiendo imagen..."/>):
+      ( <ScrollView>
+          <View style={styles.viewContainer}>
+            <Text style={styles.title}>Fotografía Frontal</Text>
+            <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
+            <View style={styles.wrapper}>
+              <View style={styles.container}>
+                <View>
+                  <Button
+                    title={ !imageSelfie ? "Toma tu foto aquí" : "Cambiar Foto"}
+                    containerStyle={styles.btnContainer}
+                    buttonStyle={ !imageSelfie ? styles.btn : styles.btnCheck}
+                    onPress={uploadSelfie}
+                  />
+                </View>
+                <View>
+                <Icon
+                  type="material-community"
+                  name="information-outline"
+                  iconStyle={styles.iconLeft}
+                  size={25}
+                  onPress={() => setIsVisibleInfoSelfie(true)}
+                />
+                <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
+                </View>
+              </View>
+            </View>
+            <Image
+                source={imageSelfie ? {uri:imageDocumentSelfie} : require("../../../assets/no-image.png")}
+                resizeMode="contain"
+                style={styles.logo}
             />
+            <Button
+              title="Siguiente"
+              containerStyle={styles.btnContainerNext}
+              buttonStyle={styles.btnNext}
+              onPress={uploadDocuments}
+            />
+            <View style={styles.viewZolbit}>
+              <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+            </View>
           </View>
-          <View>
-          <Icon
-            type="material-community"
-            name="information-outline"
-            iconStyle={styles.iconLeft}
-            size={25}
-            onPress={() => setIsVisibleInfoSelfie(true)}
-          />
-          <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
-          </View>
-        </View>
-      </View>
-      <Image
-          source={imageSelfie ? {uri:imageDocumentSelfie} : require("../../../assets/no-image.png")}
-          resizeMode="contain"
-          style={styles.logo}
-      />
-      <Button
-        title="Siguiente"
-        containerStyle={styles.btnContainerNext}
-        buttonStyle={styles.btnNext}
-        onPress={uploadDocuments}
-      />
-      <View style={styles.viewZolbit}>
-        <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
-      </View>
-      <Loading isVisible={loading} text="Subiendo imagen"/>
-      </View>
-    </ScrollView>
+          </ScrollView>
+      )
+    }
+  </>
   )
 }
 const styles = StyleSheet.create({

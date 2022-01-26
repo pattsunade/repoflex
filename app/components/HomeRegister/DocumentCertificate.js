@@ -51,16 +51,15 @@ export default function DocumentCertificate (props) {
   };
 
   const upload = async () =>
-  { const resultPermissions = await MediaLibrary.requestPermissionsAsync();
-    const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync();
-    const roll = await ImagePicker.requestCameraRollPermissionsAsync();
+  { const resultPermissions = await ImagePicker.requestCameraPermissionsAsync();
     if (resultPermissions === "denied"){
       toastRef.current.show("Es necesario aceptar los permisos de cámara para subir imagenes")
     }
     else
     { const result = await ImagePicker.launchImageLibraryAsync({
         allowsEditing:true,
-        quality: 1
+        quality: 1,
+        presentationStyle: 0
       });
       if (result.cancelled)
       { if (!image)
@@ -90,49 +89,53 @@ export default function DocumentCertificate (props) {
   console.log("docu->",documentCertificate);
 
   return (
-    <ScrollView>
-      <View style={styles.viewContainer} >
-        <Text style={styles.title}>Certificado de Antecedentes</Text>
-        <Text style={styles.text}>Pide tu certificado en el Registro Civil en línea, toma un pantallazo y subelo aquí.</Text>
-        <View style={styles.wrapper}>
-          <View style={styles.container}>
-            <View>
-              <Button
-                title={ !image ? "Sube tu archivo aquí" : "Cambiar Foto"}
-                containerStyle={styles.btnContainer}
-                buttonStyle={ !image ? styles.btn : styles.btnCheck}
-                onPress={upload}
+    <>
+      { loading ? (<Loading text="Subiendo imagen"/>):
+        ( <ScrollView>
+            <View style={styles.viewContainer} >
+              <Text style={styles.title}>Certificado de Antecedentes</Text>
+              <Text style={styles.text}>Pide tu certificado en el Registro Civil en línea, toma un pantallazo y subelo aquí.</Text>
+              <View style={styles.wrapper}>
+                <View style={styles.container}>
+                  <View>
+                    <Button
+                      title={ !image ? "Sube tu archivo aquí" : "Cambiar Foto"}
+                      containerStyle={styles.btnContainer}
+                      buttonStyle={ !image ? styles.btn : styles.btnCheck}
+                      onPress={upload}
+                    />
+                  </View>
+                  <View>
+                    <Icon
+                      type="material-community"
+                      name="information-outline"
+                      iconStyle={styles.iconLeft}
+                      size={25}
+                      onPress={() => setIsVisibleInfoCertificate(true)}
+                    /> 
+                    <InfoCertificate isVisibleInfoCertificate={isVisibleInfoCertificate} setIsVisibleInfoCertificate={setIsVisibleInfoCertificate}/>
+                  </View>
+                </View>
+              </View>
+              <Image
+                source={documentCertificate ? {uri:documentCertificate} : require("../../../assets/no-image.png")}
+                resizeMode="contain"
+                style={styles.logo}
               />
+              <Button
+                title="Siguiente"
+                containerStyle={styles.btnContainerNext}
+                buttonStyle={styles.btnNext}
+                onPress={uploadDocuments}
+              />
+              <View style={styles.viewZolbit}>
+                <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
+              </View>
             </View>
-            <View>
-              <Icon
-                type="material-community"
-                name="information-outline"
-                iconStyle={styles.iconLeft}
-                size={25}
-                onPress={() => setIsVisibleInfoCertificate(true)}
-              /> 
-              <InfoCertificate isVisibleInfoCertificate={isVisibleInfoCertificate} setIsVisibleInfoCertificate={setIsVisibleInfoCertificate}/>
-            </View>
-          </View>
-        </View>
-        <Image
-          source={documentCertificate ? {uri:documentCertificate} : require("../../../assets/no-image.png")}
-          resizeMode="contain"
-          style={styles.logo}
-        />
-        <Button
-          title="Siguiente"
-          containerStyle={styles.btnContainerNext}
-          buttonStyle={styles.btnNext}
-          onPress={uploadDocuments}
-        />
-        <View style={styles.viewZolbit}>
-          <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
-        </View>
-        <Loading isVisible={loading} text="Subiendo imagen"/>
-      </View>
-    </ScrollView>
+          </ScrollView>
+        )
+      }
+    </>
   )
 }
 const styles = StyleSheet.create({

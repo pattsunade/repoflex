@@ -125,6 +125,12 @@ export default function EmailVerificationForm(props) {
         });
         setLoading(false);
       }
+      else if (response.ans.stx == "nk")
+      { Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: 'Error de comunicación.'}
+        });
+      }
       else
       { setLoadingText("Iniciando sesión");
         AsyncStorage.setItem('@usr',rut);

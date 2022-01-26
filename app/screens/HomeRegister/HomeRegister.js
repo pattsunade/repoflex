@@ -40,7 +40,7 @@ export default function Home () {
   Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
   
   async function signOut()
-  { await AsyncStorage.multiRemove(['@ott','@mtx','@stp']);
+  { await AsyncStorage.multiRemove(['@ott','@mtx','@stp','@usr']);
     navigation.reset(
     { index: 0,
       routes: [
@@ -91,14 +91,14 @@ export default function Home () {
         }
         else
         { var mtx = ans.hdr.mtx;
-          if('-' in ans.hdr.mtx)
+          if(mtx.includes('-'))
           { navigation.reset({ 
-              index: 0,
-                routes: 
-                [ { name: 'rejected'
-                  }
-                ],
-              });
+            index: 0,
+              routes: 
+              [ { name: 'rejected'
+                }
+              ],
+            });
           }
           else
             setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
@@ -106,7 +106,8 @@ export default function Home () {
         }
       })
       .catch((e) =>
-      { setLoading(false);
+      { console.log(e);
+        setLoading(false);
         Toast.show(
         { type: 'error',
           props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'

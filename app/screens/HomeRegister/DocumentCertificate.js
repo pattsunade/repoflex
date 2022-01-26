@@ -18,9 +18,6 @@ export default function DocumentsCertificate (props) {
                 navigation={navigation}
             />
             <Toast ref={ toastRef } position="center" opacity={0.9} />
-            <Loading isVisible={isLoading} text="Enviando documentos" />
-
-            
         </View>
     )
 }

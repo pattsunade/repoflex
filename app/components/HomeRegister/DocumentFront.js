@@ -47,9 +47,7 @@ export default function DocumentFront (props) {
       onChange(manipResult.base64,"file");
   };
   const upload = async () =>{
-      const resultPermissions = await MediaLibrary.requestPermissionsAsync();
-      const resultPermissionsCamera = await ImagePicker.requestCameraPermissionsAsync();
-      const roll = await ImagePicker.requestCameraRollPermissionsAsync();
+      const resultPermissions = await ImagePicker.requestCameraPermissionsAsync();
       if (resultPermissions === "denied"){
           toastRef.current.show("Es necesario aceptar los permisos de cámara para subir imagenes")
       }
@@ -57,7 +55,8 @@ export default function DocumentFront (props) {
           const result = await ImagePicker.launchCameraAsync({
               allowsEditing:true,
               aspect: [4, 3],
-              quality: 1
+              quality: 1,
+              presentationStyle: 0
           });
           if (result.cancelled) {
               if (!image){
@@ -85,49 +84,53 @@ export default function DocumentFront (props) {
     }
   };
   return(
-    <ScrollView>
-      <View style={styles.viewContainer}>
-        <Text style={styles.title}>Cédula de Identidad</Text>
-        <Text style={styles.text}>Verificaremos que la fotografía coincida con la parte frontal de la cédula de identidad.</Text>
-        <View style={styles.wrapper}>
-          <View style={styles.container}>
-            <View>
-              <Button
-                title={ !image ? "Toma tu foto aquí" : "Cambiar Foto"}
-                containerStyle={styles.btnContainer}
-                buttonStyle={ !image ? styles.btn : styles.btnCheck}
-                onPress={upload}
+    <>
+      { loading ? (<Loading text="Subiendo imagen..."/>):
+        ( <ScrollView>
+            <View style={styles.viewContainer}>
+              <Text style={styles.title}>Cédula de Identidad</Text>
+              <Text style={styles.text}>Verificaremos que la fotografía coincida con la parte frontal de la cédula de identidad.</Text>
+              <View style={styles.wrapper}>
+                <View style={styles.container}>
+                  <View>
+                    <Button
+                      title={ !image ? "Toma tu foto aquí" : "Cambiar Foto"}
+                      containerStyle={styles.btnContainer}
+                      buttonStyle={ !image ? styles.btn : styles.btnCheck}
+                      onPress={upload}
+                    />
+                  </View>
+                  <View>
+                    <Icon
+                        type="material-community"
+                        name="information-outline"
+                        iconStyle={styles.iconLeft}
+                        size={25}
+                        onPress={() => setIsVisibleInfoDocumentFront(true)}
+                    /> 
+                    <InfoDocumentFront isVisibleInfoDocumentFront={isVisibleInfoDocumentFront} setIsVisibleInfoDocumentFront={setIsVisibleInfoDocumentFront} />
+                  </View>
+                </View>
+              </View>
+              <Image
+                source={image ? {uri:imageDocumentFront} : require("../../../assets/no-image.png")}
+                resizeMode="contain"
+                style={styles.logo}
               />
+              <Button
+                title="Siguiente"
+                containerStyle={styles.btnContainerNext}
+                buttonStyle={styles.btnNext}
+                onPress={uploadDocuments}
+              />
+              <View style={styles.viewZolbit}>
+                <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+              </View>
             </View>
-            <View>
-              <Icon
-                  type="material-community"
-                  name="information-outline"
-                  iconStyle={styles.iconLeft}
-                  size={25}
-                  onPress={() => setIsVisibleInfoDocumentFront(true)}
-              /> 
-              <InfoDocumentFront isVisibleInfoDocumentFront={isVisibleInfoDocumentFront} setIsVisibleInfoDocumentFront={setIsVisibleInfoDocumentFront} />
-            </View>
-          </View>
-        </View>
-        <Image
-          source={image ? {uri:imageDocumentFront} : require("../../../assets/no-image.png")}
-          resizeMode="contain"
-          style={styles.logo}
-        />
-        <Button
-          title="Siguiente"
-          containerStyle={styles.btnContainerNext}
-          buttonStyle={styles.btnNext}
-          onPress={uploadDocuments}
-        />
-        <View style={styles.viewZolbit}>
-          <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
-        </View>
-        <Loading isVisible={loading} text="Subiendo imagen"/>
-      </View>
-    </ScrollView>
+          </ScrollView>
+        )
+      }
+    </>   
   )
 }
 const styles = StyleSheet.create({

@@ -51,7 +51,7 @@ export default function AccountOptions(props) {
         iconColorLeft: "#6B35E2",
         iconNameRight: "lock",
         iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("changepassword")
+        onPress: () => navigation.navigate("changepassword",{usr:usr})
       },
       {
         title: "Preguntas frecuentes",

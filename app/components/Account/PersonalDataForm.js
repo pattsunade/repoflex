@@ -30,6 +30,7 @@ export default function PersonalDataForm (props) {
   const [actyCod, setActyCod] = useState(data.acty);
   const [button, setButton] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
   const bankList = [];
   const regionList = [];
   const acctypeList = [];
@@ -53,10 +54,10 @@ export default function PersonalDataForm (props) {
 
   function getcom(cod)
   { setLoadingText("Obteniendo comunas...");
-    setLoading(true);
+    setLoading2(true);
     BackEndConnect("POST","gecom",gecomFormat(cod)).then((ans)=>
     { setDistrictObj(ans.ans);
-      setLoading(false);
+      setLoading2(false);
     })
     .catch((ans) => 
     { console.log(ans);
@@ -72,7 +73,8 @@ export default function PersonalDataForm (props) {
   }
 
   function onSubmit()
-  { setLoading(true);
+  { setLoadingText('Actualizando datos...');
+    setLoading(true);
     BackEndConnect("POST","usact",formato(formData)).then((response)=>
     { if(response.ans.stx=='ok')
       { Toast.show(
@@ -170,170 +172,177 @@ export default function PersonalDataForm (props) {
 
   // paragraph.map((ans) =>{console.log(ans.bod)})
   return (
-    <ScrollView style={styles.formContainer}>
-      <Text style={styles.textDescription}>{" "}Nombres</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          onChange={(e) => onEnd(e.nativeEvent.text, "name")}
-          maxLength={50}
-          onChangeText={(e)=>setName(e)}
-          value={name}
-        />
-      </View>
-      { nameCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}Su nombre debe ser menor a 50 caracteres.</Text>):
-        (<></>)
-      }
-      <Text style={styles.textDescription}>{" "}Apellidos</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          onChange={(e) => onEnd(e.nativeEvent.text, "snam")}
-          maxLength={50}
-          onChangeText={(e)=>setSnam(e)}
-          value={snam}
-        />
-      </View>
-      { snamCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}Su apellido debe ser menor a 50 caracteres.</Text>):
-        (<></>)
-      }
-      <Text style={styles.textDescription}>{" "}Rut</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder={format(data.rut)}
-          placeholderTextColor="#bca2fd"
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          // onEndEditing={(e) => onEnd(e, "name")}
-          maxLength={50}
-          editable={false}
-        />
-      </View>
-      <Text style={styles.textDescription}>{" "}Número de documento</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder={data.ndoc}
-          placeholderTextColor="#bca2fd"
-          keyboardType="numeric"
-          style={styles.inputForm}
-          onEndEditing={(e) => onEnd(e, "ndoc")}
-          editable={false}
-          maxLength={20}
+  <>
+    { loading ? (<Loading text={loadingText} />):
+      ( <ScrollView style={styles.formContainer}>
+        <Text style={styles.textDescription}>{" "}Nombres</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            style={styles.inputForm}
+            inputContainerStyle={{borderBottomWidth:0}}
+            onChange={(e) => onEnd(e.nativeEvent.text, "name")}
+            maxLength={50}
+            onChangeText={(e)=>setName(e)}
+            value={name}
           />
-      </View>
-      { ndocCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}El número de documento debe ser menor a 20.</Text>):
-        (<></>)
-      }
-      <Text style={styles.textDescription}>{" "}Correo</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder={data.mail}
-          placeholderTextColor="#bca2fd"
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          // onEndEditing={(e) => onEnd(e, "name")}
-          maxLength={50}
-          editable={false}
-        />
-      </View>
-      <Text style={styles.textDescription}>{" "}Número telefónico</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          onChange={(e) => onEnd(e.nativeEvent.text, "phon")}
-          maxLength={50}
-          onChangeText={(e)=>setPhon(e)}
-          value={phon}
-        />
-      </View>
-      <Text style={styles.textDescription}>{" "}Región</Text>
-      <View style={styles.card}>
-        <Picker
-          selectedValue={regiCod}
-          style={styles.inputForm}
-          onValueChange={(itemValue) => setRegiCod(itemValue)}
-        >
-          {regionList}
-        </Picker>
-      </View>
-      <Text style={styles.textDescription}>{" "}Comuna</Text>
-      <View style={styles.card}>
-        <Picker
-          selectedValue={comuCod}
-          style={styles.inputForm}
-          onValueChange={(itemValue) => { onEnd(itemValue,"comu")
-                                          setComuCod(itemValue)}}
-        >
-          {renderDistrictList()}
-        </Picker>
-      </View>
-      <Text style={styles.textDescription}>{" "}Dirección</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          onChange={(e) => onEnd(e.nativeEvent.text, "addr")}
-          maxLength={128}
-          onChangeText={(e)=>setAddr(e)}
-          value={addr}
-        />
-      </View>
-      { addrCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}Su dirección debe ser menor a 128 caracteres.</Text>):
-        (<></>)
-      }
-      <Text style={styles.textDescription}>{" "}Banco</Text>
-      <View style={styles.card}>
-        <Picker
-          selectedValue={bankCod}
-          style={styles.inputForm}  
-          onValueChange={(itemValue) => {onEnd(itemValue,"bank")
-                                         setBankCod(itemValue)}}
-          > 
-          {bankList}
-        </Picker>
-      </View>
-      <Text style={styles.textDescription}>{" "}Tipo de cuenta</Text>
-      <View style={styles.card}>
-        <Picker
-          selectedValue={actyCod}
-          style={styles.inputForm}  
-          onValueChange={(itemValue) => {onEnd(itemValue,"acty")
-                                         setActyCod(itemValue)}}
+        </View>
+        { nameCorrect == 0 ?
+          (<Text style={styles.textDescriptionError}>{" "}Su nombre debe ser menor a 50 caracteres.</Text>):
+          (<></>)
+        }
+        <Text style={styles.textDescription}>{" "}Apellidos</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            style={styles.inputForm}
+            inputContainerStyle={{borderBottomWidth:0}}
+            onChange={(e) => onEnd(e.nativeEvent.text, "snam")}
+            maxLength={50}
+            onChangeText={(e)=>setSnam(e)}
+            value={snam}
+          />
+        </View>
+        { snamCorrect == 0 ?
+          (<Text style={styles.textDescriptionError}>{" "}Su apellido debe ser menor a 50 caracteres.</Text>):
+          (<></>)
+        }
+        <Text style={styles.textDescription}>{" "}Rut</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            placeholder={format(data.rut)}
+            placeholderTextColor="#bca2fd"
+            style={styles.inputForm}
+            inputContainerStyle={{borderBottomWidth:0}}
+            // onEndEditing={(e) => onEnd(e, "name")}
+            maxLength={50}
+            editable={false}
+          />
+        </View>
+        <Text style={styles.textDescription}>{" "}Número de documento</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            placeholder={data.ndoc}
+            placeholderTextColor="#bca2fd"
+            keyboardType="numeric"
+            style={styles.inputForm}
+            onEndEditing={(e) => onEnd(e, "ndoc")}
+            editable={false}
+            maxLength={20}
+            />
+        </View>
+        { ndocCorrect == 0 ?
+          (<Text style={styles.textDescriptionError}>{" "}El número de documento debe ser menor a 20.</Text>):
+          (<></>)
+        }
+        <Text style={styles.textDescription}>{" "}Correo</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            placeholder={data.mail}
+            placeholderTextColor="#bca2fd"
+            style={styles.inputForm}
+            inputContainerStyle={{borderBottomWidth:0}}
+            // onEndEditing={(e) => onEnd(e, "name")}
+            maxLength={50}
+            editable={false}
+          />
+        </View>
+        <Text style={styles.textDescription}>{" "}Número telefónico</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            style={styles.inputForm}
+            inputContainerStyle={{borderBottomWidth:0}}
+            onChange={(e) => onEnd(e.nativeEvent.text, "phon")}
+            maxLength={50}
+            onChangeText={(e)=>setPhon(e)}
+            value={phon}
+          />
+        </View>
+        <Text style={styles.textDescription}>{" "}Región</Text>
+        <View style={styles.card}>
+          <Picker
+            selectedValue={regiCod}
+            style={styles.inputForm}
+            onValueChange={(itemValue) => setRegiCod(itemValue)}
           >
-          {acctypeList}
-        </Picker>
-      </View>
-      <Text style={styles.textDescription}>{" "}Número de cuenta</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          onChange={(e) => onEnd(e.nativeEvent.text, "acnu")}
-          keyboardType="numeric"
-          onChangeText={(e)=>setAcnu(e)}
-          value={acnu}
+            {regionList}
+          </Picker>
+        </View>
+        <Text style={styles.textDescription}>{" "}Comuna</Text>
+        { loading2 ? (<Loading text={loadingText} />):
+          ( <View style={styles.card}>
+              <Picker
+                selectedValue={comuCod}
+                style={styles.inputForm}
+                onValueChange={(itemValue) => { onEnd(itemValue,"comu")
+                                                setComuCod(itemValue)}}
+              >
+                {renderDistrictList()}
+              </Picker>
+            </View>
+          )
+        }
+        <Text style={styles.textDescription}>{" "}Dirección</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            style={styles.inputForm}
+            inputContainerStyle={{borderBottomWidth:0}}
+            onChange={(e) => onEnd(e.nativeEvent.text, "addr")}
+            maxLength={128}
+            onChangeText={(e)=>setAddr(e)}
+            value={addr}
+          />
+        </View>
+        { addrCorrect == 0 ?
+          (<Text style={styles.textDescriptionError}>{" "}Su dirección debe ser menor a 128 caracteres.</Text>):
+          (<></>)
+        }
+        <Text style={styles.textDescription}>{" "}Banco</Text>
+        <View style={styles.card}>
+          <Picker
+            selectedValue={bankCod}
+            style={styles.inputForm}  
+            onValueChange={(itemValue) => {onEnd(itemValue,"bank")
+                                           setBankCod(itemValue)}}
+            > 
+            {bankList}
+          </Picker>
+        </View>
+        <Text style={styles.textDescription}>{" "}Tipo de cuenta</Text>
+        <View style={styles.card}>
+          <Picker
+            selectedValue={actyCod}
+            style={styles.inputForm}  
+            onValueChange={(itemValue) => {onEnd(itemValue,"acty")
+                                           setActyCod(itemValue)}}
+            >
+            {acctypeList}
+          </Picker>
+        </View>
+        <Text style={styles.textDescription}>{" "}Número de cuenta</Text>
+        <View style={styles.searchSection}>
+          <TextInput
+            style={styles.inputForm}
+            inputContainerStyle={{borderBottomWidth:0}}
+            onChange={(e) => onEnd(e.nativeEvent.text, "acnu")}
+            keyboardType="numeric"
+            onChangeText={(e)=>setAcnu(e)}
+            value={acnu}
+          />
+        </View>
+        { acnuCorrect == 0 ?
+          (<Text style={styles.textDescriptionError}>{" "}Su número de cuenta debe ser menor a 9 caracteres.</Text>):
+          (<></>)
+        }
+        <Button
+          title="Enviar"
+          containerStyle={styles.btnContainerRegister}
+          buttonStyle={styles.btnRegister}
+          onPress={onSubmit}
+          disabled={button}
         />
-      </View>
-      { acnuCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}Su número de cuenta debe ser menor a 9 caracteres.</Text>):
-        (<></>)
-      }
-      <Button
-        title="Enviar"
-        containerStyle={styles.btnContainerRegister}
-        buttonStyle={styles.btnRegister}
-        onPress={onSubmit}
-        disabled={button}
-      />
-      <Loading isVisible={loading} text={loadingText} />
-    </ScrollView>
+      </ScrollView>
+      )
+    }
+  </>
   )
 }
 

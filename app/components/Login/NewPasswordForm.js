@@ -119,88 +119,92 @@ export default function NewPasswordForm (props) {
   };
   
   return (
-    <ScrollView style={styles.formContainer}>
-      <Text style={styles.textDescription}> Código de Verificación:</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder=" - - - - - -"
-          placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
-          keyboardType="numeric"
-          onEndEditing={(e) => onEnd(e, "vcd")}
-          returnKeyType="next"
-          onSubmitEditing={() => { ref_input2.current.focus()}}
-          blurOnSubmit={false}
-          maxLength={12}
-        />
-        <Icon
-          type="material-community"
-          name="lock-question"
-          iconStyle={styles.iconRight}
-        />
-      </View>
-      <Text style={styles.textDescription}>{" "}Contraseña</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder="********"
-          placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          errorStyle={styles.errorStyle}
-          returnKeyType="next"
-          onSubmitEditing={() => { ref_input3.current.focus()}}
-          blurOnSubmit={false}
-          password={true}
-          secureTextEntry={showPassword ? false : true}
-          onEndEditing={(e) => onEnd(e, "psw")}
-          maxLength={15}
-          ref={ref_input2}
-        />
-        <Icon
-          type="material-community"
-          name={showPassword ? "eye-outline" : "eye-off-outline"}
-          iconStyle={styles.iconRight}
-          onPress={() => setShowPassword(!showPassword)}
-        />
-      </View>
-      { passCorrect == 1 ?
-        (<Text style={styles.textDescriptionError}>{" "}Su contraseña debe ser mayor a 5 y menor a 16 caracteres.</Text>):
-        (<></>)
-      }
-      <Text style={styles.textDescription}>{" "}Repetir Contraseña</Text>
-      <View style={styles.searchSection}>
-        <TextInput
-          placeholder="********"
-          placeholderTextColor="#AC9DC9"
-          style={styles.inputForm}
-          inputContainerStyle={{borderBottomWidth:0}}
-          errorStyle={styles.errorStyle}
-          password={true}
-          secureTextEntry={showRepeatPassword ? false : true}
-          onEndEditing={(e) => chkPass(e,"repeatPassword")}
-          maxLength={32}
-          ref={ref_input3}
-        />
-        <Icon
-          type="material-community"
-          name={showRepeatPassword ? "eye-outline" : "eye-off-outline"}
-          iconStyle={styles.iconRight}
-          onPress={() => setShowRepeatPassword(!showRepeatPassword)}
-        />
-      </View>
-      { repeatPassCorrect == 0 ?
-        (<Text style={styles.textDescriptionError}>{" "}Las contraseñas no coinciden</Text>):
-        (<></>)
-      }
-      <Button
-        title="Modificar contraseña"
-        containerStyle={styles.btnContainerLogin}
-        buttonStyle={styles.btnLogin}
-        onPress={onSubmit}
-        disabled={repeatPassCorrect != 1 || formData.vcd == 0 ? (true):(false)}
-      />
-      <Loading isVisible={loading} text="Cargando"/>
-    </ScrollView>
+  <>
+    { loading ? (<Loading text="Cargando..."/>):
+      (<ScrollView style={styles.formContainer}>
+          <Text style={styles.textDescription}> Código de Verificación:</Text>
+          <View style={styles.searchSection}>
+            <TextInput
+              placeholder=" - - - - - -"
+              placeholderTextColor="#AC9DC9"
+              style={styles.inputForm}
+              keyboardType="numeric"
+              onEndEditing={(e) => onEnd(e, "vcd")}
+              returnKeyType="next"
+              onSubmitEditing={() => { ref_input2.current.focus()}}
+              blurOnSubmit={false}
+              maxLength={12}
+            />
+            <Icon
+              type="material-community"
+              name="lock-question"
+              iconStyle={styles.iconRight}
+            />
+          </View>
+          <Text style={styles.textDescription}>{" "}Contraseña</Text>
+          <View style={styles.searchSection}>
+            <TextInput
+              placeholder="********"
+              placeholderTextColor="#AC9DC9"
+              style={styles.inputForm}
+              inputContainerStyle={{borderBottomWidth:0}}
+              errorStyle={styles.errorStyle}
+              returnKeyType="next"
+              onSubmitEditing={() => { ref_input3.current.focus()}}
+              blurOnSubmit={false}
+              password={true}
+              secureTextEntry={showPassword ? false : true}
+              onEndEditing={(e) => onEnd(e, "psw")}
+              maxLength={15}
+              ref={ref_input2}
+            />
+            <Icon
+              type="material-community"
+              name={showPassword ? "eye-outline" : "eye-off-outline"}
+              iconStyle={styles.iconRight}
+              onPress={() => setShowPassword(!showPassword)}
+            />
+          </View>
+          { passCorrect == 1 ?
+            (<Text style={styles.textDescriptionError}>{" "}Su contraseña debe ser mayor a 5 y menor a 16 caracteres.</Text>):
+            (<></>)
+          }
+          <Text style={styles.textDescription}>{" "}Repetir Contraseña</Text>
+          <View style={styles.searchSection}>
+            <TextInput
+              placeholder="********"
+              placeholderTextColor="#AC9DC9"
+              style={styles.inputForm}
+              inputContainerStyle={{borderBottomWidth:0}}
+              errorStyle={styles.errorStyle}
+              password={true}
+              secureTextEntry={showRepeatPassword ? false : true}
+              onEndEditing={(e) => chkPass(e,"repeatPassword")}
+              maxLength={32}
+              ref={ref_input3}
+            />
+            <Icon
+              type="material-community"
+              name={showRepeatPassword ? "eye-outline" : "eye-off-outline"}
+              iconStyle={styles.iconRight}
+              onPress={() => setShowRepeatPassword(!showRepeatPassword)}
+            />
+          </View>
+          { repeatPassCorrect == 0 ?
+            (<Text style={styles.textDescriptionError}>{" "}Las contraseñas no coinciden</Text>):
+            (<></>)
+          }
+          <Button
+            title="Modificar contraseña"
+            containerStyle={styles.btnContainerLogin}
+            buttonStyle={styles.btnLogin}
+            onPress={onSubmit}
+            disabled={repeatPassCorrect != 1 || formData.vcd == 0 ? (true):(false)}
+          />
+        </ScrollView>
+      )
+    }
+  </>
   )
 }
 

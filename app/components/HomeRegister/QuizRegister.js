@@ -61,38 +61,41 @@ export default function Training3 (props) {
   };
   
   return(
-  <View>
-    { showScore ?
-      ( <View> 
-          <Text style={styles.texttitle }>FORMULARIO TERMINADO</Text>
-        </View>
-      ):
-      ( <>
-          <View>
-            <View>
-              <Text style={styles.title}>{questions[currentQuestion].enu} ? </Text>
+  <>
+    { loading ? (<Loading text="Enviando respuestas..."/>):
+      ( <View>
+        { showScore ?
+          ( <View> 
+              <Text style={styles.texttitle }>FORMULARIO TERMINADO</Text>
             </View>
-            <Text style={styles.text}>Pregunta {currentQuestion + 1} / {questions.length} </Text>
-            {questions[currentQuestion].alt.map(
-              (answerOption) => 
-                ( <Button 
-                    key={answerOption.aid}
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={styles.btn}
-                    title={answerOption.txt}
-                    onPress={() => handleAnswerOptionClick(answerOption.aid,questions[currentQuestion].qid)}
-                  />
-                )
-              )
-            }
-          </View>
-        </>
+          ):
+          ( <>
+              <View>
+                <View>
+                  <Text style={styles.title}>{questions[currentQuestion].enu} ? </Text>
+                </View>
+                <Text style={styles.text}>Pregunta {currentQuestion + 1} / {questions.length} </Text>
+                {questions[currentQuestion].alt.map(
+                  (answerOption) => 
+                    ( <Button 
+                        key={answerOption.aid}
+                        containerStyle={styles.btnContainer}
+                        buttonStyle={styles.btn}
+                        title={answerOption.txt}
+                        onPress={() => handleAnswerOptionClick(answerOption.aid,questions[currentQuestion].qid)}
+                      />
+                    )
+                  )
+                }
+              </View>
+            </>
+          )
+        }
+      </View>
       )
     }
-    <Loading isVisible={loading} text="Enviando respuestas"/>
-  </View>
-  );
-      
+  </>
+  )
 }
 
 const styles = StyleSheet.create({

@@ -59,7 +59,7 @@ export default function LogInStack({route})
       <Stack.Screen
         name="newPassword"
         component={NewPassword}
-        options={{title: "Modificar contrasña"}}
+        options={{title: "Modificar contraseña"}}
         //options={{headerShown: false}}
       />
     </Stack.Navigator>

@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 
 export default function BackEndConnect(method=null, req=null, body=null){
-  const ip = "http://prod.repoflex.cl";
+  const ip = "http://104.237.140.131";
   const port = "30000";
   const dir = "/app";
   

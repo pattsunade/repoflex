@@ -11,30 +11,30 @@ import Toast from 'react-native-toast-message';
 import Loading from "../../components/Loading";
 import * as Notifications from 'expo-notifications';
 
-export default function Home () {
+export default function HomeRegister({route}) {
+  const {mtx,stp} = route.params;
   const navigation = useNavigation();
   const appState = useRef(AppState.currentState);
   const [loading, setLoading] = useState(true);
-  const [matrix, setMatrix] = useState(0);
+  const [percentage, setPercentage] = useState(mtx);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   let documents;
-  useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener(notification => {
-      let mtx = notification.request.content.data.mtx;
-      if (mtx != null)
-      { AsyncStorage.setItem('@mtx',mtx);
-        getMatrix();
-      }
+
+  useEffect(async () => {
+    const subscription = Notifications.addNotificationReceivedListener(async notification => {
+      let notificationMtx = notification.request.content.data.mtx;
+      await AsyncStorage.setItem('@mtx',notificationMtx);
+      getMatrix((mtxObj.mtx.match(/1/g) || []).length);
     });
     return () => subscription.remove();
   }, []);
   const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 
-  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, executionInfo }) => {
     console.log('Received a notification in the background!');
     mtxObj = JSON.parse(data.notification.data.body);
-    AsyncStorage.setItem('@mtx',mtxObj.mtx);
-    getMatrix();
+    await AsyncStorage.setItem('@mtx',mtxObj.mtx);
+    getMatrix((mtxObj.mtx.match(/1/g) || []).length);
   });
 
   Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
@@ -52,93 +52,44 @@ export default function Home () {
 
   useEffect(() => {
     const willFocusSubscription = navigation.addListener('focus', () => {
+      setLoading(true);
       getMatrix();
-      console.log("llamaron al focus");
     });
-    console.log("Me llamaron!");
     return willFocusSubscription;
   },[navigation]);
 
-  // useEffect(() =>
-  // { const subscription = AppState.addEventListener("change", nextAppState => {
-  //     if ( appState.current.match(/inactive|background/) &&
-  //       nextAppState === "active") 
-  //     { BackEndConnect("POST","matrx").then((ans)=>{
-  //       getMatrix();
-  //     })
-  //       console.log("App has come to the foreground!");
-  //     }
-  //     appState.current = nextAppState;
-  //     setAppStateVisible(appState.current);
-  //     console.log("AppState", appState.current);
-  //   });
-  //   // return () => subscription.remove();
-  // }, []);
-
-  async function getMatrix() {
-    let stp = await AsyncStorage.getItem('@stp');
-    if(loading)
-    { BackEndConnect("POST","matrx").then((ans)=>{
-        console.log(ans.ans.stx);
-        if(ans.ans.stx!="ok")
-        { setLoading(false);
-          Toast.show(
-          { type: 'error',
-            props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde.'
-              }
-          });
-          signOut();
-        }
-        else
-        { var mtx = ans.hdr.mtx;
-          if(mtx.includes('-'))
-          { navigation.reset({ 
-            index: 0,
-              routes: 
-              [ { name: 'rejected'
-                }
-              ],
-            });
-          }
-          else
-            setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
-          setLoading(false);
-        }
-      })
-      .catch((e) =>
-      { console.log(e);
-        setLoading(false);
-        Toast.show(
-        { type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
-            }
-          });
-      })
+  async function getMatrix(matrix=mtx, steps=stp) {
+    console.log("Llamaron a getmatrix");
+    if(matrix==null)
+    { let data = await AsyncStorage.multiGet(['@stp','@mtx']);
+      steps = data[0][1];
+      matrix = data[1][1];
+      setPercentage(Math.round((((matrix.match(/1/g) || []).length)*100)/parseInt(steps)));
     }
     else
-    { let mtx = await AsyncStorage.getItem('@mtx');
-      setMatrix(Math.round((((mtx.match(/1/g) || []).length)*100)/parseInt(stp)));
-    }
-    console.log("Llamaron a getmatrix");
+      setPercentage(matrix*100/parseInt(steps));
+    setLoading(false);
   }
+
+
   if (loading)
   { return <Loading isVisible={true} text="Obteniendo datos..." />
   }
-  else if (matrix < 70){
+  else if (percentage < 70){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
           <Text style={styles.title} >Avance de mi registro</Text>
-          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
-          <Text>{matrix} %</Text>
+          <Progress.Bar progress={percentage/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{percentage} %</Text>
         </View>
         <View style={styles.viewContainer2}>
           <Text style={styles.subtitle}>Siguiente Paso</Text>
           <TouchableOpacity style={styles.customBtn} onPress={() =>
-            matrix == 20 ? navigation.navigate("documentdata"):
-            matrix == 30 ? navigation.navigate("documentselfie"): 
-            matrix == 40 ? navigation.navigate("documentfront"):
-            matrix == 50 ? navigation.navigate("documentreverse"):
+            percentage == 20 ? navigation.navigate("documentdata"):
+            percentage == 30 ? navigation.navigate("documentselfie"): 
+            percentage == 40 ? navigation.navigate("documentfront"):
+            percentage == 50 ? navigation.navigate("documentreverse"):
             navigation.navigate("documentcertificate")   
           }>
           <View style={styles.wrapper}>
@@ -295,13 +246,13 @@ export default function Home () {
       </ScrollView>
     )
   }
-  else if (matrix == 70){
+  else if (percentage == 70){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
           <Text style={styles.title} >Avance de mi registro</Text>
-          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
-          <Text>{matrix} %</Text>
+          <Progress.Bar progress={percentage/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{percentage} %</Text>
         </View>
         <View style={styles.viewContainer2}>
           <Text style={styles.subtitle}>Siguiente Paso</Text>
@@ -453,13 +404,13 @@ export default function Home () {
     </ScrollView>
   )
   }
-  else if (matrix == 80){
+  else if (percentage == 80){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
           <Text style={styles.title} >Avance de mi registro</Text>
-          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
-          <Text>{matrix} %</Text>
+          <Progress.Bar progress={percentage/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{percentage} %</Text>
         </View>
         <View style={styles.viewContainer2}>
           <Text style={styles.subtitle}>Siguiente Paso</Text>
@@ -611,13 +562,13 @@ export default function Home () {
       </ScrollView>
     )
   }
-  else if (matrix == 90){
+  else if (percentage == 90){
     return(
       <ScrollView>
         <View style={styles.viewContainer}>
           <Text style={styles.title} >Avance de mi registro</Text>
-          <Progress.Bar progress={matrix/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
-          <Text>{matrix} %</Text>
+          <Progress.Bar progress={percentage/100} width={300} borderRadius={20} backgroundColor="#fff" height={25} color={"#6B35E2"} />
+          <Text>{percentage} %</Text>
         </View>
         <View style={styles.viewContainer2}>
           <Text style={styles.subtitle}>Siguiente Paso</Text>

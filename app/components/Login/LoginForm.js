@@ -57,9 +57,9 @@ export default function LoginForm()
           setLoading(false);
         }
         else
-        { let matrix = response.hdr.mtx;
+        { let matrix = (response.hdr.mtx.match(/1/g) || []).length;
           let stp = response.ans.stp;
-          if ((matrix.match(/1/g) || []).length>=parseInt(stp))
+          if (matrix>=parseInt(stp))
           { AsyncStorage.setItem('@usr',formData.rut)
             navigation.reset(
             { index: 0,
@@ -69,11 +69,12 @@ export default function LoginForm()
               ],
             });
           }
-          else 
+          else
           { navigation.reset(
             { index: 0,
               routes: [
                 { name: 'homeregister',
+                  params: { mtx:matrix,stp:stp }
                 }
               ],
             });

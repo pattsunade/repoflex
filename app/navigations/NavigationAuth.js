@@ -22,7 +22,7 @@ function SplashScreen() {
 export default function Navigation() {
   const RootStack = createStackNavigator();
   const [ott, setOtt] = useState();
-  const [matrix, setMatrix] = useState();
+  const [mtx, setMtx] = useState();
   const [stp, setStp] = useState();
   const [quest, setQuest] = useState();
   const [tid, setTid] = useState();
@@ -34,14 +34,11 @@ export default function Navigation() {
   useEffect(() => {
     async function getOtt()
     { let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp','@intro']).then(async (ans) =>
-      { let mtx;
-        // console.log(ans);
+      { // console.log(ans);
         setOtt(ans[0][1]);
         setStp(ans[2][1]);
         if (ans[1][1] != null)
-        { mtx = (ans[1][1].match(/1/g) || []).length;
-          setMatrix(mtx);
-        }
+          setMtx((ans[1][1].match(/1/g) || []).length);
         setQuest(JSON.parse(ans[3][1]));
         setTid(parseInt(ans[4][1]));
         setTaskData(JSON.parse(ans[5][1]));
@@ -77,12 +74,13 @@ export default function Navigation() {
               <RootStack.Screen 
                 name="home"
                 component={HomeStack}
-                options={{ title: "Home", headerShown: false }}
+                options={{ headerShown: false }}
               />
               <RootStack.Screen 
                 name="homeregister"
                 component={HomeRegisterStack}
-                options={{ title: "Home", headerShown: false }}
+                options={{ headerShown: false }}
+                initialParams={{ mtx:mtx,stp:stp }}
               />
               <RootStack.Screen 
                 name="task"
@@ -96,12 +94,13 @@ export default function Navigation() {
                 options={{headerShown: false}}
               />
             </>
-          ): stp>matrix ?
+          ): stp>mtx ?
           ( <>
               <RootStack.Screen 
                 name="homeregister"
                 component={HomeRegisterStack}
                 options={{ title: "Home", headerShown: false }}
+                initialParams={{ mtx:mtx,stp:stp }}
               />
               <RootStack.Screen 
                 name="home"
@@ -155,6 +154,7 @@ export default function Navigation() {
                 name="homeregister"
                 component={HomeRegisterStack}
                 options={{ title: "Home", headerShown: false }}
+                initialParams={{ mtx:mtx,stp:stp }}
               />
             </>
           ):
@@ -185,6 +185,7 @@ export default function Navigation() {
                 name="homeregister"
                 component={HomeRegisterStack}
                 options={{ title: "Home", headerShown: false }}
+                initialParams={{ mtx:mtx,stp:stp }}
               />
             </>
           )

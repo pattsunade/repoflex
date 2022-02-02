@@ -44,7 +44,9 @@ export default function DocumentData (props)
 
 
   return (
-    <KeyboardAwareScrollView>
+    <KeyboardAwareScrollView enableOnAndroid={true}
+      enableAutomaticScroll={(Platform.OS === 'ios')}
+    >
       <View style={styles.viewForm}>
         { loading ? (<Loading isVisible={loading} text="Cargando..." />)
         :(<DocumentDataForm

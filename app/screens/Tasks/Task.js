@@ -84,9 +84,9 @@ export default function Task ({route}) {
         </ScrollView>
       )
     }
-  }
-  
+  } 
 }
+
 const styles = StyleSheet.create({
   viewContainer:{
     marginRight: 40,

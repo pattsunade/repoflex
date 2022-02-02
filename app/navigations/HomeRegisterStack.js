@@ -19,13 +19,15 @@ import Rejected from "../screens/HomeRegister/Rejected";
  
 const Stack = createStackNavigator();
 
-export default function HomeRegisterStack(){
+export default function HomeRegisterStack({route}){
+  const {mtx,stp} = route.params;
   return(
     <Stack.Navigator initialRouteName = "homeregister"> 
       <Stack.Screen
         name="homeregister"
         component={HomeRegister}
         options={{title: "Mi Registro"}}
+        initialParams={{mtx:mtx,stp:stp}}
         //options={{headerShown: false}}
       />
       <Stack.Screen

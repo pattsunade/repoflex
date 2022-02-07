@@ -180,7 +180,7 @@ export default function TaskQuestion (props) {
                     />
                     <View style={styles.activityText}>
                       <Text style={styles.customBtnText}>{questions[completed].tiq}</Text>
-                      <Text style={styles.customBtnText}>Actividad a desarrollar (haz click).</Text>
+                      <Text style={styles.customBtnText}>Actividad a desarrollar</Text>
                     </View>
                   </View>
                 </TouchableOpacity>

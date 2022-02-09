@@ -122,8 +122,7 @@ export default function TaskQuestion (props) {
   }
 
   useEffect(() => 
-  { console.log(taskData);
-    if (taskData!=null || taskData!= undefined)
+  { if (taskData!=null || taskData!= undefined)
     { console.log('entre en no null');
       if (formData.length==0)
       { 
@@ -141,6 +140,7 @@ export default function TaskQuestion (props) {
       }
       // AsyncStorage.setItem('@taskData',JSON.stringify(formData));  
     }
+    console.log(formData);
   },[taskData]);
 
   return(
@@ -220,14 +220,7 @@ export default function TaskQuestion (props) {
             { compArr.map((arr,index) =>
                 { return(
                     <TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
-                      { Toast.show(
-                          { type: 'error',
-                            props: 
-                            { onPress: () => {}, text1: 'success', text2: '¡Ya completaste esta actividad!.'
-                            }
-                          }
-                        );
-                      }
+                      navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,data:formData[index].aid})
                     }>
                       <View style={styles.container}>
                         <Icon

@@ -1,5 +1,5 @@
 import React,{useState,useRef,useEffect} from "react";
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { Input,Button, Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
@@ -31,11 +31,18 @@ export default function PersonalDataForm (props) {
   const [button, setButton] = useState(true);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const bankList = [];
-  const regionList = [];
-  const acctypeList = [];
+  const [bankList, setBankList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
+  const [acctypeList, setAcctypeList] = useState([]);
   
-  setLists();
+  useEffect(()=>
+  { console.log("me llamaron");
+    getcom(regiCod);
+  },[regiCod])
+
+  useEffect(()=>
+  { setLists();
+  },[lists])
 
   function formato(obj)
   { return {...obj,uid:data.uid}
@@ -104,7 +111,10 @@ export default function PersonalDataForm (props) {
   }
 
   function setLists()
-  { let b=lists.bancos.length;
+  { let bankList = [];
+    let regionList = [];
+    let acctypeList = [];
+    let b=lists.bancos.length;
     let r=lists.regiones.length;
     let a=lists.actypes.length;
     // let c=comunas.com.length
@@ -128,10 +138,9 @@ export default function PersonalDataForm (props) {
         acctypeList.push(
           <Picker.Item label={lists.actypes[i]["name"]} value={lists.actypes[i]["cod"]} key={lists.actypes[i]["cod"]} />
         )
-      // if(comunas.com[i]!=null)
-      //   districtList.push(
-      //     <Picker.Item label={comunas.com[i]["nam"]} value={comunas.com[i]["cod"]} key={comunas.com[i]["cod"]} />
-      //   )
+    setBankList(bankList);
+    setRegionList(regionList);
+    setAcctypeList(acctypeList);
     }
   }
 
@@ -154,11 +163,6 @@ export default function PersonalDataForm (props) {
       ? rut.replace(/^0+|[^0-9kK]+/g, '')
       : ''
   }
-
-  useEffect(()=>
-  { console.log("me llamaron");
-    getcom(regiCod);
-  },[regiCod])
 
   const renderDistrictList = () =>
   { let districtList = [];
@@ -267,7 +271,11 @@ export default function PersonalDataForm (props) {
           </Picker>
         </View>
         <Text style={styles.textDescription}>{" "}Comuna</Text>
-        { loading2 ? (<Loading text={loadingText} />):
+        { loading2 ? 
+          (<View style={styles.loaderTask}>
+            <ActivityIndicator  size="large" color="#0000ff"/>
+            <Text>Cargando comunas...</Text>
+          </View>):
           ( <View style={styles.card}>
               <Picker
                 selectedValue={comuCod}

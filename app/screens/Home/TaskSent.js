@@ -51,7 +51,7 @@ export default function TaskSent({route}) {
             { type: 'error',
               props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
                 }
-            });   
+            });
           }
         );
       },

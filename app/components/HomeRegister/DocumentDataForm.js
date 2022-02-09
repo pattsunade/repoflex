@@ -42,19 +42,16 @@ export default function DocumentDataForm(props) {
   const ref_input9 = useRef();
 
   useEffect(()=>
-  { console.log('me llamaron');
-    if (regiCod!=null)
+  { if (regiCod!=null)
       getcom(regiCod);
   },[regiCod])
 
   useEffect(()=>
-  { console.log('me llamaron2');
-    setLists();
+  { setLists();
   },[lists])
 
   function setLists()
-  { console.log('llamaron a lists');
-    let bankList = [];
+  { let bankList = [];
     let regionList = [];
     let acctypeList = [];
     let num;

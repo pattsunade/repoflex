@@ -32,13 +32,13 @@ export default function LoginForm()
     else
     { BackEndConnect("POST","auten",formato(formData)).then(async (response) => 
       { if (response.ans.stx === "wk")
-          { Toast.show(
-            { type: 'error',
-              props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
-              }
-            });
-            setLoading(false);
-          }
+        { Toast.show(
+          { type: 'error',
+            props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+            }
+          });
+          setLoading(false);
+        }
         else if (response.ans.stx === "uk")
         { navigation.navigate("emailverification",
           { rut:formData.rut,
@@ -85,10 +85,10 @@ export default function LoginForm()
       .catch((response) => 
       { setLoading(false);
         Toast.show(
-          { type: 'error',
-            props: {onPress: () => {}, text1: 'Error', text2: "Error de comunicación, intenta más tarde"
-            }
-          });
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: "Error de comunicación, intenta más tarde"
+          }
+        });
         console.log(response);
       });
     }

@@ -15,7 +15,8 @@ import moment from "moment";
 const { width, height } = Dimensions.get('window');
 
 export default function QuizTaskRun (props) {
-  const {questions,tid,completed} = props;
+  const {questions,tid,completed,data} = props;
+  console.log(data);
   const navigation = useNavigation();
   const [showScore, setShowScore] = useState(false);
   const [score, setScore] = useState(0);
@@ -30,7 +31,7 @@ export default function QuizTaskRun (props) {
   const [mode, setMode] = useState("date");
   const [displayDate, setDisplayDate] = useState(null);
   const [displayTime, setDisplayTime] = useState(null);
-  const [disabledContinue, setDisabledContinue] = useState(true);
+  const [disabledContinue, setDisabledContinue] = useState(data ? false:true);
   const [qid, setQid] = useState(0);
   const [formData, setFormData] = useState([]);
   const [formDataPic, setFormDataPic] = useState(defaultFormValuePic());
@@ -240,6 +241,7 @@ export default function QuizTaskRun (props) {
                 style={styles.inputForm}
                 onChange={(e) => onChange(e)}
                 maxLength={128}
+                value={data && data}
               />
             </View>
             <View style={styles.searchSection}>

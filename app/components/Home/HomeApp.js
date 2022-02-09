@@ -5,7 +5,7 @@ import Loading from "../Loading";
 import { size, isEmpty,map } from "lodash";
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from "../../utils/BackEndConnect";
 import moment from "moment";
@@ -44,66 +44,73 @@ export default function HomeApp(props) {
     };
   }
 
+  useEffect(() => {
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      
+    });
+    return willFocusSubscription;
+  },[navigation]);
+
   useEffect(async () => 
-    { try 
-      { setLoading(true);
-        setDisplayDate(moment(dateObj).format('DD/MM/YY HH:mm'));
-        let location = await Location.getCurrentPositionAsync({});
-        let latitude = location.coords.latitude.toString();
-        let longitude = location.coords.longitude.toString();
-        setLati(latitude);
-        setLong(longitude);
-        BackEndConnect("POST","house",formato(latitude,longitude)).then((response) => 
-        { const notificaciones = [];
-          for (var i = 0; i < response.ans.noti.length; i++)
-          { var counter = response.ans.noti[i];
-            notificaciones.push(counter);
-          }
-          setAmou(response.ans.amou);
-          setName(response.ans.name);
-          setRank(response.ans.rank);
-          setAvai(response.ans.avai);
-          setAsgn(response.ans.asgn);
-          setProc(response.ans.proc);
-          setEnvi(response.ans.envi);
-          setChck(response.ans.chck);
-          setFini(response.ans.fini);
-          setLoca(response.ans.loca);
-          setLevl(response.ans.levl);
-          setNoti(notificaciones);
-          setWork(response.ans.work);
-          setLoading(false);
-        })
-        .catch((ans) => 
-          { console.log(ans);
-            Toast.show(
-              { type: 'error',
-                props: 
-                { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor inicia sesión nuevamente"
-                }
-              }
-            );
-            navigation.reset(
-            { index: 0,
-              routes: [
-                { name: 'login',
-                }
-              ],
-            });
-          }
-        );
-      }
-      catch(e)
-      { console.error(e);
-        Toast.show(
-        { type: 'error',
-          props: 
-          { onPress: () => {}, text1: 'Error', text2: "Error desconocido."
-          }
-        });
+  { try
+    { setLoading(true);
+      setDisplayDate(moment(dateObj).format('DD/MM/YY HH:mm'));
+      let location = await Location.getCurrentPositionAsync({});
+      let latitude = location.coords.latitude.toString();
+      let longitude = location.coords.longitude.toString();
+      setLati(latitude);
+      setLong(longitude);
+      BackEndConnect("POST","house",formato(latitude,longitude)).then((response) => 
+      { const notificaciones = [];
+        for (var i = 0; i < response.ans.noti.length; i++)
+        { var counter = response.ans.noti[i];
+          notificaciones.push(counter);
+        }
+        setAmou(response.ans.amou);
+        setName(response.ans.name);
+        setRank(response.ans.rank);
+        setAvai(response.ans.avai);
+        setAsgn(response.ans.asgn);
+        setProc(response.ans.proc);
+        setEnvi(response.ans.envi);
+        setChck(response.ans.chck);
+        setFini(response.ans.fini);
+        setLoca(response.ans.loca);
+        setLevl(response.ans.levl);
+        setNoti(notificaciones);
+        setWork(response.ans.work);
         setLoading(false);
-      }
+      })
+      .catch((ans) => 
+        { console.log(ans);
+          Toast.show(
+            { type: 'error',
+              props: 
+              { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor inicia sesión nuevamente"
+              }
+            }
+          );
+          navigation.reset(
+          { index: 0,
+            routes: [
+              { name: 'login',
+              }
+            ],
+          });
+        }
+      );
     }
+    catch(e)
+    { console.error(e);
+      Toast.show(
+      { type: 'error',
+        props: 
+        { onPress: () => {}, text1: 'Error', text2: "Error desconocido."
+        }
+      });
+      setLoading(false);
+    }
+  }
   ,[dateObj]);
   
   return (

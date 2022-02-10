@@ -15,23 +15,28 @@ import moment from "moment";
 const { width, height } = Dimensions.get('window');
 
 export default function QuizTaskRun (props) {
-  const {questions,tid,completed,data} = props;
-  console.log(data);
+  const {questions,tid,completed,update} = props;
+  console.log("update->",update);
   const navigation = useNavigation();
-  const [showScore, setShowScore] = useState(false);
-  const [score, setScore] = useState(0);
-  const [input, setInput] = useState();
+  // const [showScore, setShowScore] = useState(false);
+  // const [score, setScore] = useState(0);
+  const [input, setInput] = useState(update);
   const [checked, setChecked] = useState([]);
   const [stars, setStars] = useState();
-  const [image, setImage] = useState("");
-  const [date, setDate] = useState(new Date());
+  const [image, setImage] = useState();
+  const [date, setDate] = useState(update ? new Date(Date.parse('20'+update.substr(0,2)+'/'+
+      update.substr(2,2)+'/'+update.substr(4,2)+
+      ' '+update.substr(6,2)+':'+update.substr(8,2))):
+    new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [show, setShow] = useState(false);
-  const [mode, setMode] = useState("date");
-  const [displayDate, setDisplayDate] = useState(null);
-  const [displayTime, setDisplayTime] = useState(null);
-  const [disabledContinue, setDisabledContinue] = useState(data ? false:true);
+  const [mode, setMode] = useState('date');
+  const [displayDate, setDisplayDate] = useState(update ? update.substr(4,2)+'/'+
+      update.substr(2,2)+'/'+update.substr(0,2):null);
+  const [displayTime, setDisplayTime] = useState(update ? update.substr(6,2)+':'+
+      update.substr(8,2):null);
+  const [disabledContinue, setDisabledContinue] = useState(update ? false:true);
   const [qid, setQid] = useState(0);
   const [formData, setFormData] = useState([]);
   const [formDataPic, setFormDataPic] = useState(defaultFormValuePic());
@@ -64,9 +69,9 @@ export default function QuizTaskRun (props) {
   { setLoading(true);
     if(formDataPic.file.length>0)
     { setQid(qidd)
-      if (qid) {
-        setScore(score + 1);
-      }
+      // if (qid) {
+      //   setScore(score + 1);
+      // }
       sendimage(qidd).then(() =>
       { AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>{
         navigation.navigate(
@@ -74,7 +79,8 @@ export default function QuizTaskRun (props) {
           params:
           { completed:completed+1,
             tid:tid,
-            taskData:{qid:qidd,aid:"pic"}
+            taskData:{qid:qidd,aid:"pic"},
+            update:false
           },
           merge: true
         })
@@ -148,45 +154,59 @@ export default function QuizTaskRun (props) {
   { setLoading(true);
     if (res!=null&&(res.length>0||res>0))
     { formData.push({qid:qid,aid:res});
-      if (res) 
-      { setScore(score + 1);
+      // if (res) 
+      //   setScore(score + 1);
+      if (update)
+      { navigation.navigate(
+        { name:'task',
+          params: 
+          { tid:tid,
+            taskData:{qid:qid,aid:res},
+            update:true
+          },
+          merge: true
+        });
       }
-      AsyncStorage.setItem('@comp',(completed+1).toString());
-      navigation.navigate({
-        name:'task',
-        params: 
-        { completed:completed+1,
-          tid:tid,
-          taskData:{qid:qid,aid:res},
-        },
-        merge: true
-      });
+      else
+      { AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
+        { navigation.navigate(
+          { name:'task',
+            params: 
+            { completed:completed+1,
+              tid:tid,
+              taskData:{qid:qid,aid:res},
+              update:false
+            },
+            merge: true
+          });
+        });
+      }
       setLoading(false);
     }
     else
     { Toast.show(
-        { type: 'error',
-          props: 
-          { onPress: () => {}, text1: 'Error', text2: "El campo no puede estar vacío."
-          }
+      { type: 'error',
+        props: 
+        { onPress: () => {}, text1: 'Error', text2: "El campo no puede estar vacío."
         }
-      );
+      });
     }
   }
 
   const handleConfirm = (event, selectedDate) =>
-  { const currentDate = selectedDate || date;
-    if(Platform.OS === 'ios')
-      setSelectedDate(moment(currentDate).format('YYMMDDHHmm'));
+  { if(Platform.OS === 'ios')
+    { setSelectedDate(moment(selectedDate).format('YYMMDDHHmm'));
+      setDate(selectedDate);
+    }
     else
     { setShow(false);
       if(mode=='date')
-      { setSelectedDate(moment(currentDate).format('YYMMDD'));
-        setDisplayDate(moment(currentDate).format('DD [de] MMMM [del] YYYY'));
+      { setSelectedDate(moment(selectedDate).format('YYMMDD'));
+        setDisplayDate(moment(selectedDate).format('DD/MM/YYYY'));
       }
       else
-      { setSelectedTime(moment(currentDate).format('HHmm'));
-        setDisplayTime(moment(currentDate).format('HH:mm'));
+      { setSelectedTime(moment(selectedDate).format('HHmm'));
+        setDisplayTime(moment(selectedDate).format('HH:mm'));
       }
     }
   };
@@ -210,10 +230,9 @@ export default function QuizTaskRun (props) {
   }
 
   function updateCheck(id)
-  { if (checked.length==0){
-      for(let i=1;i<=questions.alt.length;i++){
+  { if (checked.length==0)
+    { for(let i=1;i<=questions.alt.length;i++)
         checked.push(false);
-      }
     }
     let newChk = [...checked];
     newChk[id-1] = !newChk[id-1];
@@ -223,11 +242,7 @@ export default function QuizTaskRun (props) {
 
   return(
     <View>
-      {showScore ? 
-        ( <View>
-            <Text style={styles.texttitle }>FORMULARIO TERMINADO</Text>
-          </View>
-        ):questions.aty == 1 ?
+      {questions.aty == 1 ?
         ( <>
             <View>
               <View>
@@ -241,7 +256,7 @@ export default function QuizTaskRun (props) {
                 style={styles.inputForm}
                 onChange={(e) => onChange(e)}
                 maxLength={128}
-                value={data && data}
+                value={input}
               />
             </View>
             <View style={styles.searchSection}>
@@ -262,17 +277,17 @@ export default function QuizTaskRun (props) {
               <Text style={styles.text}>Pregunta {completed + 1} </Text>
             </View>
             <View style={styles.searchSection2}>
-              {questions.alt.map(
-                (answerOption) => 
-                  ( <Button 
-                      key={answerOption.aid}
-                      containerStyle={styles.btnContainer}
-                      buttonStyle={styles.btn}
-                      title={answerOption.txt}
-                      onPress={() => handleAnswerOptionClick(answerOption.aid,questions.qid)}
-                    />
-                  )
-              )}
+            {questions.alt.map(
+              (answerOption) => 
+                ( <Button 
+                    key={answerOption.aid}
+                    containerStyle={styles.btnContainer}
+                    buttonStyle={styles.btn}
+                    title={answerOption.txt}
+                    onPress={() => handleAnswerOptionClick(answerOption.aid,questions.qid)}
+                  />
+                )
+            )}
             </View>
           </>
         ):questions.aty == 3 ?
@@ -284,37 +299,37 @@ export default function QuizTaskRun (props) {
               <Text style={styles.text}>Pregunta {completed + 1} </Text>
             </View>
             <View>
-              { questions.alt.map((answerOption) =>{
-                return <CheckBox
+            { questions.alt.map((answerOption) =>
+              { return <CheckBox
                   title={answerOption.txt}
                   checked={checked[answerOption.aid-1]}
                   onPress={() => updateCheck(answerOption.aid)}
                   key={answerOption.aid}
-                  />
-              }
-              )}
-              <View style={styles.searchSection}>
-                <Button
-                  containerStyle={styles.btnContainer}
-                  buttonStyle={styles.btn}
-                  title="Siguiente"
-                  disabled={disabledContinue}
-                  onPress={() =>{
-                    let altId="";
-                    let len=checked.length;
-                    for (let i=1;i<=len;i++)
-                    { if(checked[i-1])
-                        altId = altId+i.toString()+"-";
-                      if(i==len)
-                        altId = altId.slice(0,-1);
-                    }
-                    // console.log(altId);
-                    handleAnswerOptionClick(altId,questions.qid)
-                  }}
                 />
-              </View>
+              }
+            )}
+            <View style={styles.searchSection}>
+              <Button
+                containerStyle={styles.btnContainer}
+                buttonStyle={styles.btn}
+                title="Siguiente"
+                disabled={disabledContinue}
+                onPress={() =>{
+                  let altId="";
+                  let len=checked.length;
+                  for (let i=1;i<=len;i++)
+                  { if(checked[i-1])
+                      altId = altId+i.toString()+"-";
+                    if(i==len)
+                      altId = altId.slice(0,-1);
+                  }
+                  // console.log(altId);
+                  handleAnswerOptionClick(altId,questions.qid)
+                }}
+              />
             </View>
-          </>
+          </View>
+        </>
         ):questions.aty == 4 ?
         ( <>
             <View>
@@ -344,13 +359,9 @@ export default function QuizTaskRun (props) {
           </>  
         ):questions.aty == 5 ?
         ( <>
-            <View>
-              <View>
-                <Text style={styles.title}>{questions.tiq}</Text>
-              </View>
+            <View style={{flexDirection:'column', alignItems: 'center',}}>
+              <Text style={styles.title}>{questions.tiq}</Text>
               <Text style={styles.text}>Pregunta {completed + 1} </Text>
-            </View>
-            <View>      
               <Button
                 title={ !image ? "Tomar foto" : "Cambiar Foto"}
                 containerStyle={styles.btnContainerPic}
@@ -358,76 +369,74 @@ export default function QuizTaskRun (props) {
                 onPress={()=>upload()}
               />
               <Image
-                  source={image ? {uri:image} : require("../../../assets/no-image.png")}
-                  resizeMode="contain"
-                  style={styles.logo}
-                />
-              <View style={styles.searchSection}>
+                source={image ? {uri:image} : require("../../../assets/no-image.png")}
+                resizeMode="contain"
+                style={styles.logo}
+              />
+              <Button
+                containerStyle={styles.btnContainer}
+                buttonStyle={styles.btn}
+                title="Siguiente"
+                disabled={disabledContinue}
+                onPress={() => handleAnswerOptionClickPic(questions.qid)}
+              />
+            </View>
+          </>
+        ):questions.aty == 6 &&
+        ( Platform.OS === 'ios' ?
+          ( <View style={styles.viewContainerIos}>
+              <Text style={styles.title}>{questions.tiq}</Text>
+              <Text style={styles.text}>Actividad {completed + 1} </Text>
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                is24Hour={true}
+                mode='datetime'
+                onChange={handleConfirm}
+              />
+              <View style={{ alignItems: 'center',
+                             justifyContent: 'center'}}>
                 <Button 
                   containerStyle={styles.btnContainer}
                   buttonStyle={styles.btn}
                   title="Siguiente"
-                  disabled={disabledContinue}
-                  onPress={() => handleAnswerOptionClickPic(questions.qid)}
+                  onPress={selectedDate == null ?
+                      () => handleAnswerOptionClick(moment(date).format('YYMMDDHHmm'),questions.qid):
+                      () => handleAnswerOptionClick(selectedDate,questions.qid)                        
+                    }
                 />
               </View>
             </View>
-          </>
-        ):questions.aty == 6 ?
-        ( Platform.OS === 'ios' ?( 
-              <View style={styles.viewContainerIos}>
-                <Text style={styles.title}>{questions.tiq}</Text>
-                <Text style={styles.text}>Actividad {completed + 1} </Text>
+          ):
+          ( <View style={styles.viewContainer}>
+              <Text style={styles.title}>{questions.tiq}</Text>
+              <Text style={styles.text}>Actividad {completed + 1} </Text>
+              <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
+                    onPress={showDatePicker} title="Seleccionar fecha"/>
+              <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
+                    onPress={showTimePicker} title="Seleccionar hora"/>
+              { show && ( 
                 <DateTimePicker
                   testID="dateTimePicker"
                   value={date}
+                  mode={mode}
                   is24Hour={true}
-                  mode='datetime'
+                  display="default"
                   onChange={handleConfirm}
-                />
-                <View style={{ alignItems: 'center',
-                               justifyContent: 'center'}}>
-                  <Button 
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={styles.btn}
-                    title="Siguiente"
-                    onPress={selectedDate == null ?
-                        () => handleAnswerOptionClick(moment(date).format('YYMMDDHHmm'),questions.qid):
-                        () => handleAnswerOptionClick(selectedDate,questions.qid)                        
-                      }
-                  />
-                </View>
-              </View>
-            ):( <View style={styles.viewContainer}>
-                  <Text style={styles.title}>{questions.tiq}</Text>
-                  <Text style={styles.text}>Actividad {completed + 1} </Text>
-                  <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
-                        onPress={showDatePicker} title="Seleccionar fecha"/>
-                  <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
-                        onPress={showTimePicker} title="Seleccionar hora"/>
-                  { show && ( <DateTimePicker
-                                testID="dateTimePicker"
-                                value={date}
-                                mode={mode}
-                                is24Hour={true}
-                                display="default"
-                                onChange={handleConfirm}
-                              />)
-                  }
-                  <Text style={styles.textDate}>Fecha: {displayDate}</Text>
-                  <Text style={styles.textDate}>Hora:  {displayTime}</Text>
-                  <Button 
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={styles.btn}
-                    title="Siguiente"
-                    disabled={displayDate!= null && displayTime != null ? false:true}
-                    onPress={() => handleAnswerOptionClick(selectedDate+selectedTime,questions.qid)}
-                  />
-                </View>
-              )
-        ):(
-        <>
-        </>)
+                />)
+              }
+              <Text style={styles.textDate}>Fecha: {displayDate}</Text>
+              <Text style={styles.textDate}>Hora:  {displayTime}</Text>
+              <Button 
+                containerStyle={styles.btnContainer}
+                buttonStyle={styles.btn}
+                title="Siguiente"
+                disabled={displayDate!= null && displayTime != null ? false:true}
+                onPress={() => handleAnswerOptionClick(selectedDate+selectedTime,questions.qid)}
+              />
+            </View>
+          )
+        )
       }
       { loading && (<Loading text={loadingText}/>)
       }
@@ -437,14 +446,14 @@ export default function QuizTaskRun (props) {
 
 const styles = StyleSheet.create(
 { title:
-  { marginTop:50,
+  { marginTop:40,
     marginHorizontal:20,
     fontSize: 30,
     textAlign:"center",
     fontWeight: "bold"
   },
   text:
-  { marginTop:30,
+  { marginTop:20,
     marginBottom:10,
     marginHorizontal:20,
     fontSize: 20,
@@ -561,8 +570,7 @@ const styles = StyleSheet.create(
     borderRadius: 20
   },
   btnContainerPic:
-  { marginTop:40,
-    marginBottom: 40,
+  { marginTop:20,
     width: "50%",
     marginHorizontal:100
   },

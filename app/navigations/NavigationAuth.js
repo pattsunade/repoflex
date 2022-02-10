@@ -34,7 +34,7 @@ export default function Navigation() {
   useEffect(() => {
     async function getOtt()
     { let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp','@intro']).then(async (ans) =>
-      { // console.log(ans);
+      { console.log(ans);
         setOtt(ans[0][1]);
         setStp(ans[2][1]);
         if (ans[1][1] != null)

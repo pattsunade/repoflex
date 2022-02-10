@@ -12,7 +12,7 @@ import Toast from 'react-native-toast-message';
 const { width, height } = Dimensions.get('window');
 
 export default function TaskQuestion (props) {
-  const {questions, tid, completed, taskData} = props;
+  const {questions, tid, completed, taskData, update} = props;
   const navigation = useNavigation();
   const [formData, setFormData] = useState([]);
   const per = Math.round(completed*100/questions.length);
@@ -73,7 +73,7 @@ export default function TaskQuestion (props) {
           navigation.reset(
           { index: 0,
             routes: 
-            [ { name: 'login',
+            [ { name: 'home',
               }
             ],
           });
@@ -121,27 +121,46 @@ export default function TaskQuestion (props) {
     };
   }
 
-  useEffect(() => 
-  { if (taskData!=null || taskData!= undefined)
+  useEffect(async () =>
+  { console.log("taskData->",taskData);
+    console.log("data->",update);
+    if (taskData!=null)
     { console.log('entre en no null');
-      if (formData.length==0)
-      { 
-        console.log('entre en 1');
-        setFormData([...formData,taskData]);
-        AsyncStorage.setItem('@taskData',JSON.stringify(taskData));
+      if (update)
+      { console.log("entre");
+        taskNum = parseInt(taskData.qid);
+        let updAnswer = formData;
+        updAnswer[taskNum-1] = taskData;
+        setFormData(updAnswer);
       }
-      else if (per<=100)
-      { const temp = [...formData,taskData];
-        // console.log('temp-->',temp);
-        AsyncStorage.setItem('@taskData',JSON.stringify(temp)); 
-        console.log('entre en 2');
-        setFormData(temp);
-        // console.log('ofrmdata-->',formData);
+      else if (isArray(taskData))
+        setFormData(taskData);
+      else
+      { let addAnswer = [...formData,taskData];
+        setFormData(addAnswer);
+        await AsyncStorage.setItem('@taskData',JSON.stringify(addAnswer));
       }
+      // if (formData!=null)
+      // { console.log('entre en 1');
+      //   setFormData([...formData,taskData]);
+      //   AsyncStorage.setItem('@taskData',JSON.stringify(taskData));
+      // }
+      // else if (per<=100)
+      // { const temp = [...formData,taskData];
+      //   // console.log('temp-->',temp);
+      //   AsyncStorage.setItem('@taskData',JSON.stringify(temp)); 
+      //   console.log('entre en 2');
+      //   setFormData(temp);
+      //   // console.log('ofrmdata-->',formData);
+      // }
       // AsyncStorage.setItem('@taskData',JSON.stringify(formData));  
     }
-    console.log(formData);
+    console.log("form->",formData);
   },[taskData]);
+
+  function isArray(a) {
+    return (!!a) && (a.constructor === Array);
+  };
 
   return(
     <>
@@ -218,26 +237,25 @@ export default function TaskQuestion (props) {
             }
             <Text style={styles.subtitle}> Pasos Completados: {completed}</Text>
             { compArr.map((arr,index) =>
-                { return(
-                    <TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
-                      navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,data:formData[index].aid})
-                    }>
-                      <View style={styles.container}>
-                        <Icon
-                          type='material-community'
-                          name='check-circle'
-                          iconStyle={styles.iconLeft2}
-                          size={35}
-                        />
-                        <View style={styles.activityText}>
-                          <Text style={styles.customBtnText}>{arr.tiq}</Text>
-                          <Text style={styles.customBtnText}>Actividad completada {index+1}.</Text>
-                        </View>
+              { return(
+                  <TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
+                    navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,update:formData[index].aid})
+                  }>
+                    <View style={styles.container}>
+                      <Icon
+                        type='material-community'
+                        name='check-circle'
+                        iconStyle={styles.iconLeft2}
+                        size={35}
+                      />
+                      <View style={styles.activityText}>
+                        <Text style={styles.customBtnText}>{arr.tiq}</Text>
+                        <Text style={styles.customBtnText}>Actividad completada {index+1}.</Text>
                       </View>
-                    </TouchableOpacity>
-                  )
-                }
-              )
+                    </View>
+                  </TouchableOpacity>
+                )
+              })
             }
           </View>
           <View style={styles.wrapper}>

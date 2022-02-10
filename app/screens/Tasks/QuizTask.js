@@ -7,7 +7,7 @@ import QuizTaskRun from "../../components/Tasks/QuizTaskRun";
 const { width, height } = Dimensions.get('window');
 
 export default function QuizTask ({route,navigation}) {
-  const {questions,tid,completed,data} = route.params;
+  const {questions,tid,completed,update} = route.params;
   const navigations = useNavigation();
   return(
     <ScrollView>
@@ -17,7 +17,7 @@ export default function QuizTask ({route,navigation}) {
           questions={questions}
           tid={tid}
           completed={completed}
-          data={data}
+          update={update}
         />
       </View>
       <Divider style= {styles.divider}/>

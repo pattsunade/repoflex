@@ -15,7 +15,7 @@ import moment from "moment";
 const { width, height } = Dimensions.get('window');
 
 export default function QuizTaskRun (props) {
-  const {questions,tid,completed,update} = props;
+  const {questions,tid,completed,update,uri} = props;
   console.log("update->",update);
   const navigation = useNavigation();
   // const [showScore, setShowScore] = useState(false);
@@ -23,7 +23,7 @@ export default function QuizTaskRun (props) {
   const [input, setInput] = useState(update);
   const [checked, setChecked] = useState([]);
   const [stars, setStars] = useState();
-  const [image, setImage] = useState();
+  const [image, setImage] = useState(uri);
   const [date, setDate] = useState(update ? new Date(Date.parse('20'+update.substr(0,2)+'/'+
       update.substr(2,2)+'/'+update.substr(4,2)+
       ' '+update.substr(6,2)+':'+update.substr(8,2))):
@@ -73,18 +73,33 @@ export default function QuizTaskRun (props) {
       //   setScore(score + 1);
       // }
       sendimage(qidd).then(() =>
-      { AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>{
-        navigation.navigate(
-        { name:'task',
-          params:
-          { completed:completed+1,
-            tid:tid,
-            taskData:{qid:qidd,aid:"pic"},
-            update:false
-          },
-          merge: true
-        })
-      });
+      { AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
+        { if (update)
+          { navigation.navigate(
+            { name:'task',
+              params:
+              { tid:tid,
+                taskData:{qid:qidd,aid:'pic'},
+                uri:{qid:qidd,image:image},
+                update:true,
+              },
+              merge: true
+            });
+          }
+          else
+          { navigation.navigate(
+            { name:'task',
+              params:
+              { completed:completed+1,
+                tid:tid,
+                taskData:{qid:qidd,aid:"pic"},
+                uri:{qid:qidd,image:image},
+                update:false,
+              },
+              merge: true
+            });
+          }
+        });
       }).catch((ans) =>
         { console.log(ans);
         }
@@ -162,6 +177,7 @@ export default function QuizTaskRun (props) {
           params: 
           { tid:tid,
             taskData:{qid:qid,aid:res},
+            uri:{qid:qid,image:null},
             update:true
           },
           merge: true
@@ -175,6 +191,7 @@ export default function QuizTaskRun (props) {
             { completed:completed+1,
               tid:tid,
               taskData:{qid:qid,aid:res},
+              uri:{qid:qid,image:null},
               update:false
             },
             merge: true
@@ -291,14 +308,9 @@ export default function QuizTaskRun (props) {
             </View>
           </>
         ):questions.aty == 3 ?
-        ( <>
-            <View>
-              <View>
-                <Text style={styles.title}>{questions.tiq}</Text>
-              </View>
-              <Text style={styles.text}>Pregunta {completed + 1} </Text>
-            </View>
-            <View>
+        ( <ScrollView>
+            <Text style={styles.title}>{questions.tiq}</Text>
+            <Text style={styles.text}>Pregunta {completed + 1} </Text>
             { questions.alt.map((answerOption) =>
               { return <CheckBox
                   title={answerOption.txt}
@@ -328,8 +340,7 @@ export default function QuizTaskRun (props) {
                 }}
               />
             </View>
-          </View>
-        </>
+          </ScrollView>
         ):questions.aty == 4 ?
         ( <>
             <View>

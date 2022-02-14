@@ -49,7 +49,7 @@ export default function DetailTask({route,navigation})
     { index: 0,
       routes: 
       [ { name: 'task',
-          params: {tid:tid,completed:0,taskData:null,quest:null,update:null}
+          params: {tid:tid,completed:0,taskData:null,quest:null,update:null,uri:null}
         }
       ],
     })

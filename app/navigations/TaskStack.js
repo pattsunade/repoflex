@@ -7,14 +7,14 @@ import QuizTask from "../screens/Tasks/QuizTask";
 const Stack = createStackNavigator();
 
 export default function TaskStack({route})
-{ const {tid,quest,taskData,completed} = route.params;
+{ const {tid,quest,taskData,completed,uri} = route.params;
   return(
     <Stack.Navigator>
       <Stack.Screen
         name="task"
         component={Task}
         options={{title: "Tarea"}}
-        initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'completed':completed}}
+        initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'completed':completed,'uri':uri}}
         //options={{headerShown: false}}
       />
       <Stack.Screen

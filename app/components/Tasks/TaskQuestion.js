@@ -12,9 +12,11 @@ import Toast from 'react-native-toast-message';
 const { width, height } = Dimensions.get('window');
 
 export default function TaskQuestion (props) {
-  const {questions, tid, completed, taskData, update} = props;
+  const {questions, tid, completed, taskData, update, uri} = props;
+  console.log(uri);
   const navigation = useNavigation();
   const [formData, setFormData] = useState([]);
+  const [uris, setUris] = useState([]);
   const per = Math.round(completed*100/questions.length);
   const compArr = questions.slice(0,completed);
   const [loading, setLoading] = useState(false);
@@ -85,7 +87,7 @@ export default function TaskQuestion (props) {
           props: {onPress: () => {}, text1: 'Éxito', text2: response.ans.msg
           }
         });
-        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
+        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp','@uri']).then(() =>
         { setLoading(false);
           navigation.reset({
             index: 0,
@@ -132,13 +134,22 @@ export default function TaskQuestion (props) {
         let updAnswer = formData;
         updAnswer[taskNum-1] = taskData;
         setFormData(updAnswer);
+        if (uri.image)
+        { let updUris = uris;
+          updUris[taskNum-1].image = uri.image;
+          setUris(updUris);
+        }
       }
       else if (isArray(taskData))
-        setFormData(taskData);
+      { setFormData(taskData);
+        setUris(uri);
+      }
       else
       { let addAnswer = [...formData,taskData];
+        let addUris = [...uris,uri];
         setFormData(addAnswer);
-        await AsyncStorage.setItem('@taskData',JSON.stringify(addAnswer));
+        setUris(addUris);
+        await AsyncStorage.multiSet([['@taskData',JSON.stringify(addAnswer)],['@uri',JSON.stringify(addUris)]]);
       }
       // if (formData!=null)
       // { console.log('entre en 1');
@@ -155,6 +166,7 @@ export default function TaskQuestion (props) {
       // }
       // AsyncStorage.setItem('@taskData',JSON.stringify(formData));  
     }
+    console.log('uris->',uris);
     console.log("form->",formData);
   },[taskData]);
 
@@ -239,7 +251,7 @@ export default function TaskQuestion (props) {
             { compArr.map((arr,index) =>
               { return(
                   <TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
-                    navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,update:formData[index].aid})
+                    navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,update:formData[index].aid,uri:uris[index].image})
                   }>
                     <View style={styles.container}>
                       <Icon

@@ -12,7 +12,7 @@ import Toast from 'react-native-toast-message';
 const { width, height } = Dimensions.get('window');
 
 export default function Task ({route}) {
-  const {quest,tid,taskData,completed,update} = route.params;
+  const {quest,tid,taskData,completed,update,uri} = route.params;
   const navigation = useNavigation();
   const [error, setError] = useState(false);
   const [questions, setQuestions] = useState(quest);
@@ -73,7 +73,7 @@ export default function Task ({route}) {
     { return(
         <ScrollView>
           <View>
-            <TaskQuestion questions={questions} tid={tid} completed={completed} taskData={taskData} update={update}/>
+            <TaskQuestion questions={questions} tid={tid} completed={completed} taskData={taskData} update={update} uri={uri}/>
           </View>
           <Divider style= {styles.divider} />
           <View style={styles.viewZolbit}>

@@ -26,15 +26,15 @@ export default function Navigation() {
   const [stp, setStp] = useState();
   const [quest, setQuest] = useState();
   const [tid, setTid] = useState();
-  const [taskData, setTaskData] = useState();
+  const [backAnsFormat, setBackAnsFormat] = useState();
   const [completed, setCompleted] = useState();
-  const [uri,setUri] = useState();
+  const [frontAnsFormat,setFrontAnsFormat] = useState();
   const [intro, setIntro] = useState();
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     async function getOtt()
-    { let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@taskData','@comp','@intro','@uri']).then(async (ans) =>
+    { let data = AsyncStorage.multiGet(['@ott','@mtx','@stp','@quest','@tid','@backAnsFormat','@comp','@intro','@frontAnsFormat']).then(async (ans) =>
       { console.log(ans);
         setOtt(ans[0][1]);
         setStp(ans[2][1]);
@@ -42,10 +42,10 @@ export default function Navigation() {
           setMtx((ans[1][1].match(/1/g) || []).length);
         setQuest(JSON.parse(ans[3][1]));
         setTid(parseInt(ans[4][1]));
-        setTaskData(JSON.parse(ans[5][1]));
+        setBackAnsFormat(JSON.parse(ans[5][1]));
         setCompleted(parseInt(ans[6][1]));
         setIntro(parseInt(ans[7][1]));
-        setUri(ans[8][1]);
+        setFrontAnsFormat(JSON.parse(ans[8][1]));
         setLoading(false);
       });
     }
@@ -88,7 +88,7 @@ export default function Navigation() {
               name="task"
               component={TaskStack}
               options={{ title: "Task", headerShown: false }}
-              initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'uri':uri}}
+              initialParams={{'quest':quest,'tid':tid,'backAnsFormat':backAnsFormat,'frontAnsFormat':frontAnsFormat}}
             />
             <RootStack.Screen 
               name="account"
@@ -124,7 +124,7 @@ export default function Navigation() {
               name="task"
               component={TaskStack}
               options={{ title: "Task", headerShown: false }}
-              initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'uri':uri}}
+              initialParams={{'quest':quest,'tid':tid,'backAnsFormat':backAnsFormat,'frontAnsFormat':frontAnsFormat}}
             />
           </>
         ):quest != null || quest == "null" ?
@@ -133,7 +133,7 @@ export default function Navigation() {
               name="task"
               component={TaskStack}
               options={{ title: "Task", headerShown: false }}
-              initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'completed':completed,'uri':uri}}
+              initialParams={{'quest':quest,'tid':tid,'backAnsFormat':backAnsFormat,'completed':completed,'frontAnsFormat':frontAnsFormat}}
             />
             <RootStack.Screen
               name="login"
@@ -145,7 +145,7 @@ export default function Navigation() {
               name="home"
               component={HomeStack}
               options={{ title: "Home", headerShown: false }}
-              initialParams={{'quest':quest,'tid':tid,'taskData':taskData}}
+              initialParams={{'quest':quest,'tid':tid,'backAnsFormat':backAnsFormat}}
             />
             <RootStack.Screen 
               name="account"
@@ -181,7 +181,7 @@ export default function Navigation() {
             name="task"
             component={TaskStack}
             options={{ title: "Task", headerShown: false }}
-            initialParams={{'quest':quest,'tid':tid,'taskData':taskData,'uri':uri}}
+            initialParams={{'quest':quest,'tid':tid,'backAnsFormat':backAnsFormat,'frontAnsFormat':frontAnsFormat}}
           />
           <RootStack.Screen 
             name="homeregister"

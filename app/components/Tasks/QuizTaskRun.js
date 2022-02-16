@@ -1,5 +1,5 @@
-import React, { useRef,useState } from "react";
-import { StyleSheet,StatusBar, Text, View, ScrollView, TextInput,TouchableOpacity ,Dimensions,SafeAreaView, Image, Platform} from 'react-native';
+import React, { useState } from "react";
+import { StyleSheet, Text, View, ScrollView, TextInput, Image, Platform, ActivityIndicator} from 'react-native';
 import { Input, Divider, Icon, Button, CheckBox} from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { Rating, AirbnbRating } from 'react-native-ratings';
@@ -12,31 +12,31 @@ import BackEndConnect from "../../utils/BackEndConnect";
 import Toast from 'react-native-toast-message';
 import Loading from '../Loading';
 import moment from "moment";
-const { width, height } = Dimensions.get('window');
+
 
 export default function QuizTaskRun (props) {
-  const {questions,tid,completed,update,uri} = props;
-  console.log("update->",update);
+  const {questions,tid,completed,prevAns} = props;
+  console.log("prevAns->",prevAns);
   const navigation = useNavigation();
   // const [showScore, setShowScore] = useState(false);
   // const [score, setScore] = useState(0);
-  const [input, setInput] = useState(update);
-  const [checked, setChecked] = useState([]);
-  const [stars, setStars] = useState();
-  const [image, setImage] = useState(uri);
-  const [date, setDate] = useState(update ? new Date(Date.parse('20'+update.substr(0,2)+'/'+
-      update.substr(2,2)+'/'+update.substr(4,2)+
-      ' '+update.substr(6,2)+':'+update.substr(8,2))):
+  const [input, setInput] = useState(prevAns);
+  const [checked, setChecked] = useState(prevAns ? prevAns:[]);
+  const [stars, setStars] = useState(prevAns ? prevAns:0);
+  const [image, setImage] = useState(prevAns);
+  const [date, setDate] = useState(questions.aty == 6 && prevAns ? new Date(Date.parse('20'+prevAns.substr(0,2)+'/'+
+      prevAns.substr(2,2)+'/'+prevAns.substr(4,2)+
+      ' '+prevAns.substr(6,2)+':'+prevAns.substr(8,2))):
     new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState('date');
-  const [displayDate, setDisplayDate] = useState(update ? update.substr(4,2)+'/'+
-      update.substr(2,2)+'/'+update.substr(0,2):null);
-  const [displayTime, setDisplayTime] = useState(update ? update.substr(6,2)+':'+
-      update.substr(8,2):null);
-  const [disabledContinue, setDisabledContinue] = useState(update ? false:true);
+  const [displayDate, setDisplayDate] = useState(questions.aty == 6 && prevAns ? prevAns.substr(4,2)+'/'+
+      prevAns.substr(2,2)+'/'+prevAns.substr(0,2):null);
+  const [displayTime, setDisplayTime] = useState(questions.aty == 6 && prevAns ? prevAns.substr(6,2)+':'+
+      prevAns.substr(8,2):null);
+  const [disabledContinue, setDisabledContinue] = useState(prevAns ? false:true);
   const [qid, setQid] = useState(0);
   const [formData, setFormData] = useState([]);
   const [formDataPic, setFormDataPic] = useState(defaultFormValuePic());
@@ -74,14 +74,14 @@ export default function QuizTaskRun (props) {
       // }
       sendimage(qidd).then(() =>
       { AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
-        { if (update)
+        { if (prevAns)
           { navigation.navigate(
             { name:'task',
               params:
               { tid:tid,
-                taskData:{qid:qidd,aid:'pic'},
-                uri:{qid:qidd,image:image},
-                update:true,
+                backAnsFormat:{qid:qidd,aid:'pic'},
+                frontAnsFormat:{qid:qidd,aid:image},
+                update:true
               },
               merge: true
             });
@@ -92,9 +92,8 @@ export default function QuizTaskRun (props) {
               params:
               { completed:completed+1,
                 tid:tid,
-                taskData:{qid:qidd,aid:"pic"},
-                uri:{qid:qidd,image:image},
-                update:false,
+                backAnsFormat:{qid:qidd,aid:"pic"},
+                frontAnsFormat:{qid:qidd,aid:image}
               },
               merge: true
             });
@@ -165,19 +164,19 @@ export default function QuizTaskRun (props) {
     }
   }
 
-  function handleAnswerOptionClick (res,qid)
+  function handleAnswerOptionClick (backAns,qid,frontAns=null,)
   { setLoading(true);
-    if (res!=null&&(res.length>0||res>0))
-    { formData.push({qid:qid,aid:res});
+    if (backAns!=null&&(backAns.length>0||backAns>0))
+    { formData.push({qid:qid,aid:backAns});
       // if (res) 
       //   setScore(score + 1);
-      if (update)
+      if (prevAns)
       { navigation.navigate(
         { name:'task',
           params: 
           { tid:tid,
-            taskData:{qid:qid,aid:res},
-            uri:{qid:qid,image:null},
+            backAnsFormat:{qid:qid,aid:backAns},
+            frontAnsFormat:{qid:qid,aid:frontAns ? frontAns:backAns},
             update:true
           },
           merge: true
@@ -190,9 +189,8 @@ export default function QuizTaskRun (props) {
             params: 
             { completed:completed+1,
               tid:tid,
-              taskData:{qid:qid,aid:res},
-              uri:{qid:qid,image:null},
-              update:false
+              backAnsFormat:{qid:qid,aid:backAns},
+              frontAnsFormat:{qid:qid,aid:frontAns ? frontAns:backAns}
             },
             merge: true
           });
@@ -246,76 +244,109 @@ export default function QuizTaskRun (props) {
     setDisabledContinue(false);
   }
 
-  function updateCheck(id)
-  { if (checked.length==0)
-    { for(let i=1;i<=questions.alt.length;i++)
-        checked.push(false);
+  function updateCheck(id,multi)//0 == single choice
+  { let newChk = [...checked];
+    let total = questions.alt.length;
+    let button = false;
+    console.log(newChk);
+    if (newChk.length==0)
+    { for(let i=1;i<=total;i++)
+      { if (i==id)
+          newChk.push(true);
+        else
+          newChk.push(false);
+      }
     }
-    let newChk = [...checked];
-    newChk[id-1] = !newChk[id-1];
+    else
+    { if (multi==0)
+      { for(let i=1;i<=total;i++)
+        { if (newChk[i-1]==true)
+          { newChk[i-1] = false;
+            break;
+          }
+        }
+        newChk[id-1] = !newChk[id-1];
+      }
+      else
+      { newChk[id-1] = !newChk[id-1];
+        for(let i=1;i<=total;i++)
+        { if (newChk[i-1]==true)
+            break;
+          else if (i==total)
+            button = true;
+        }
+      }
+    }
+    console.log(newChk);
     setChecked(newChk);
-    setDisabledContinue(false);
+    setDisabledContinue(button);
+  }
+
+  function finalMultiChoice()
+  { let altId="";
+    let len=checked.length;
+    for (let i=1;i<=len;i++)
+    { if(checked[i-1])
+        altId = altId+i.toString()+"-";
+      if(i==len)
+        altId = altId.slice(0,-1);
+    }
+    // console.log(altId);
+    handleAnswerOptionClick(altId,questions.qid,checked);
   }
 
   return(
-    <View>
+    <>
       {questions.aty == 1 ?
-        ( <>
-            <View>
-              <View>
-                <Text style={styles.title}>{questions.tiq}</Text>
-              </View>
-              <Text style={styles.text}>Pregunta {completed + 1}</Text>
-            </View>
-            <View style={styles.searchSection}>
-              <TextInput
-                placeholder="Texto aquí"
-                style={styles.inputForm}
-                onChange={(e) => onChange(e)}
-                maxLength={128}
-                value={input}
-              />
-            </View>
-            <View style={styles.searchSection}>
-              <Button 
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn} title="Siguiente"
-                disabled={disabledContinue}
-                onPress={() => handleAnswerOptionClick(input,questions.qid)}
-              />
-            </View>
-          </>
+        ( <View style={styles.activityParentView}>
+            <Text style={styles.title}>{questions.tiq}</Text>
+            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+            <TextInput
+              placeholder="Texto aquí"
+              style={styles.inputForm}
+              onChange={(e) => onChange(e)}
+              maxLength={128}
+              value={input}
+            />
+            <Button
+              containerStyle={styles.btnContainer}
+              buttonStyle={styles.btn} title="Siguiente"
+              disabled={disabledContinue}
+              onPress={() => handleAnswerOptionClick(input,questions.qid)}
+            />
+          </View>
         ):questions.aty == 2 ?
-        ( <>
-            <View>
-              <View>
-                <Text style={styles.title}>{questions.tiq}</Text>
-              </View>
-              <Text style={styles.text}>Pregunta {completed + 1} </Text>
-            </View>
-            <View style={styles.searchSection2}>
-            {questions.alt.map(
-              (answerOption) => 
-                ( <Button 
-                    key={answerOption.aid}
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={styles.btn}
-                    title={answerOption.txt}
-                    onPress={() => handleAnswerOptionClick(answerOption.aid,questions.qid)}
-                  />
-                )
-            )}
-            </View>
-          </>
-        ):questions.aty == 3 ?
         ( <ScrollView>
             <Text style={styles.title}>{questions.tiq}</Text>
-            <Text style={styles.text}>Pregunta {completed + 1} </Text>
+            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
             { questions.alt.map((answerOption) =>
               { return <CheckBox
                   title={answerOption.txt}
                   checked={checked[answerOption.aid-1]}
-                  onPress={() => updateCheck(answerOption.aid)}
+                  onPress={() => updateCheck(answerOption.aid,0)}
+                  key={answerOption.aid}
+                />
+              }
+            )}
+            <View style={styles.searchSection}>
+              <Button
+                containerStyle={styles.btnContainer}
+                buttonStyle={styles.btn}
+                disabled={disabledContinue}
+                title='Siguiente'
+                onPress={()=>finalMultiChoice()}
+              />
+            </View>
+          </ScrollView>
+        ):questions.aty == 3 ?
+        ( <ScrollView>
+            <Text style={styles.title}>{questions.tiq}</Text>
+            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+            { questions.alt.map((answerOption) =>
+              { return <CheckBox
+                  title={answerOption.txt}
+                  checked={checked[answerOption.aid-1]}
+                  onPress={() => updateCheck(answerOption.aid,1)}
                   key={answerOption.aid}
                 />
               }
@@ -326,78 +357,68 @@ export default function QuizTaskRun (props) {
                 buttonStyle={styles.btn}
                 title="Siguiente"
                 disabled={disabledContinue}
-                onPress={() =>{
-                  let altId="";
-                  let len=checked.length;
-                  for (let i=1;i<=len;i++)
-                  { if(checked[i-1])
-                      altId = altId+i.toString()+"-";
-                    if(i==len)
-                      altId = altId.slice(0,-1);
-                  }
-                  // console.log(altId);
-                  handleAnswerOptionClick(altId,questions.qid)
-                }}
+                onPress={()=>finalMultiChoice()}
               />
             </View>
           </ScrollView>
         ):questions.aty == 4 ?
-        ( <>
-            <View>
-              <View>
-                <Text style={styles.title}>{questions.tiq}</Text>
-              </View>
-              <Text style={styles.text}>Pregunta {completed + 1} </Text>
-            </View>
-            <View>
-              <AirbnbRating
-                count={7}
-                reviews={["1", "2", "3", "4", "5", "6", "7"]}
-                defaultRating={0}
-                size={30}
-                onFinishRating={ratingFinish}
-              />
-              <View style={styles.searchSection}>
-                <Button 
-                  containerStyle={styles.btnContainer}
-                  buttonStyle={styles.btn}
-                  title="Siguiente"
-                  disabled={disabledContinue}
-                  onPress={() => handleAnswerOptionClick(stars,questions.qid)}
-                />
-              </View>
-            </View>
-          </>  
-        ):questions.aty == 5 ?
-        ( <>
-            <View style={{flexDirection:'column', alignItems: 'center',}}>
-              <Text style={styles.title}>{questions.tiq}</Text>
-              <Text style={styles.text}>Pregunta {completed + 1} </Text>
-              <Button
-                title={ !image ? "Tomar foto" : "Cambiar Foto"}
-                containerStyle={styles.btnContainerPic}
-                buttonStyle={ !image ? styles.btnPic : styles.btnCheck}
-                onPress={()=>upload()}
-              />
-              <Image
-                source={image ? {uri:image} : require("../../../assets/no-image.png")}
-                resizeMode="contain"
-                style={styles.logo}
-              />
-              <Button
+        ( <View>
+            <Text style={styles.title}>{questions.tiq}</Text>
+            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+            <AirbnbRating
+              count={7}
+              reviews={["1", "2", "3", "4", "5", "6", "7"]}
+              defaultRating={stars}
+              size={30}
+              onFinishRating={ratingFinish}
+            />
+            <View style={styles.searchSection}>
+              <Button 
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
                 title="Siguiente"
                 disabled={disabledContinue}
-                onPress={() => handleAnswerOptionClickPic(questions.qid)}
+                onPress={() => handleAnswerOptionClick(stars,questions.qid)}
               />
             </View>
-          </>
+          </View>
+          
+        ):questions.aty == 5 ?
+        ( <View style={styles.activityParentView}>
+            <Text style={styles.title}>{questions.tiq}</Text>
+            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+            <Button
+              title={ !image ? "Tomar foto" : "Cambiar Foto"}
+              containerStyle={styles.picContainerBtn}
+              buttonStyle={ !image ? styles.picBtn : styles.checkBtn}
+              onPress={()=>upload()}
+            />
+            <Image
+              source={image ? {uri:image} : require("../../../assets/no-image.png")}
+              resizeMode="contain"
+              style={styles.logo}
+            />
+            { loading ? 
+              ( <View style={styles.loaderTask}>
+                  <ActivityIndicator  size="large" color="#0000ff"/>
+                  <Text>Subiendo imagen...</Text>
+                </View>
+              ):
+              ( <Button
+                  containerStyle={styles.btnContainer}
+                  buttonStyle={styles.btn}
+                  title="Siguiente"
+                  disabled={disabledContinue}
+                  onPress={() => handleAnswerOptionClickPic(questions.qid)}
+                />
+              )
+            }
+          </View>
         ):questions.aty == 6 &&
         ( Platform.OS === 'ios' ?
-          ( <View style={styles.viewContainerIos}>
+          ( <View style={styles.IosDateActivityParentView}>
               <Text style={styles.title}>{questions.tiq}</Text>
-              <Text style={styles.text}>Actividad {completed + 1} </Text>
+              <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
               <DateTimePicker
                 testID="dateTimePicker"
                 value={date}
@@ -419,9 +440,9 @@ export default function QuizTaskRun (props) {
               </View>
             </View>
           ):
-          ( <View style={styles.viewContainer}>
+          ( <View style={styles.AndroidDateActivityParentView}>
               <Text style={styles.title}>{questions.tiq}</Text>
-              <Text style={styles.text}>Actividad {completed + 1} </Text>
+              <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
               <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
                     onPress={showDatePicker} title="Seleccionar fecha"/>
               <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
@@ -449,14 +470,18 @@ export default function QuizTaskRun (props) {
           )
         )
       }
-      { loading && (<Loading text={loadingText}/>)
-      }
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create(
-{ title:
+{ activityParentView:
+  { flexDirection:'column',
+    alignItems: 'center',
+    marginRight: 30,
+    marginLeft: 30
+  },
+  title:
   { marginTop:40,
     marginHorizontal:20,
     fontSize: 30,
@@ -476,7 +501,7 @@ const styles = StyleSheet.create(
     fontSize: 20,
     textAlign:"center"
   },
-  viewContainer:
+  AndroidDateActivityParentView:
   { marginRight: 30,
     marginLeft: 30,
     marginTop: 15,
@@ -484,7 +509,7 @@ const styles = StyleSheet.create(
     justifyContent: "center",
     alignItems: "center"
   },
-  viewContainerIos:
+  IosDateActivityParentView:
   { marginRight: 30,
     marginLeft: 30,
     marginTop: 15,
@@ -508,15 +533,6 @@ const styles = StyleSheet.create(
     fontSize: 17,
     textAlign:"justify"
   },
-  textRegister:
-  { flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  btnRegister:
-  { color: "#6B35E2",
-    fontWeight: "bold"
-  },
   divider:
   { backgroundColor: "#6B35E2",
     margin: 40
@@ -527,32 +543,6 @@ const styles = StyleSheet.create(
   },
   textZolbit:
   { fontWeight: "bold"
-  },
-  customBtnText:
-  { fontSize: 20,
-    fontWeight: "400",
-    marginVertical:5
-  },
-  customBtnTextContent:
-  { marginBottom:100,
-    textAlign: "justify"
-  },
-  customBtn: 
-  { backgroundColor: "#fff",
-    paddingHorizontal: 30,
-    paddingVertical: 5,
-    borderRadius: 10,
-    marginTop:5 ,
-    marginBottom:5
-  },
-  container: 
-  { flex:.5,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems:"center"
-  },
-  wrapper:
-  { flex: 1
   },
   btnContainer:
   { marginTop: 10,
@@ -575,22 +565,22 @@ const styles = StyleSheet.create(
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
-    paddingLeft: 0,
+    paddingLeft: 10,
     width: "100%",   
     backgroundColor: '#fff',
     borderRadius: 20
   },
-  btnContainerPic:
+  picContainerBtn:
   { marginTop:20,
     width: "50%",
     marginHorizontal:100
   },
-  btnPic:
+  picBtn:
   { backgroundColor: "#A29FD8",
     borderRadius: 50,
     marginHorizontal:10
   },
-  btnCheck:
+  checkBtn:
   { backgroundColor: "#5100FF",
     borderRadius: 50,
     marginHorizontal:10
@@ -608,5 +598,10 @@ const styles = StyleSheet.create(
     alignItems: 'center',
     marginRight: 20,
     marginLeft: 20
+  },
+  loaderTask:
+  { marginTop:10,
+    marginBottom: 10,
+    alignItems: "center",
   }
 });

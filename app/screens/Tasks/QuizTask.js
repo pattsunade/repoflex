@@ -1,33 +1,31 @@
-import React, { useRef,useState } from "react";
-import { StyleSheet,StatusBar, Text, View, ScrollView,  TouchableOpacity ,Dimensions,SafeAreaView} from 'react-native';
-import {  Divider,Icon,Button } from "react-native-elements";
+import React from "react";
+import { StyleSheet, Text, View} from 'react-native';
+import {  Divider } from "react-native-elements";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import QuizTaskRun from "../../components/Tasks/QuizTaskRun";
 
-const { width, height } = Dimensions.get('window');
-
 export default function QuizTask ({route,navigation}) {
-  const {questions,tid,completed,update,uri} = route.params;
+  const {questions,tid,completed,prevAns} = route.params;
   const navigations = useNavigation();
   return(
-    <ScrollView>
-      <View>
-        <QuizTaskRun
-          navigation={navigation}
-          questions={questions}
-          tid={tid}
-          completed={completed}
-          update={update}
-          uri={uri}
-        />
-      </View>
+    <KeyboardAwareScrollView enableOnAndroid={true}
+      enableAutomaticScroll={(Platform.OS === 'ios')}
+    >
+      <QuizTaskRun
+        navigation={navigation}
+        questions={questions}
+        tid={tid}
+        completed={completed}
+        prevAns={prevAns}
+      />
       <Divider style= {styles.divider}/>
       <View style={styles.viewZolbit}>
         <Text>Un producto de
           <Text style={styles.textZolbit}> Zolbit</Text>
         </Text>    
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   )
 }
 

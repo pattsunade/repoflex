@@ -12,11 +12,10 @@ import Toast from 'react-native-toast-message';
 const { width, height } = Dimensions.get('window');
 
 export default function TaskQuestion (props) {
-  const {questions, tid, completed, taskData, update, uri} = props;
-  console.log(uri);
+  const {questions, tid, completed, backAnsFormat, frontAnsFormat, update} = props;
   const navigation = useNavigation();
   const [formData, setFormData] = useState([]);
-  const [uris, setUris] = useState([]);
+  const [frontData, setFrontData] = useState([]);
   const per = Math.round(completed*100/questions.length);
   const compArr = questions.slice(0,completed);
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,7 @@ export default function TaskQuestion (props) {
           props: {onPress: () => {}, text1: 'Éxito', text2: ans.ans.msg
           }
         });
-        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
+        AsyncStorage.multiRemove(['@tid','@quest','@backAnsFormat','@comp']).then(() =>
         { setLoading(false);
           navigation.reset(
           { index: 0,
@@ -70,7 +69,7 @@ export default function TaskQuestion (props) {
           },
           autohide: false
         });
-        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp']).then(() =>
+        AsyncStorage.multiRemove(['@tid','@quest','@backAnsFormat','@comp']).then(() =>
         { setLoading(false);
           navigation.reset(
           { index: 0,
@@ -87,7 +86,7 @@ export default function TaskQuestion (props) {
           props: {onPress: () => {}, text1: 'Éxito', text2: response.ans.msg
           }
         });
-        AsyncStorage.multiRemove(['@tid','@quest','@taskData','@comp','@uri']).then(() =>
+        AsyncStorage.multiRemove(['@tid','@quest','@backAnsFormat','@comp','@frontAnsFormat']).then(() =>
         { setLoading(false);
           navigation.reset({
             index: 0,
@@ -124,51 +123,48 @@ export default function TaskQuestion (props) {
   }
 
   useEffect(async () =>
-  { console.log("taskData->",taskData);
-    console.log("data->",update);
-    if (taskData!=null)
+  { console.log("backAnsFormat->",backAnsFormat);
+    console.log("frontAnsFormat->",frontAnsFormat);
+    if (backAnsFormat!=null)
     { console.log('entre en no null');
       if (update)
-      { console.log("entre");
-        taskNum = parseInt(taskData.qid);
-        let updAnswer = formData;
-        updAnswer[taskNum-1] = taskData;
+      { let updAnswer = formData;
+        let updData = frontData;
+        let taskNum = parseInt(backAnsFormat.qid);
+        updAnswer[taskNum-1] = backAnsFormat;
+        updData[taskNum-1]= frontAnsFormat;
         setFormData(updAnswer);
-        if (uri.image)
-        { let updUris = uris;
-          updUris[taskNum-1].image = uri.image;
-          setUris(updUris);
-        }
+        setFrontData(updData);
       }
-      else if (isArray(taskData))
-      { setFormData(taskData);
-        setUris(uri);
+      else if (isArray(backAnsFormat))
+      { setFormData(backAnsFormat);
+        setFrontData(frontAnsFormat);
       }
       else
-      { let addAnswer = [...formData,taskData];
-        let addUris = [...uris,uri];
+      { let addAnswer = [...formData,backAnsFormat];
+        let addUpdate = [...frontData,frontAnsFormat];
         setFormData(addAnswer);
-        setUris(addUris);
-        await AsyncStorage.multiSet([['@taskData',JSON.stringify(addAnswer)],['@uri',JSON.stringify(addUris)]]);
+        setFrontData(addUpdate);
+        await AsyncStorage.multiSet([['@backAnsFormat',JSON.stringify(addAnswer)],['@frontAnsFormat',JSON.stringify(addUpdate)]]);
       }
       // if (formData!=null)
       // { console.log('entre en 1');
-      //   setFormData([...formData,taskData]);
-      //   AsyncStorage.setItem('@taskData',JSON.stringify(taskData));
+      //   setFormData([...formData,backAnsFormat]);
+      //   AsyncStorage.setItem('@backAnsFormat',JSON.stringify(backAnsFormat));
       // }
       // else if (per<=100)
-      // { const temp = [...formData,taskData];
+      // { const temp = [...formData,backAnsFormat];
       //   // console.log('temp-->',temp);
-      //   AsyncStorage.setItem('@taskData',JSON.stringify(temp)); 
+      //   AsyncStorage.setItem('@backAnsFormat',JSON.stringify(temp)); 
       //   console.log('entre en 2');
       //   setFormData(temp);
       //   // console.log('ofrmdata-->',formData);
       // }
-      // AsyncStorage.setItem('@taskData',JSON.stringify(formData));  
+      // AsyncStorage.setItem('@backAnsFormat',JSON.stringify(formData));  
     }
-    console.log('uris->',uris);
+    console.log('frontData->',frontData);
     console.log("form->",formData);
-  },[taskData]);
+  },[backAnsFormat]);
 
   function isArray(a) {
     return (!!a) && (a.constructor === Array);
@@ -215,7 +211,7 @@ export default function TaskQuestion (props) {
                     </View>
                   </View>
                 </TouchableOpacity>
-                <Text style={styles.subtitle}> Actividades pendientes</Text>
+                {pendArr.length>0 && <Text style={styles.subtitle}> Actividades pendientes</Text>}
               </>
               )
             }
@@ -251,7 +247,7 @@ export default function TaskQuestion (props) {
             { compArr.map((arr,index) =>
               { return(
                   <TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
-                    navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,update:formData[index].aid,uri:uris[index].image})
+                    navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,prevAns:frontData[index].aid})
                   }>
                     <View style={styles.container}>
                       <Icon

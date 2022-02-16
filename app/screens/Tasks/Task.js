@@ -1,18 +1,18 @@
-import React, { useState,useRef,useEffect } from "react";
+import React, { useState,useRef,useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, Alert, TouchableOpacity ,Dimensions} from 'react-native';
-import { Button, Divider,Icon } from "react-native-elements";
-import { useNavigation } from "@react-navigation/native";
+import { Button, Divider,Icon } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import BackEndConnect from "../../utils/BackEndConnect"
-import TaskQuestion from "../../components/Tasks/TaskQuestion";
-import Loading from "../../components/Loading";
+import BackEndConnect from '../../utils/BackEndConnect'
+import TaskQuestion from '../../components/Tasks/TaskQuestion';
+import Loading from '../../components/Loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
 const { width, height } = Dimensions.get('window');
 
 export default function Task ({route}) {
-  const {quest,tid,taskData,completed,update,uri} = route.params;
+  const {quest,tid,backAnsFormat,completed,update,frontAnsFormat} = route.params;
   const navigation = useNavigation();
   const [error, setError] = useState(false);
   const [questions, setQuestions] = useState(quest);
@@ -26,18 +26,34 @@ export default function Task ({route}) {
 
   useEffect(() => 
   { if(questions===undefined || questions === null)
-    { BackEndConnect("POST","detai",formato()).then(async (response) =>
-      { var questAns = response.ans.tas;
+    { BackEndConnect('POST','taskd',formato()).then(async (response) =>
+      { if (response.ans.stx!='ok')
+        { await AsyncStorage.clear();
+          Toast.show(
+          { type: 'error',
+            props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
+            },
+            autohide: false
+          });
+          navigation.reset({
+            index: 0,
+            routes: 
+            [ { name: 'login',
+              }
+            ],
+          }); 
+        }
+        var questAns = response.ans.tas;
         setQuestions(questAns);
         questAns = JSON.stringify(questAns);
         AsyncStorage.multiSet([['@quest',questAns],['@tid',tid.toString()],['@comp',completed.toString()]]);
         setLoading(false);
       })
-      .catch((ans) =>
+      .catch(async (ans) =>
       { console.log(ans);
         setError(true);
         setLoading(false);
-        AsyncStorage.removeItem('@ott');
+        await AsyncStorage.clear();
         Toast.show(
         { type: 'error',
           props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
@@ -50,9 +66,8 @@ export default function Task ({route}) {
           [ { name: 'login',
             }
           ],
-          });
-        }
-      );
+        });
+      });
     }
     else if(typeof questions == 'string')
     { setQuestions(JSON.parse(questions));
@@ -63,7 +78,7 @@ export default function Task ({route}) {
     }
   },[questions])
   if (loading)
-  { return <Loading text="Iniciando tarea..." />
+  { return <Loading text='Iniciando tarea...' />
   }
   else
   { if (error)
@@ -73,7 +88,7 @@ export default function Task ({route}) {
     { return(
         <ScrollView>
           <View>
-            <TaskQuestion questions={questions} tid={tid} completed={completed} taskData={taskData} update={update} uri={uri}/>
+            <TaskQuestion questions={questions} tid={tid} completed={completed} backAnsFormat={backAnsFormat} update={update} frontAnsFormat={frontAnsFormat}/>
           </View>
           <Divider style= {styles.divider} />
           <View style={styles.viewZolbit}>
@@ -93,17 +108,17 @@ const styles = StyleSheet.create({
     marginLeft: 40,
     marginTop: 15,
     marginBottom:5,
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   btnCloseSession:{
     marginTop:10,
     borderRadius:20,
-    backgroundColor:"#D0021B",
+    backgroundColor:'#D0021B',
     borderTopWidth: 1,
-    borderTopColor:"#e3e3e3",
+    borderTopColor:'#e3e3e3',
     borderBottomWidth: 1,
-    borderBottomColor:"#e3e3e3",
+    borderBottomColor:'#e3e3e3',
     paddingTop: 10,
     paddingBottom:10,
     marginBottom:10,
@@ -118,39 +133,39 @@ const styles = StyleSheet.create({
     marginBottom:50,
     marginHorizontal:20,
     fontSize: 17,
-    textAlign:"justify"
+    textAlign:'justify'
   },
   textRegister:{
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   btnRegister:{
-    color: "#6B35E2",
-    fontWeight: "bold"
+    color: '#6B35E2',
+    fontWeight: 'bold'
   },
   divider:{
-    backgroundColor: "#6B35E2",
+    backgroundColor: '#6B35E2',
     margin: 20
   },
   viewZolbit:{
-    justifyContent: "center",
-    alignItems: "center", 
+    justifyContent: 'center',
+    alignItems: 'center', 
   },
   textZolbit: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   customBtnText: {
     fontSize: 20,
-    fontWeight: "400",
+    fontWeight: '400',
     marginVertical:5
   },
   customBtnTextContent: {
     marginBottom:100,
-    textAlign: "justify"
+    textAlign: 'justify'
   },
   customBtn: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     paddingHorizontal: 30,
     paddingVertical: 5,
     borderRadius: 10,
@@ -161,23 +176,23 @@ const styles = StyleSheet.create({
     flex: .5,
     flexDirection: 'row',
     justifyContent: 'flex-start', //replace with flex-end or center
-    alignItems:"center"
+    alignItems:'center'
   },
   wrapper: {
     flex: 1,
   },
   btnContainer: {
     marginTop: 20,
-    width: "95%",
+    width: '95%',
     marginLeft: 10,
   },
   btn: {
-    backgroundColor: "#6B35E2",
+    backgroundColor: '#6B35E2',
     borderRadius: 50,
   },
   loaderTask:{
     marginTop:100,
     marginBottom:10,
-    alignItems:"center",
+    alignItems:'center',
   }
 });

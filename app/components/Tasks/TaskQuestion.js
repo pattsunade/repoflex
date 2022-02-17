@@ -247,7 +247,7 @@ export default function TaskQuestion (props) {
             { compArr.map((arr,index) =>
               { return(
                   <TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
-                    navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,prevAns:frontData[index].aid})
+                    navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,prevAns:frontData[index]})
                   }>
                     <View style={styles.container}>
                       <Icon

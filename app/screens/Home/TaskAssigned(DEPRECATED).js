@@ -1,12 +1,12 @@
-import React, { useState,useCallback } from "react";
-import { StyleSheet, View,Text,ActivityIndicator} from "react-native";
+import React, { useState,useCallback } from 'react';
+import { StyleSheet, View,Text,ActivityIndicator} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useNavigation } from "@react-navigation/native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useNavigation } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/BackEndConnect';
 import Toast from 'react-native-toast-message';
-import ListTask from "../../components/Home/ListTask";
+import ListTask from '../../components/Home/ListTask';
 
 export default function TaskAssigned({route}) {
   const {lati,long} = route.params;
@@ -15,8 +15,8 @@ export default function TaskAssigned({route}) {
   const [dataPending, setDataPending] = useState([]);
   const [dataInProgress, setInDataProgress] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState("");
-  const [msp, setMsp] = useState("");
+  const [msg, setMsg] = useState('');
+  const [msp, setMsp] = useState('');
 
   function formato() {
     return{
@@ -28,7 +28,7 @@ export default function TaskAssigned({route}) {
 
   useFocusEffect(
     useCallback(() =>
-      { BackEndConnect("POST","tasks",formato()).then(async (response) =>
+      { BackEndConnect('POST','tasks',formato()).then(async (response) =>
         { const array = response.ans.tas;
           const arrayPending = [];
           const arrayInProgress = [];
@@ -101,12 +101,12 @@ export default function TaskAssigned({route}) {
     <>
       { loading ? 
         ( <View style={styles.loaderTask}>
-            <ActivityIndicator  size="large" color="#0000ff"/>
+            <ActivityIndicator  size='large' color='#0000ff'/>
             <Text>Cargando Tareas</Text>
           </View>):
         ( <Tab.Navigator>
-            <Tab.Screen name="Pendientes" component={Pending} />
-            <Tab.Screen name="En progreso" component={InProgress} />
+            <Tab.Screen name='Pendientes' component={Pending} />
+            <Tab.Screen name='En progreso' component={InProgress} />
           </Tab.Navigator>)
       }
     </>
@@ -115,7 +115,7 @@ export default function TaskAssigned({route}) {
 
 const styles = StyleSheet.create({
   logo: {
-    width: "100%",
+    width: '100%',
     height: 150,
     marginTop: 20
   },
@@ -126,16 +126,16 @@ const styles = StyleSheet.create({
   loaderTask: {
     marginTop:100,
     marginBottom: 10,
-    alignItems: "center"
+    alignItems: 'center'
   },
   title:{
     textAlign: 'center',
-    fontWeight:"bold",
+    fontWeight:'bold',
     paddingBottom:5,
     marginTop:10,
     marginBottom:10,
     fontSize:20,
-    //color: "#6B35E2",
-    justifyContent:"center"
+    //color: '#6B35E2',
+    justifyContent:'center'
   }
 });

@@ -80,7 +80,7 @@ export default function QuizTaskRun (props) {
               params:
               { tid:tid,
                 backAnsFormat:{qid:qidd,aid:'pic'},
-                frontAnsFormat:{qid:qidd,aid:image},
+                frontAnsFormat:image,
                 update:true
               },
               merge: true
@@ -93,7 +93,7 @@ export default function QuizTaskRun (props) {
               { completed:completed+1,
                 tid:tid,
                 backAnsFormat:{qid:qidd,aid:"pic"},
-                frontAnsFormat:{qid:qidd,aid:image}
+                frontAnsFormat:image
               },
               merge: true
             });
@@ -176,7 +176,7 @@ export default function QuizTaskRun (props) {
           params: 
           { tid:tid,
             backAnsFormat:{qid:qid,aid:backAns},
-            frontAnsFormat:{qid:qid,aid:frontAns ? frontAns:backAns},
+            frontAnsFormat:frontAns ? frontAns:backAns,
             update:true
           },
           merge: true
@@ -190,7 +190,7 @@ export default function QuizTaskRun (props) {
             { completed:completed+1,
               tid:tid,
               backAnsFormat:{qid:qid,aid:backAns},
-              frontAnsFormat:{qid:qid,aid:frontAns ? frontAns:backAns}
+              frontAnsFormat:frontAns ? frontAns:backAns
             },
             merge: true
           });

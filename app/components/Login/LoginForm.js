@@ -31,7 +31,15 @@ export default function LoginForm()
     }
     else
     { BackEndConnect("POST","auten",formato(formData)).then(async (response) => 
-      { if (response.ans.stx === "wk")
+      { if (response.ans.stx === "nk")
+        { Toast.show(
+          { type: 'error',
+            props: {onPress: () => {}, text1: 'Error', text2: 'Porfavor intenta más tarde'
+            }
+          });
+          setLoading(false);
+        }
+        else if (response.ans.stx === "wk")
         { Toast.show(
           { type: 'error',
             props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
@@ -51,6 +59,16 @@ export default function LoginForm()
           index: 0,
             routes: 
             [ { name: 'rejected'
+              }
+            ],
+          });
+          setLoading(false);
+        }
+        else if(response.ans.stx === "vk")
+        { navigation.reset({ 
+          index: 0,
+            routes: 
+            [ { name: 'outdated'
               }
             ],
           });
@@ -211,6 +229,7 @@ export default function LoginForm()
     return{
       usr : objeto.rut,
       psw : objeto.psw,
+      vers: 13,
       orig : 'app'
     }
   }

@@ -7,7 +7,7 @@ import RecoverPassword from "../screens/LogIn/RecoverPassword";
 import NewPassword from "../screens/LogIn/NewPassword";
 import Rejected from "../screens/LogIn/Rejected";
 import EmailVerification from "../screens/LogIn/EmailVerification";
-// import EmailVerificationA from "../screens/LogIn/EmailVerificationA";
+import Outdated from "../screens/LogIn/Outdated";
 
 const Stack = createStackNavigator();
 export default function LogInStack({route})
@@ -50,12 +50,12 @@ export default function LogInStack({route})
         options={{title: "Rechazado"}}
         //options={{headerShown: false}}
       />
-      {/*<Stack.Screen
-        name="emailverificationA"
-        component={EmailVerificationA}
-        options={{title: "Verificar Email"}}
+      <Stack.Screen
+        name="outdated"
+        component={Outdated}
+        options={{title: "Actualizar"}}
         //options={{headerShown: false}}
-      />*/}
+      />
       <Stack.Screen
         name="newPassword"
         component={NewPassword}

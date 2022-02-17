@@ -18,7 +18,7 @@ export default function Task ({route}) {
   const [questions, setQuestions] = useState(quest);
   const [loading, setLoading] = useState(true);
   
-  function formato() 
+  function formato()
   { return{
       tid: tid
     };

@@ -1,21 +1,76 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text,TouchableOpacity} from 'react-native';
+import React, { useEffect,useState } from 'react';
+import { StyleSheet, View, Text, ActivityIndicator} from 'react-native';
 import { Card } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { Divider, Button } from 'react-native-elements';
 import BackEndConnect from '../../utils/BackEndConnect';
+import Toast from 'react-native-toast-message';
 import Loading from '../../components/Loading';
 
-export default function DetailTask({route,navigation}) 
-{ const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig,wen,start,abort,assign} = route.params;
-  const [loading, setLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState('');
+export default function TaskDetail({route,navigation}) 
+{ const {tit,typ,tid,pla,amo,sig,wen,start,abort,assign} = route.params;
+  const [loading, setLoading] = useState(true);
+  const [taskDetail, setTaskDetail] = useState();
+  const [det,setDet] = useState();
+  const [tim,setTim] = useState();
+  const [nqu,setNqu] = useState();
+  const [npi,setNpi] = useState();
+  const [nre,setNre] = useState();
+  const [loadingText, setLoadingText] = useState('Cargando detalles...');
 
-  function formato() 
+  function getTaskDetail()
+  { BackEndConnect('POST','taskq',formato()).then((response) => 
+    { if(response.ans.stx==='ok')
+      { setDet(response.ans.det);
+        setNqu(response.ans.nqu);
+        setNpi(response.ans.npi);
+        setNre(response.ans.nre);
+        setTim(response.ans.tim);
+        setLoading(false);
+      }
+      else
+      { navigation.reset({
+          index: 0,
+          routes: 
+          [ { name: 'login',
+            }
+          ],
+        });
+        Toast.show(
+        { type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '
+          },
+          autohide: false
+        });
+      }
+    })
+    .catch((ans) =>
+    { Toast.show(
+      { type: 'error',
+        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '
+        },
+        autohide: false
+      });
+      navigation.reset({
+        index: 0,
+        routes: 
+        [ { name: 'login',
+          }
+        ],
+      });
+    });
+  }
+
+  useEffect(()=>
+  { getTaskDetail();
+  },[]);
+
+  function formato()
   { return{
       tid: tid,
     };
   }
+
 
   function assingFun()
   { setLoadingText('Asignando tarea...');
@@ -36,7 +91,7 @@ export default function DetailTask({route,navigation})
     { console.log(ans);
       Toast.show(
       { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '+ans1.ans.msg
+        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '
         },
         autohide: false
       });
@@ -60,14 +115,14 @@ export default function DetailTask({route,navigation})
     setLoading(true);
     BackEndConnect("POST","abort",formato()).then(async (response) => 
     { if(response.ans.stx!="ok")
-    { Toast.show(
-      {
-        type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
-        },
-        autohide: false
-      });
-    }
+      { Toast.show(
+        {
+          type: 'error',
+          props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+          },
+          autohide: false
+        });
+      }
       navigation.reset({
       index: 0,
       routes: 
@@ -81,7 +136,7 @@ export default function DetailTask({route,navigation})
     { console.log(ans);
       Toast.show(
       { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente'+ans1.ans.msg
+        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente'
         },
         autohide: false
       });
@@ -90,7 +145,11 @@ export default function DetailTask({route,navigation})
 
   return(
   <>
-    { loading ? (<Loading text={loadingText}/>)
+    { loading ? (
+      <View style={styles.loaderTask}>
+        <ActivityIndicator  size="large" color="#0000ff"/>
+        <Text>{loadingText}</Text>
+      </View>)
       :(<Card style={styles.parentView}>
           <View style={styles.taskTypeView}>
             <View style={styles.circleView}>
@@ -106,7 +165,8 @@ export default function DetailTask({route,navigation})
             <Text style={styles.taskText}>Fecha: <Text style={styles.textDetail}>{wen.substring(4,6)}/{wen.substring(2,4)}/{wen.substring(0,2)} {wen.substring(6,8)}:{wen.substring(8,10)}</Text></Text>
             <Text style={styles.taskText}>Detalle: <Text style={styles.taskDetail}>{det} </Text></Text>
             <Text style={styles.taskText}>A pagar: <Text style={styles.boldTaskDetail}>$ {amo}</Text></Text>
-            <Text style={styles.taskText}>Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text></Text>
+            { parseInt(tim) > 0 && <Text style={styles.taskText}>Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text></Text>
+            }
           </View>
           <Divider style= {styles.divider}/>
           <View style={styles.activityView}>
@@ -242,5 +302,10 @@ const styles = StyleSheet.create(
     borderRadius:50,
     marginHorizontal:8,
     marginBottom:10
+  },
+  loaderTask: {
+    marginTop:50,
+    marginBottom: 10,
+    alignItems: "center",
   },
 });

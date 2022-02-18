@@ -381,9 +381,8 @@ export default function QuizTaskRun (props) {
                 onPress={() => handleAnswerOptionClick(stars,questions.qid)}
               />
             </View>
-          </View>
-          
-        ):questions.aty == 5 ?
+          </View>  
+        ):questions.aty == 5 || questions.aty == 7 ?
         ( <View style={styles.activityParentView}>
             <Text style={styles.title}>{questions.tiq}</Text>
             <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>

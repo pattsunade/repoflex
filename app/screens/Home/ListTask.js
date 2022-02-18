@@ -5,16 +5,19 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator} from 'react-native
 import { Divider, Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from '../../utils/BackEndConnect';
 
 export default function ListTask({route}){ 
   const navigation = useNavigation();
   const {lati,long,start,abort,assign,type} = route.params;
-  const [taskList, setTaskList] = useState();
+  const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [requestNum, setRequestNum] = useState(1);
+  const [pendingTaskList, setPendingTaskList] = useState();
+  const [taskHomeNum, setTaskHomeNum] = useState(0);
   const [msg, setMsg] = useState('');
 
   function formato(pag,tat) {
@@ -26,20 +29,23 @@ export default function ListTask({route}){
     };
   }
 
-  function getTasks(pag,tat)
-  { BackEndConnect('POST','tasks',formato(pag,tat)).then((response) =>
+  const getTasks = (pag,tat) =>
+  { BackEndConnect('POST','tasks',formato(pag,tat)).then(async (response) =>
     { if (response.ans.stx === 'ok')
       { let taskArray = response.ans.tax;
         let taskNum = parseInt(response.ans.knx);
         let taskTypeArray = response.ans.ltt;
+        let newHomeTaskNum = taskHomeNum+taskNum;
         setMsg(response.ans.msg);
+        setPendingTaskList(response.ans.mas);
+        setTaskHomeNum(newHomeTaskNum);
         if(taskArray != undefined)
         { for(let i=0;i<taskNum;i++)
           { let taskType = taskArray[i].lto;
             taskArray[i]['sig'] = taskTypeArray[taskType].sig;
             taskArray[i]['typ'] = taskTypeArray[taskType].typ;
           }
-          if(requestNum>1)
+          if(pag>1)
             setTaskList(taskList.concat(taskArray));
           else
             setTaskList(taskArray);
@@ -53,7 +59,13 @@ export default function ListTask({route}){
           props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
           }
         });
-        setLoading(false);
+        navigation.reset({
+          index: 0,
+          routes: 
+          [ { name: 'login',
+            }
+          ],
+        });
       }
     }).catch((e) => 
       { console.log(e);
@@ -69,15 +81,20 @@ export default function ListTask({route}){
 
   function refreshTaskList()
   { setRefreshLoading(true);
-    setRefresh(!refresh)
     setRequestNum(1);
+    getTasks(1,type);
   }
 
   useFocusEffect(
-    useCallback(() => {
-      const unsubscribe = getTasks(requestNum,type);
-      return () => unsubscribe;
-    }, [requestNum,refresh])
+    useCallback(() =>
+    { 
+      // console.log('me llamaron');
+      // setLoading(true);
+      if (pendingTaskList!= '0')
+      { const unsubscribe = getTasks(requestNum,type);
+        return () => unsubscribe;
+      }
+    }, [requestNum])
   );
 
   function Tasks(props){
@@ -111,11 +128,6 @@ export default function ListTask({route}){
               tid:tid,
               pla:pla,
               amo:amo,
-              det:det,
-              tim:tim,
-              nqu:nqu,
-              npi:npi,
-              nre:nre,
               sig:sig,
               wen:wen,
               start:start,
@@ -123,7 +135,7 @@ export default function ListTask({route}){
               abort:abort
             })}
           />
-        </View>      
+        </View>
       </Card>
     );
   }
@@ -144,8 +156,8 @@ export default function ListTask({route}){
               data={taskList}
               renderItem={(data) => <Tasks lista={data} start={start} assign={assign} abort={abort}/>}
               keyExtractor={(item, index) => index.toString()}
-              onEndReached={()=>setRequestNum(requestNum+1)}
-              onEndReachedThreshold={.8}
+              onEndReached={()=>pendingTaskList!= '0' && setRequestNum(requestNum+1)}
+              onEndReachedThreshold={3}
               refreshing={refreshLoading}
               onRefresh={()=>refreshTaskList()}
             />
@@ -170,6 +182,7 @@ const styles = StyleSheet.create({
   { marginRight: 10,
     marginLeft: 10,
     marginTop:20,
+    marginBottom:20,
     borderWidth: 2,
     borderRadius:10,
     borderColor: '#000000'

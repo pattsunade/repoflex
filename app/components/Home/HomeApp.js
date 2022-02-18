@@ -17,9 +17,9 @@ export default function HomeApp(props) {
   const [amou, setAmou] = useState();
   const [avai, setAvai] = useState();
   const [asgn, setAsgn] = useState();
-  const [proc, setProc] = useState();
+  // const [proc, setProc] = useState();
   const [envi, setEnvi] = useState();
-  const [chck, setChck] = useState();
+  // const [chck, setChck] = useState();
   const [fini, setFini] = useState();
   const [loca, setLoca] = useState();
   const [levl, setLevl] = useState();
@@ -44,9 +44,53 @@ export default function HomeApp(props) {
     };
   }
 
+  function getHomeData(latitude,longitude)
+  { BackEndConnect('POST','house',formato(latitude,longitude)).then((response) => 
+    { const notificaciones = [];
+      for (var i = 0; i < response.ans.noti.length; i++)
+      { var counter = response.ans.noti[i];
+        notificaciones.push(counter);
+      }
+      setAmou(response.ans.amou);
+      setName(response.ans.name);
+      setRank(response.ans.rank);
+      setAvai(response.ans.avai);
+      setAsgn(response.ans.asgn);
+      // setProc(response.ans.proc);
+      setEnvi(response.ans.envi);
+      // setChck(response.ans.chck);
+      setFini(response.ans.fini);
+      if(latitude!=999)
+        setLoca(response.ans.loca);
+      setLevl(response.ans.levl);
+      setNoti(notificaciones);
+      setWork(response.ans.work);
+      setLoading(false);
+    })
+    .catch((ans) => 
+      { console.log(ans);
+        Toast.show(
+          { type: 'error',
+            props: 
+            { onPress: () => {}, text1: 'Error', text2: 'Error conexión. Porfavor inicia sesión nuevamente'
+            }
+          }
+        );
+        navigation.reset(
+        { index: 0,
+          routes: [
+            { name: 'login',
+            }
+          ],
+        });
+      }
+    );
+  }
+
   useEffect(() => {
     const willFocusSubscription = navigation.addListener('focus', () => {
-      
+      setLoading(true);
+      getHomeData(999,999);
     });
     return willFocusSubscription;
   },[navigation]);
@@ -60,45 +104,7 @@ export default function HomeApp(props) {
       let longitude = location.coords.longitude.toString();
       setLati(latitude);
       setLong(longitude);
-      BackEndConnect('POST','house',formato(latitude,longitude)).then((response) => 
-      { const notificaciones = [];
-        for (var i = 0; i < response.ans.noti.length; i++)
-        { var counter = response.ans.noti[i];
-          notificaciones.push(counter);
-        }
-        setAmou(response.ans.amou);
-        setName(response.ans.name);
-        setRank(response.ans.rank);
-        setAvai(response.ans.avai);
-        setAsgn(response.ans.asgn);
-        setProc(response.ans.proc);
-        setEnvi(response.ans.envi);
-        setChck(response.ans.chck);
-        setFini(response.ans.fini);
-        setLoca(response.ans.loca);
-        setLevl(response.ans.levl);
-        setNoti(notificaciones);
-        setWork(response.ans.work);
-        setLoading(false);
-      })
-      .catch((ans) => 
-        { console.log(ans);
-          Toast.show(
-            { type: 'error',
-              props: 
-              { onPress: () => {}, text1: 'Error', text2: 'Error conexión. Porfavor inicia sesión nuevamente'
-              }
-            }
-          );
-          navigation.reset(
-          { index: 0,
-            routes: [
-              { name: 'login',
-              }
-            ],
-          });
-        }
-      );
+      getHomeData(latitude,longitude);
     }
     catch(e)
     { console.error(e);
@@ -214,7 +220,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key='3'
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],start:[true,true],abort:[false,true],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
                 Chevron
                 bottomDivider
               >
@@ -229,7 +235,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key='4'
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],start:[true,true],abort:[false,true],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
                 Chevron
                 bottomDivider
               >

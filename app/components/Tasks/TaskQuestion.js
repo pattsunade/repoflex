@@ -31,7 +31,7 @@ export default function TaskQuestion (props) {
           props: {onPress: () => {}, text1: 'Éxito', text2: ans.ans.msg
           }
         });
-        AsyncStorage.multiRemove(['@tid','@quest','@backAnsFormat','@comp']).then(() =>
+        AsyncStorage.multiRemove(['@tid','@quest','@backAnsFormat','@comp','@frontAnsFormat']).then(() =>
         { setLoading(false);
           navigation.reset(
           { index: 0,
@@ -51,10 +51,10 @@ export default function TaskQuestion (props) {
       }
     }).catch((ans)=>
     { Toast.show(
-        { type: 'error',
-          props: {onPress: () => {}, text1: 'Éxito', text2: 'Error interno, por favor intenta nuevamente.'
-          }
-        });
+      { type: 'error',
+        props: {onPress: () => {}, text1: 'Éxito', text2: 'Error interno, por favor intenta nuevamente.'
+        }
+      });
     });
   }
 
@@ -69,7 +69,7 @@ export default function TaskQuestion (props) {
           },
           autohide: false
         });
-        AsyncStorage.multiRemove(['@tid','@quest','@backAnsFormat','@comp']).then(() =>
+        AsyncStorage.multiRemove(['@tid','@quest','@backAnsFormat','@comp','@frontAnsFormat']).then(() =>
         { setLoading(false);
           navigation.reset(
           { index: 0,
@@ -243,7 +243,7 @@ export default function TaskQuestion (props) {
                 )
               })
             }
-            <Text style={styles.subtitle}> Pasos Completados: {completed}</Text>
+            {compArr.length>0 && <Text style={styles.subtitle}> Actividades completadas: {completed}</Text>}
             { compArr.map((arr,index) =>
               { return(
                   <TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>

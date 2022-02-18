@@ -1,5 +1,6 @@
-import React,{ useEffect,useState } from 'react';
+import React,{ useEffect,useState,useCallback } from 'react';
 import { Card } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator} from 'react-native';
 import { Divider, Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
@@ -13,22 +14,20 @@ export default function ListTask({route}){
   const [loading, setLoading] = useState(true);
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [taskType, setTaskType] = useState(type[0] ? type[0]:type)
-  const [taskType2, setTaskType2] = useState(type[1]);
   const [requestNum, setRequestNum] = useState(1);
   const [msg, setMsg] = useState('');
 
-  function formato(pag) {
+  function formato(pag,tat) {
     return{
-      tat: taskType,//task type
+      tat: tat,//task type
       lat: lati,
       lon: long,
       pag: pag //requested page
     };
   }
 
-  function getTasks(pag)
-  { BackEndConnect('POST','tasks',formato(pag)).then((response) =>
+  function getTasks(pag,tat)
+  { BackEndConnect('POST','tasks',formato(pag,tat)).then((response) =>
     { if (response.ans.stx === 'ok')
       { let taskArray = response.ans.tax;
         let taskNum = parseInt(response.ans.knx);
@@ -54,13 +53,6 @@ export default function ListTask({route}){
           props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
           }
         });
-        navigation.reset(
-        { index: 0,
-          routes: [
-            { name: 'login',
-            }
-          ],
-        });
         setLoading(false);
       }
     }).catch((e) => 
@@ -71,26 +63,22 @@ export default function ListTask({route}){
           props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde'
             }
         });
-        navigation.reset(
-        { index: 0,
-          routes: [
-            { name: 'login',
-            }
-          ],
-        });
       }
     );
   }
 
   function refreshTaskList()
   { setRefreshLoading(true);
-    setRefresh(!refresh);
+    setRefresh(!refresh)
     setRequestNum(1);
   }
 
-  useEffect(()=>
-  { getTasks(requestNum);
-  },[requestNum,refresh]);
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = getTasks(requestNum,type);
+      return () => unsubscribe;
+    }, [requestNum,refresh])
+  );
 
   function Tasks(props){
     const navigation = useNavigation();
@@ -146,7 +134,7 @@ export default function ListTask({route}){
             <ActivityIndicator  size="large" color="#0000ff"/>
             <Text>Cargando Tareas...</Text>
           </View>):
-        taskList == null ?
+        taskList.length==0 ?
         ( <View>
             <Text style={styles.title}>{msg}</Text>
           </View>
@@ -157,7 +145,7 @@ export default function ListTask({route}){
               renderItem={(data) => <Tasks lista={data} start={start} assign={assign} abort={abort}/>}
               keyExtractor={(item, index) => index.toString()}
               onEndReached={()=>setRequestNum(requestNum+1)}
-              onEndReachedThreshold={1}
+              onEndReachedThreshold={.8}
               refreshing={refreshLoading}
               onRefresh={()=>refreshTaskList()}
             />
@@ -174,7 +162,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   loaderTask: {
-    marginTop:100,
+    marginTop:50,
     marginBottom: 10,
     alignItems: "center",
   },
@@ -253,5 +241,15 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginHorizontal:8,
     marginBottom:10,
+  },
+  title:{
+    textAlign: 'center',
+    fontWeight:'bold',
+    paddingBottom:5,
+    marginTop:10,
+    marginBottom:10,
+    fontSize:20,
+    //color: '#6B35E2',
+    justifyContent:'center'
   }
 });

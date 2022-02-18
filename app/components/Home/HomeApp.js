@@ -199,7 +199,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key='2'
-                onPress={()=> navigation.navigate('listtask',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas'})}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
                 Chevron
                 bottomDivider
               >
@@ -214,7 +214,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key='3'
-                onPress={()=> navigation.navigate('listtask',{lati,long,type:[4,5],start:[true,true],abort:[false,true],title:'Tareas Enviadas'})}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],start:[true,true],abort:[false,true],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
                 Chevron
                 bottomDivider
               >
@@ -229,7 +229,7 @@ export default function HomeApp(props) {
               </ListItem>
               <ListItem
                 key='4'
-                onPress={()=> navigation.navigate('listtask',{lati,long,type:[6,7],start:[true,true],abort:[false,true],title:'Tareas Finalizadas'})}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],start:[true,true],abort:[false,true],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
                 Chevron
                 bottomDivider
               >

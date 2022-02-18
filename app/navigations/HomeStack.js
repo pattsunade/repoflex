@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Home from '../screens/Home/Home';
 import ListTask from '../screens/Home/ListTask';
+import ListTaskTab from '../screens/Home/ListTaskTab';
 import Notification from '../screens/Home/Notification';
 import TaskDetail from '../screens/Home/TaskDetail';
 
@@ -22,6 +23,12 @@ export default function HomeStack({route})
       <Stack.Screen
         name='listtask'
         component={ListTask}
+        options={({ route }) => ({ title: route.params.title })}
+        //options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name='listtasktab'
+        component={ListTaskTab}
         options={({ route }) => ({ title: route.params.title })}
         //options={{headerShown: false}}
       />

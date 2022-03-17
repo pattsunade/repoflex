@@ -8,6 +8,7 @@ To run in development mode, install the following:
 
 - [Npm](https://nodejs.org/dist/v16.14.0/node-v16.14.0-x64.msi)
 - Yarn using npm: `$ npm install --global yarn`
+- Expo using npm: `$ npm install -g expo-cli`
 
 - [Java 8 JDK](https://www.oracle.com/java/technologies/downloads/#java8-windows)
 - [Android Studio](https://developer.android.com/studio)

@@ -50,7 +50,7 @@ If gradle throws 'kotlin could not find the required jdk tools in the java insta
 
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
 
-Cocoapods by using brew: `$ brew install cocoapods`
+- Cocoapods by using brew: `$ brew install cocoapods`
 
 Open Repoflex.xcodeproj and Repoflex.xcworkspace. This will open Xcode.
 

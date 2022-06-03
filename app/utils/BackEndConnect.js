@@ -3,13 +3,15 @@ import Toast from 'react-native-toast-message';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 
+// const IP = "http://prod.repoflex.cl";
+const IP = "http://104.237.140.131:30000/app"
+const PORT = "30000";
+const PATH = "/app";
+
 export default function BackEndConnect(method=null, req=null, body=null){
-  const ip = "http://prod.repoflex.cl";
-  const port = "30000";
-  const dir = "/app";
   
   async function Connect(method, req, body, ott, txi, phid){
-    let url = ip + ":" + port + dir;
+    let url = IP + ":" + PORT + PATH;
     if (body == null){
       console.log("pidiendo datos");
       var backResponse = await fetch(url, {

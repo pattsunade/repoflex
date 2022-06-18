@@ -1,205 +1,80 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
-import { ListItem, Button,Icon } from "react-native-elements";
-import { map } from "lodash";
+import { ListItem, Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
-import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
-import ChangeEmailForm from "./ChangeEmailForm";
-import ChangePasswordForm from "./ChangePasswordForm";
 
-export default function AccountOptions(props) {
-  const {usr} = props;
-  const navigation = useNavigation();
-  function generateOptions()
-  { return [
-      {
-        title: "Cuenta",
-        iconType: "material-community",
-        iconNameLeft: "account-circle",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "account-circle",
-        iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("personaldata",{usr:usr}),
-      },
-      // {
-      //   title: "Ranking",
-      //   iconType: "material-community",
-      //   iconNameLeft: "people",
-      //   iconColorLeft: "#6B35E2",
-      //   iconNameRight: "people",
-      //   iconColorRight: "#6B35E2",
-      //   // onPress: () => selectedComponent("password"),
-      // },
-      // {
-      //   title: "Configuraciones",
-      //   iconType: "material-community",
-      //   iconNameLeft: "subject",
-      //   iconColorLeft: "#6B35E2",
-      //   iconNameRight: "subject",
-      //   iconColorRight: "#6B35E2",
-      //   // onPress: () => selectedComponent("password"),
-      // },
-    ];
-  }
+function CustomListItem ({ onPress, leftIcon, rightIcon, text }) {
 
-  function generateOptionsdos()
-  { return [
-      {
-        title: "Cambiar contraseña",
-        iconType: "material-community",
-        iconNameLeft: "lock",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "lock",
-        iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("changepassword",{usr:usr})
-      },
-      {
-        title: "Preguntas frecuentes",
-        iconType: "material-community",
-        iconNameLeft: "live-help",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "chevron-right",
-        iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("frequentquestions")
-      },
-      // {
-      //   title: "Invitar a un amigo",
-      //   iconType: "material-community",
-      //   iconNameLeft: "group-add",
-      //   iconColorLeft: "#6B35E2",
-      //   iconNameRight: "chevron-right",
-      //   iconColorRight: "#6B35E2",
-      // },
-      // {
-      //   title: "Referidos",
-      //   iconType: "material-community",
-      //   iconNameLeft: "supervised-user-circle",
-      //   iconColorLeft: "#6B35E2",
-      //   iconNameRight: "chevron-right",
-      //   iconColorRight: "#6B35E2",
-      // },
-      {
-        title: "Acerca de la App",
-        iconType: "material-community",
-        iconNameLeft: "info",
-        iconColorLeft: "#6B35E2",
-        iconNameRight: "chevron-right",
-        iconColorRight: "#6B35E2",
-        onPress: () => navigation.navigate("about")
-      },
-      // {
-      //   title: "Evalúanos",
-      //   iconType: "material-community",
-      //   iconNameLeft: "star-border",
-      //   iconColorLeft: "#6B35E2",
-      //   iconNameRight: "chevron-right",
-      //   iconColorRight: "#6B35E2",
-      // },
-      
-    ];
-  }
-
-  // const selectedComponent = (key) => {
-  //   switch (key) {
-  //     case "displayName":
-  //       setRenderComponent(
-  //         <ChangeDisplayNameForm
-  //           displayName={userInfo.displayName}
-  //           setShowModal={setShowModal}
-  //           toastRef={toastRef}
-  //           setRealoadUserInfo={setRealoadUserInfo}
-  //         />
-  //       );
-  //       setShowModal(true);
-  //       break;
-  //     case "email":
-  //       setRenderComponent(
-  //         <ChangeEmailForm
-  //           email={userInfo.email}
-  //           setShowModal={setShowModal}
-  //           toastRef={toastRef}
-  //           setRealoadUserInfo={setRealoadUserInfo}
-  //         />
-  //       );
-  //       setShowModal(true);
-  //       break;
-  //     case "password":
-  //       setRenderComponent(
-  //         <ChangePasswordForm setShowModal={setShowModal} toastRef={toastRef} />
-  //       );
-  //       setShowModal(true);
-  //       break;
-  //     default:
-  //       setRenderComponent(null);
-  //       setShowModal(false);
-  //       break;
-  //   }
-  // };
-
-  const menuOptions = generateOptions();
-  const menuOptions2 = generateOptionsdos();
-  
-  return (
-    <ScrollView>
-      <View style={styles.menuBorder}>
-        <Text style={styles.titleSecction}>{"  "}GENERAL</Text>
-        {map(menuOptions, (menu, index) => (
-          <ListItem
-            key={index}
-            title={menu.title}
-            leftIcon={{
-              type: menu.iconType,
-              name: menu.iconNameLeft,
-              color: menu.iconColorLeft,
-            }}
-            rightIcon={{
-              type: menu.iconType,
-              name: menu.iconNameRight,
-              color: menu.iconColorRight,
-            }}
-            containerStyle={styles.menuItem}
-            onPress={menu.onPress}
-            Chevron
-          >
-          <Icon name={menu.iconNameLeft} color="#6B35E2"/>
-          <ListItem.Content>
-          <ListItem.Title containerStyle={styles.menuItem}>{menu.title}</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Chevron color="#6B35E2" />
-          </ListItem>
-        ))}
-        <Text style={styles.titleSecction}>{"  "}OTROS</Text>
-        {map(menuOptions2, (menu, index) => (
-        <ListItem
-          key={index}
-          title={menu.title}
-          leftIcon={{
-            type: menu.iconType,
-            name: menu.iconNameLeft,
-            color: menu.iconColorLeft,
-          }}
-          rightIcon={{
-            type: menu.iconType,
-            name: menu.iconNameRight,
-            color: menu.iconColorRight,
-          }}
-          containerStyle={styles.menuItem}
-          onPress={menu.onPress}
-          Chevron
-        >
-          
-        <Icon name={menu.iconNameLeft} color="#6B35E2"/>
-        <ListItem.Content>
-        <ListItem.Title containerStyle={styles.menuItem}>{menu.title}</ListItem.Title>
-        </ListItem.Content>
-        <ListItem.Chevron color="#6B35E2" />
+    return (
+        <ListItem containerStyle={styles.menuItem} onPress={onPress}>
+            {leftIcon}
+            <ListItem.Content>
+                <ListItem.Title containerStyle={styles.menuItem}>
+                    {text}
+                </ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Chevron color="#6B35E2" />
         </ListItem>
-      ))}
-      </View>
-    </ScrollView>
-  );
+    )
 }
 
+function AccountOptions(props) {
+    const {usr} = props;
+    const navigation = useNavigation();
+
+    const menuOptions1 = React.useMemo(() => ([
+        {
+            title: "Cuenta",
+            leftIcon: <Icon type={"material-community"} name={"account-circle"} color="#6B35E2" size={24}/>,
+            onPress: () => navigation.navigate("personaldata",{usr:usr}),
+        }
+    ]),[]);
+    const menuOptions2 = React.useMemo(() => ([
+        {
+            title: "Cambiar contraseña",
+            leftIcon: <Icon type={"material-community"} name={"lock"} color="#6B35E2" size={24}/>,
+            onPress: () => navigation.navigate("changepassword",{usr:usr})
+        },
+        {
+            title: "Preguntas frecuentes",
+            leftIcon: <Icon type={"material"} name={"live-help"} color="#6B35E2" size={24}/>,
+            onPress: () => navigation.navigate("frequentquestions")
+        },
+        {
+            title: "Acerca de la App",
+            leftIcon: <Icon type={"material"} name={"info"} color="#6B35E2" size={24}/>,
+            onPress: () => navigation.navigate("about")
+        }
+    ]), []);
+    
+    return (
+
+        <ScrollView>
+        <View style={styles.menuBorder}>
+            <Text style={styles.titleSecction}>{"  "}GENERAL</Text>
+            {menuOptions1.map(option => (
+                <CustomListItem key={option.title}
+                    leftIcon={option.leftIcon}
+                    text={option.title}
+                    onPress={option.onPress}
+                />
+            ))}
+            
+            
+            <Text style={styles.titleSecction}>{"  "}OTROS</Text>
+            {menuOptions2.map(option => (
+                <CustomListItem key={option.title}
+                    leftIcon={option.leftIcon}
+                    text={option.title}
+                    onPress={option.onPress}
+                />
+            ))}
+        </View>
+        </ScrollView>
+    );
+}
+
+export default AccountOptions;
 const styles = StyleSheet.create({
   menuItem: {
     borderBottomWidth: 1,

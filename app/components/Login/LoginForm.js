@@ -1,14 +1,15 @@
 import React, { useState, useRef} from "react";
 import { StyleSheet,View,Text,AppState,TextInput } from "react-native";
-import { Icon, Button } from "react-native-elements";
+import { Button, Icon } from "react-native-elements";
+// import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { isEmpty } from "lodash";
 import { useNavigation } from "@react-navigation/native";
-import { validateEmail } from "../../utils/validations";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from '../../utils/BackEndConnect';
 import { clean } from "../../utils/rut";
+
 
 function CreateAccount(){
 
@@ -265,10 +266,10 @@ export default function LoginForm() {
 				maxLength={15}
 				/>
 				<Icon
-				type="material-community"
-				name={showPassword ? "eye-outline" : "eye-off-outline"}
-				iconStyle={styles.iconRight}
-				onPress={() => setShowPassword(!showPassword)}
+					type="material-community"
+					name={showPassword ? "eye-outline" : "eye-off-outline"}
+					iconStyle={styles.iconRight}
+					onPress={() => setShowPassword(!showPassword)}
 				/>
 			</View>
 			<View style={styles.viewError}>
@@ -318,6 +319,7 @@ const styles = StyleSheet.create({
   },
   iconRight: {
     color:"#AC9DC9",
+	// fontSize: 20
   },
   btnContainerLogin: {
     marginTop: 20,

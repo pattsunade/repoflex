@@ -6,7 +6,7 @@ export function clean (rut) {
         : ''
 }
 
-export function validate (rut) {
+export function validarRut (rut) {
     if (typeof rut !== 'string') {
         return false
     }
@@ -15,7 +15,7 @@ export function validate (rut) {
     // so a rut like 00000000-0 will not pass
     if (/^0+/.test(rut)) {
         return false
-    }ß
+    }
   
     if (!/^0*(\d{1,3}(\.?\d{3})*)-?([\dkK])$/.test(rut)) {
         return false
@@ -76,9 +76,9 @@ export function getCheckDigit (input) {
     if (checkDigit === 10) {
     return 'K'
     } else if (checkDigit === 11) {
-    return '0'
+        return '0';
     } else {
-    return checkDigit.toString()
+        return checkDigit.toString();
     }
 }
 
@@ -86,5 +86,5 @@ export const customValidateRut = (rut) => {
     if (rut === undefined || rut === ""){
         return undefined
     }
-    return validate(rut)
+    return validarRut(rut)
 } 

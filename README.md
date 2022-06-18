@@ -46,6 +46,9 @@ Finally connect an android v8.0 or higher device and run `$ expo run:android`. M
 
 If gradle throws 'kotlin could not find the required jdk tools in the java installation', [check this article](https://docs.oracle.com/javase/9/install/installation-jdk-and-jre-macos.htm#JSJIG-GUID-577CEA7C-E51C-416D-B9C6-B1469F45AC78)
 
+on repoflex/android7gradle.properties
+org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_333.jdk/Contents/Home
+
 ### Ios
 
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)

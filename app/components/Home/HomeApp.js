@@ -10,123 +10,172 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from '../../utils/BackEndConnect';
 import moment from 'moment';
 
-export default function HomeApp(props) {
-  const navigation = useNavigation();
-  const [name, setName] = useState();
-  const [rank, setRank] = useState();
-  const [amou, setAmou] = useState();
-  const [avai, setAvai] = useState();
-  const [asgn, setAsgn] = useState();
-  // const [proc, setProc] = useState();
-  const [envi, setEnvi] = useState();
-  // const [chck, setChck] = useState();
-  const [fini, setFini] = useState();
-  const [loca, setLoca] = useState();
-  const [levl, setLevl] = useState();
-  const [noti, setNoti] = useState();
-  const [tenp, setTenp] = useState();
-  const [work, setWork] = useState();
-  const [lati, setLati] = useState();
-  const [long, setLong] = useState();
-  const [loading, setLoading] = useState(true);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [dateObj, setDateObj] = useState(new Date());
-  const [displayDate, setDisplayDate] = useState('');
-  const [number, setNumber] = useState(0);
-  const RZ = String(rank).charAt(0);
-  const RR = String(rank).charAt(2);
-  const RI = String(rank).charAt(4);
-
-  function formato(lati,longi)
-  { return{
-      lat: lati,
-      lon: longi
+const formato = (lati,longi) => { 
+    return{
+        lat: lati,
+        lon: longi
     };
-  }
+}
 
-  function getHomeData(latitude,longitude)
-  { BackEndConnect('POST','house',formato(latitude,longitude)).then((response) => 
-    { const notificaciones = [];
-      for (var i = 0; i < response.ans.noti.length; i++)
-      { var counter = response.ans.noti[i];
-        notificaciones.push(counter);
-      }
-      setAmou(response.ans.amou);
-      setName(response.ans.name);
-      setRank(response.ans.rank);
-      setAvai(response.ans.avai);
-      setAsgn(response.ans.asgn);
-      // setProc(response.ans.proc);
-      setEnvi(response.ans.envi);
-      // setChck(response.ans.chck);
-      setFini(response.ans.fini);
-      if(latitude!=999)
-        setLoca(response.ans.loca);
-      setLevl(response.ans.levl);
-      setNoti(notificaciones);
-      setWork(response.ans.work);
-      setLoading(false);
-    })
-    .catch((ans) => 
-      { console.log(ans);
-        Toast.show(
-          { type: 'error',
-            props: 
-            { onPress: () => {}, text1: 'Error', text2: 'Error conexión. Porfavor inicia sesión nuevamente'
+function CustomListItem ({
+	onPress,
+	leftIcon,
+	counter, 
+	text,
+    ...props
+}) {
+	return (
+		<ListItem onPress={onPress} {...props}>
+			{leftIcon}
+			<ListItem.Content>
+				<ListItem.Title style={styles.menuItem}>
+					{text}
+				</ListItem.Title>
+			</ListItem.Content>
+			<ListItem.Content>
+				<ListItem.Title style={styles.numberItem}>
+					{counter}
+				</ListItem.Title>
+			</ListItem.Content>
+			<ListItem.Chevron color='#6B35E2' />
+		</ListItem>
+	)
+}
+
+export default function HomeApp(props) {
+    const navigation = useNavigation();
+    const [name, setName] = useState();
+    const [rank, setRank] = useState();
+    const [amou, setAmou] = useState();
+    const [avai, setAvai] = useState();
+    const [asgn, setAsgn] = useState();
+    // const [proc, setProc] = useState();
+    const [envi, setEnvi] = useState();
+    // const [chck, setChck] = useState();
+    const [fini, setFini] = useState();
+    const [loca, setLoca] = useState();
+    const [levl, setLevl] = useState();
+    const [noti, setNoti] = useState();
+    const [tenp, setTenp] = useState();
+    const [work, setWork] = useState();
+    const [lati, setLati] = useState();
+    const [long, setLong] = useState();
+    const [loading, setLoading] = useState(true);
+    const [isEnabled, setIsEnabled] = useState(false);
+    const [dateObj, setDateObj] = useState(new Date());
+    const [displayDate, setDisplayDate] = useState('');
+    const [number, setNumber] = useState(0);
+    const RZ = String(rank).charAt(0);
+    const RR = String(rank).charAt(2);
+    const RI = String(rank).charAt(4);
+
+    
+
+    const getHomeData = React.useCallback((latitude,longitude) => { 
+
+        BackEndConnect('POST','house',formato(latitude,longitude)).then((response) => { 
+            const notificaciones = [];
+            for (var i = 0; i < response.ans.noti.length; i++) { 
+                var counter = response.ans.noti[i];
+                notificaciones.push(counter);
             }
-          }
-        );
-        navigation.reset(
-        { index: 0,
-          routes: [
-            { name: 'login',
+            setAmou(response.ans.amou);
+            setName(response.ans.name);
+            setRank(response.ans.rank);
+            setAvai(response.ans.avai);
+            setAsgn(response.ans.asgn);
+            // setProc(response.ans.proc);
+            setEnvi(response.ans.envi);
+            // setChck(response.ans.chck);
+            setFini(response.ans.fini);
+            if(latitude!=999)
+                setLoca(response.ans.loca);
+            setLevl(response.ans.levl);
+            setNoti(notificaciones);
+            setWork(response.ans.work);
+            setLoading(false);
+        })
+        .catch((ans) => 
+        { console.log(ans);
+            Toast.show(
+            { type: 'error',
+                props: 
+                { onPress: () => {}, text1: 'Error', text2: 'Error conexión. Porfavor inicia sesión nuevamente'
+                }
             }
-          ],
-        });
-      }
-    );
-  }
-
-  useEffect(() => {
-    const willFocusSubscription = navigation.addListener('focus', () => {
-      setLoading(true);
-      getHomeData(999,999);
-    });
-    return willFocusSubscription;
-  },[navigation]);
-
-  useEffect(async () => 
-  { try
-    { setLoading(true);
-      setDisplayDate(moment(dateObj).format('DD/MM/YY HH:mm'));
-      let location = await Location.getCurrentPositionAsync({});
-      let latitude = location.coords.latitude.toString();
-      let longitude = location.coords.longitude.toString();
-      setLati(latitude);
-      setLong(longitude);
-      getHomeData(latitude,longitude);
-    }
-    catch(e)
-    { console.error(e);
-      Toast.show(
-      { type: 'error',
-        props: 
-        { onPress: () => {}, text1: 'Error', text2: 'Error desconocido.'
+            );
+            navigation.reset(
+            { index: 0,
+            routes: [
+                { name: 'login',
+                }
+            ],
+            });
         }
-      });
-      setLoading(false);
-    }
-  }
-  ,[dateObj]);
-  
-  return (
-    <>
-      { loading ? 
-        ( <Loading isVisible={loading} text='Cargando...' />
-        ):
-        ( <>
-            <View style={styles.viewContainerInfo}>
-              <View style={{flexDirection:'column'}}>
+        );
+    },[])
+
+    const onRefresh = React.useCallback(async() => {
+		setRefreshing(true)
+		console.log("i am refreshing");
+		const location = await Location.getCurrentPositionAsync({});
+		await getHomeData(
+			location.coords.latitude.toString(), 
+			location.coords.longitude.toString(),
+		)
+		setRefreshing(false)
+
+	},[])
+
+    React.useEffect(() => {
+        const willFocusSubscription = navigation.addListener('focus', async() => {
+            setLoading(true);
+            await getHomeData(999,999);
+            setLoading(true);
+        });
+        return willFocusSubscription;
+    },[navigation]);
+
+    React.useEffect(() => { 
+        const run = async() => {
+            
+            setDisplayDate(moment(dateObj).format('DD/MM/YY HH:mm'));
+			let location = await Location.getCurrentPositionAsync({});
+			let latitude = location.coords.latitude.toString();
+			let longitude = location.coords.longitude.toString();
+			setLati(latitude);
+			setLong(longitude);
+			await getHomeData(latitude,longitude);
+        }
+		
+        setLoading(true);
+        run()
+        .catch((e) => {
+            console.error(e);
+            Toast.show({ 
+                type: 'error',
+                props: { 
+                    onPress: () => {}, 
+                    text1: 'Error', 
+                    text2: 'Error desconocido.'
+                }
+            });
+        })
+        .finally(() => {
+            setLoading(false);
+        })
+	},[dateObj]);
+
+    
+    
+    
+
+    if(loading) {
+        return <Loading isVisible text='Cargando...' />
+    } 
+    return (<>
+        <View style={styles.viewContainerInfo}>
+            <View style={{flexDirection:'column'}}>
                 <Text style={styles.texttitle}>Ubicación:</Text>
                 <Text style={{fontWeight:'bold'}}> {loca}</Text>
                 <Text style={styles.texttitle2}>Última actualización:</Text>
@@ -135,7 +184,7 @@ export default function HomeApp(props) {
                 <Text style={styles.texttitleNombre}>
                   {name}.
                 </Text>
-              </View>
+            </View>
               <View style={{flexDirection:'column',justifyContent:'space-around','marginLeft':25}}>
                 <Icon
                   size={40}
@@ -175,85 +224,41 @@ export default function HomeApp(props) {
             <TouchableOpacity style={styles.customBtn}>
               <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
               <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
-              {/*<Icon 
-                size={15}
-                type='material-community'
-                name='information-outline'
-                color= 'black'
-                containerStyle={styles.btnContainer}
-                onPress={()=> navigation.navigate('home')}
-              />*/}
+
             </TouchableOpacity>
             <View>
               <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
             </View>
             <View>
-              <ListItem
-                key='1'
-                onPress={()=> navigation.navigate('listtask',{lati,long,type:1,start:true,assign:true,title:'Tareas Disponibles'})}
-                Chevron
-                bottomDivider
-              >
-                <Icon name='view-list' color='#6B35E2'/>
-                <ListItem.Content>
-                  <ListItem.Title style={styles.menuItem}>Disponibles</ListItem.Title>
-                </ListItem.Content>
-                <ListItem.Content>
-                  <ListItem.Title style={styles.numberItem}>{avai}</ListItem.Title>
-                </ListItem.Content>
-                <ListItem.Chevron color='#6B35E2' />
-              </ListItem>
-              <ListItem
-                key='2'
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
-                Chevron
-                bottomDivider
-              >
-                <Icon name='view-list' color='#6B35E2'/>
-                <ListItem.Content>
-                  <ListItem.Title style={styles.menuItem}>Asignadas</ListItem.Title>
-                </ListItem.Content>
-                <ListItem.Content>
-                  <ListItem.Title style={styles.numberItem}>{asgn}</ListItem.Title>
-                </ListItem.Content>
-                <ListItem.Chevron color='#6B35E2'/>
-              </ListItem>
-              <ListItem
-                key='3'
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
-                Chevron
-                bottomDivider
-              >
-                <Icon name='view-list' color='#6B35E2'/>
-                <ListItem.Content>
-                  <ListItem.Title style={styles.menuItem}>Enviadas</ListItem.Title>
-                </ListItem.Content>
-                <ListItem.Content>
-                  <ListItem.Title style={styles.numberItem}>{envi}</ListItem.Title>
-                </ListItem.Content>
-                <ListItem.Chevron color='#6B35E2'/>
-              </ListItem>
-              <ListItem
-                key='4'
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
-                Chevron
-                bottomDivider
-              >
-                <Icon name='view-list' color='#6B35E2'/>
-                  <ListItem.Content>
-                    <ListItem.Title style={styles.menuItem}>Finalizadas</ListItem.Title>
-                  </ListItem.Content>
-                  <ListItem.Content>
-                    <ListItem.Title style={styles.numberItem}>{fini}</ListItem.Title>
-                  </ListItem.Content>
-                  <ListItem.Chevron color='#6B35E2'/>
-              </ListItem>
+                <CustomListItem 
+                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                    text={"Disponibles"}
+                    counter={avai}
+                    onPress={()=> navigation.navigate('listtask',{lati,long,type:1,start:true,assign:true,title:'Tareas Disponibles'})}    
+                    bottomDivider
+                />
+                <CustomListItem 
+                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                    text={"Asignadas"}
+                    counter={asgn}
+                    onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
+                    bottomDivider
+                />
+                <CustomListItem 
+                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                    text={"Enviadas"}
+                    counter={envi}
+                    onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
+                    bottomDivider
+                />
+                <CustomListItem 
+                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                    text={"Finalizadas"}
+                    counter={fini}
+                    onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
+                />
           </View>
-        </>
-        )
-      }
-    </>    
-  );
+    </>);
 }
 const styles = StyleSheet.create(
 { viewContainerInfo:

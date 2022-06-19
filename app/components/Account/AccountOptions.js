@@ -3,8 +3,7 @@ import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 
-function CustomListItem ({ onPress, leftIcon, rightIcon, text }) {
-
+function CustomListItem ({ onPress, leftIcon, text }) {
     return (
         <ListItem containerStyle={styles.menuItem} onPress={onPress}>
             {leftIcon}
@@ -50,26 +49,26 @@ function AccountOptions(props) {
     return (
 
         <ScrollView>
-        <View style={styles.menuBorder}>
-            <Text style={styles.titleSecction}>{"  "}GENERAL</Text>
-            {menuOptions1.map(option => (
-                <CustomListItem key={option.title}
-                    leftIcon={option.leftIcon}
-                    text={option.title}
-                    onPress={option.onPress}
-                />
-            ))}
-            
-            
-            <Text style={styles.titleSecction}>{"  "}OTROS</Text>
-            {menuOptions2.map(option => (
-                <CustomListItem key={option.title}
-                    leftIcon={option.leftIcon}
-                    text={option.title}
-                    onPress={option.onPress}
-                />
-            ))}
-        </View>
+            <View style={styles.menuBorder}>
+                <Text style={styles.titleSecction}>{"  "}GENERAL</Text>
+                {menuOptions1.map(option => (
+                    <CustomListItem key={option.title}
+                        leftIcon={option.leftIcon}
+                        text={option.title}
+                        onPress={option.onPress}
+                    />
+                ))}
+                
+                
+                <Text style={styles.titleSecction}>{"  "}OTROS</Text>
+                {menuOptions2.map(option => (
+                    <CustomListItem key={option.title}
+                        leftIcon={option.leftIcon}
+                        text={option.title}
+                        onPress={option.onPress}
+                    />
+                ))}
+            </View>
         </ScrollView>
     );
 }

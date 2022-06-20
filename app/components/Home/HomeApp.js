@@ -1,6 +1,6 @@
 import React, { useState,useRef,useEffect,useCallback } from 'react';
-import { StyleSheet, View, Text,Picker, Switch, Animated, ScrollView,TouchableOpacity,Dimensions,SafeAreaView } from 'react-native';
-import { Input, Icon, Button, ListItem} from 'react-native-elements';
+import { StyleSheet, View, Text,Picker, Switch, Animated, ScrollView,TouchableOpacity,Dimensions,SafeAreaView, Pressable } from 'react-native';
+import { Input, Icon, Button, ListItem, Card} from 'react-native-elements';
 import Loading from '../Loading';
 import { size, isEmpty,map } from 'lodash';
 import * as Location from 'expo-location';
@@ -9,6 +9,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from '../../utils/BackEndConnect';
 import moment from 'moment';
+import { RefreshControl } from 'react-native';
 
 const formato = (lati,longi) => { 
     return{
@@ -115,6 +116,7 @@ export default function HomeApp(props) {
         );
     },[])
 
+    const [refreshing, setRefreshing] = React.useState(false)
     const onRefresh = React.useCallback(async() => {
 		setRefreshing(true)
 		console.log("i am refreshing");
@@ -173,100 +175,246 @@ export default function HomeApp(props) {
     if(loading) {
         return <Loading isVisible text='Cargando...' />
     } 
-    return (<>
-        <View style={styles.viewContainerInfo}>
-            <View style={{flexDirection:'column'}}>
-                <Text style={styles.texttitle}>Ubicación:</Text>
-                <Text style={{fontWeight:'bold'}}> {loca}</Text>
-                <Text style={styles.texttitle2}>Última actualización:</Text>
-                <Text style={{fontWeight:'bold'}}> {displayDate}</Text>
-                <Text style={styles.texttitleSaludo}>Hola, </Text>
-                <Text style={styles.texttitleNombre}>
-                  {name}.
-                </Text>
-            </View>
-              <View style={{flexDirection:'column',justifyContent:'space-around','marginLeft':25}}>
-                <Icon
-                  size={40}
-                  type='material-community'
-                  name='refresh'
-                  color= '#5300eb'
-                  containerStyle={styles.btnContainer}
-                  onPress={()=>setDateObj(new Date())}
-                />
-                <Icon
-                  size={40}
-                  type='material-community'
-                  name='account-circle'
-                  color= '#5300eb'
-                  containerStyle={styles.btnContainer}
-                  onPress={ () => navigation.navigate('account',
-                    { nameuser:name,
-                      level:levl
-                    })
-                  }
-                />
-              </View>
-            </View>
-            <View style={styles.wrapperInfo}>
-              <View style = {styles.container}>
-                <View style={styles.circleViewRZ}>
-                  <Text style={styles.circleText}>{RZ}</Text>
+    return (
+        <SafeAreaView>
+            <ScrollView refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={20}/>
+            }>
+                <View style={styles.viewContainerInfo} >
+                    <Pressable 
+                        style={styles.userAccountContainer} 
+                        onPress={ () => navigation.navigate('account',{ 
+                            nameuser:name,
+                            level:levl})}
+                        >
+                        <Icon
+                            size={40}
+                            type='material-community'
+                            name='account-circle'
+                            color= '#5300eb'
+                            containerStyle={styles.btnContainer}
+                        />
+                        <Text style={styles.textUserAccout}>
+                            Hola {name}
+                        </Text> 
+                    </Pressable>                    
+                    {/* <View style={{flexDirection:'column'}}>
+                        <Text style={styles.texttitle}>Ubicación:</Text>
+                        <Text style={{fontWeight:'bold'}}> {loca}</Text>
+                        <Text style={styles.texttitle2}>Última actualización:</Text>
+                        <Text style={{fontWeight:'bold'}}> {displayDate}</Text>
+                        <Text style={styles.texttitleSaludo}>Hola, </Text>
+                        <Text style={styles.texttitleNombre}>
+                        {name}.
+                        </Text>
+                    </View> */}
+                    
+                    {/* <View style={{flexDirection:'column',justifyContent:'space-around','marginLeft':25}}>
+                        <Icon
+                            size={40}
+                            type='material-community'
+                            name='refresh'
+                            color= '#5300eb'
+                            containerStyle={styles.btnContainer}
+                            onPress={()=>setDateObj(new Date())}
+                        />
+                        
+                    </View> */}
                 </View>
-                <View style={styles.circleViewRR}>
-                  <Text style={styles.circleText}>{RR}</Text>
-                </View>
-                <View style={styles.circleViewRI}>
-                  <Text style={styles.circleText}>{RI}</Text>
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.customBtn}>
-              <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
-              <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
+                
+                <Card containerStyle={styles.cardStyle}>
+                    <View style={styles.cardContainerAccount}>
+                        <Text style={styles.cardAccoutText}> Mi cuenta </Text>
+                        <View style={styles.achievement}>
+                            <View style = {styles.achievementContainer}>
+                                    <Text style={styles.circleViewRZ}>{RZ}</Text>
+                                    <Text style={styles.circleViewRR}>{RR}</Text>
+                                    <Text style={styles.circleViewRI}>{RI}</Text>
+                             
+                            </View>
+                        </View>
+                    </View>
+                    <Text style={styles.cardUpdateText}> Última actualización: {displayDate}</Text>
+                    <Text style={styles.cardLocationText}> Ubicación {loca} </Text>
+                    <View style={styles.cardContainerMoney}>
+                        <Text style={styles.cardBalanceMoneyText}> Saldo a favor </Text>
+                        <Text >
+                            <Text style={styles.cardMoneyAmountText1}> $ </Text>
+                            <Text style={styles.cardMoneyAmountText2}>{amou}</Text>
+                        </Text>
+                    </View>
+                    
+                </Card>
 
-            </TouchableOpacity>
-            <View>
-              <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
-            </View>
-            <View>
-                <CustomListItem 
-                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                    text={"Disponibles"}
-                    counter={avai}
-                    onPress={()=> navigation.navigate('listtask',{lati,long,type:1,start:true,assign:true,title:'Tareas Disponibles'})}    
-                    bottomDivider
-                />
-                <CustomListItem 
-                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                    text={"Asignadas"}
-                    counter={asgn}
-                    onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
-                    bottomDivider
-                />
-                <CustomListItem 
-                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                    text={"Enviadas"}
-                    counter={envi}
-                    onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
-                    bottomDivider
-                />
-                <CustomListItem 
-                    leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                    text={"Finalizadas"}
-                    counter={fini}
-                    onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
-                />
-          </View>
-    </>);
+                
+
+                {/* <TouchableOpacity style={styles.customBtn}>
+                    <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
+                    <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
+
+                </TouchableOpacity> */}
+                    <View>
+                    <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
+                    </View>
+                    <View>
+                        <CustomListItem 
+                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                            text={"Disponibles"}
+                            counter={avai}
+                            onPress={()=> navigation.navigate('listtask',{lati,long,type:1,start:true,assign:true,title:'Tareas Disponibles'})}    
+                            bottomDivider
+                        />
+                        <CustomListItem 
+                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                            text={"Asignadas"}
+                            counter={asgn}
+                            onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
+                            bottomDivider
+                        />
+                        <CustomListItem 
+                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                            text={"Enviadas"}
+                            counter={envi}
+                            onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
+                            bottomDivider
+                        />
+                        <CustomListItem 
+                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                            text={"Finalizadas"}
+                            counter={fini}
+                            onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
+                        />
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
-const styles = StyleSheet.create(
-{ viewContainerInfo:
-  { marginRight: 10,
-    marginLeft: 10,
-    marginBottom:0,
-    flexDirection:'row'
-  },
+const styles = StyleSheet.create({ 
+    viewContainerInfo: { 
+        // marginRight: 10,
+        // marginLeft: 10,
+        // paddingTop: 10,
+        marginBottom:0 
+    },
+    userAccountContainer: {
+        // borderWidth: 1,
+        marginTop:25,
+        paddingTop: 10,
+        paddingEnd: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        marginEnd: 'auto'
+    },
+    textUserAccout: {
+        fontSize: 20,
+        fontWeight: 'bold', 
+    },
+    // Card
+    cardStyle: {
+        marginBottom: 20,
+        marginTop: 20,
+        borderWidth: 0,
+        margin: 0,
+        borderRadius: 20,
+        shadowColor: 'rgba(0,0,0, .2)',
+        shadowOffset: { height: 0, width: 0 },
+        shadowOpacity: 0, //default is 1
+        shadowRadius: 0//default is 1
+        
+    },
+    // card info
+    cardContainerAccount: {
+        flexDirection: "row",
+        marginBottom: 0,
+        // borderWidth: 1,
+    },
+    cardAccoutText: {
+        fontSize: 18,
+        
+        marginEnd: "auto"
+    },
+    cardUpdateText: {
+        fontSize: 12,
+        color: "gray",
+    },
+    cardLocationText: {
+        color: "gray",
+        fontSize: 12,
+    },
+    achievementContainer: { 
+        // marginBottom:15,
+        // flex: .5,
+        flexDirection: 'row',
+        // justifyContent: 'flex-start', //replace with flex-end or center
+    },
+    achievement: { 
+        // marginBottom:50
+    },
+    circleViewRZ: { 
+        backgroundColor: '#BCA2E1',
+        width: 30,
+        height: 30,
+        borderRadius: 20,
+        // justifyContent: 'center',
+        marginRight:5,
+        marginLeft:5,
+        fontWeight: 'bold', 
+        fontSize: 20,
+        alignItems: 'center',
+        textAlign: 'center',
+        color:'#fff'
+        
+    },
+    circleViewRR: { 
+        backgroundColor: '#8E55DE',
+        width: 30,
+        height: 30,
+        borderRadius: 20,
+        // justifyContent: 'center',
+        marginRight:5,
+        marginLeft:5,
+        fontWeight: 'bold', 
+        fontSize: 20,
+        alignItems: 'center',
+        textAlign: 'center',
+        color:'#fff'
+        
+    },
+    circleViewRI: { 
+        backgroundColor: '#6A17DF',
+        width: 30,
+        height: 30,
+        borderRadius: 20,
+        // justifyContent: 'center',
+        marginRight:5,
+        marginLeft:5,
+        fontWeight: 'bold', 
+        fontSize: 20,
+        alignItems: 'center',
+        textAlign: 'center',
+        color:'#fff'
+    },
+        
+    // Card Money
+    cardContainerMoney: {
+        marginTop: 14,
+        // borderWidth: 1,
+
+    }, 
+    cardBalanceMoneyText: {
+        color: "#6B35E2",
+        fontSize: 16,
+    },
+    cardMoneyAmountText1: {
+        color: "#6B35E2",
+        fontSize: 20
+    },
+    cardMoneyAmountText2: {
+        color: "#6B35E2",
+        fontSize: 24,
+        fontWeight: "bold"
+    },  
+    // ----------
   logo:
   { width: '100%',
     height: 150,
@@ -286,13 +434,14 @@ const styles = StyleSheet.create(
     fontSize: 17,
     textAlign:'justify'
   },
-  texttitleSaludo:
-  { marginTop:0,
+  
+  texttitleSaludo: { 
+    marginTop:0,
     fontWeight: 'bold',
     color: '#59575C',
     marginHorizontal:0,
     fontSize: 30,
-    textAlign:'justify'
+    textAlign:'justify',
   },
   texttitleNombre:
   { marginBottom:10,
@@ -321,16 +470,8 @@ const styles = StyleSheet.create(
     alignItems:'center',
     marginRight:100,
   },
-  wrapperInfo:
-  { flex: 1,
-    marginBottom:50
-  },
-  container:
-  { marginBottom:15,
-    flex: .5,
-    flexDirection: 'row',
-    justifyContent: 'flex-start', //replace with flex-end or center
-  },
+ 
+  
   iconLeft1:
   { color: '#CF0404',
     marginRight: 7,
@@ -341,11 +482,9 @@ const styles = StyleSheet.create(
     marginRight: 7,
     marginLeft:65,
   },
-  btnContainer:
-  { justifyContent: 'center',
-    top: 25,
-    right: 5,
-    //sombreado
+  btnContainer: { 
+    // borderWidth: 1,
+    marginEnd: 10
   },
   btnMontoIn:
   { width: '100%',
@@ -374,8 +513,8 @@ const styles = StyleSheet.create(
     color: '#59575C',
     textAlign: 'center',
   },
-  customBtnTextContentPrice:
-  { marginTop:5,
+  customBtnTextContentPrice: { 
+    marginTop:5,
     marginBottom:5,
     fontSize: 15,
     color: '#59575C',
@@ -392,31 +531,7 @@ const styles = StyleSheet.create(
     textAlign: 'left',
     fontSize:15,
   },
-  circleViewRZ:
-  { width: 35,
-    height: 35,
-    borderRadius: 20,
-    backgroundColor: '#BCA2E1',
-    justifyContent: 'center',
-    marginRight:5,
-    marginLeft:5
-  },
-  circleViewRR:
-  { width: 35,
-    height: 35,
-    borderRadius: 20,
-    backgroundColor: '#8E55DE',
-    justifyContent: 'center',
-    marginRight:5,
-  },
-  circleViewRI:
-  { width: 35,
-    height: 35,
-    borderRadius: 20,
-    backgroundColor: '#6A17DF',
-    justifyContent: 'center',
-    marginRight:5,
-  },
+  
   circleText:
   { fontWeight: 'bold', 
     fontSize: 20,

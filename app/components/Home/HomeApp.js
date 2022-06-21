@@ -66,9 +66,9 @@ export default function HomeApp(props) {
     const [dateObj, setDateObj] = useState(new Date());
     const [displayDate, setDisplayDate] = useState('');
     const [number, setNumber] = useState(0);
-    const RZ = String(rank).charAt(0);
-    const RR = String(rank).charAt(2);
-    const RI = String(rank).charAt(4);
+    // const RZ = String(rank).charAt(0);
+    // const RR = String(rank).charAt(2);
+    // const RI = String(rank).charAt(4);
 
     
 
@@ -176,7 +176,7 @@ export default function HomeApp(props) {
         return <Loading isVisible text='Cargando...' />
     } 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.fullScreen}>
             <ScrollView refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={20}/>
             }>
@@ -225,14 +225,14 @@ export default function HomeApp(props) {
                 <Card containerStyle={styles.cardStyle}>
                     <View style={styles.cardContainerAccount}>
                         <Text style={styles.cardAccoutText}> Mi cuenta </Text>
-                        <View style={styles.achievement}>
+                        {/* <View style={styles.achievement}>
                             <View style = {styles.achievementContainer}>
                                     <Text style={styles.circleViewRZ}>{RZ}</Text>
                                     <Text style={styles.circleViewRR}>{RR}</Text>
                                     <Text style={styles.circleViewRI}>{RI}</Text>
                              
                             </View>
-                        </View>
+                        </View> */}
                     </View>
                     <Text style={styles.cardUpdateText}> Última actualización: {displayDate}</Text>
                     <Text style={styles.cardLocationText}> Ubicación {loca} </Text>
@@ -290,6 +290,11 @@ export default function HomeApp(props) {
     );
 }
 const styles = StyleSheet.create({ 
+
+    fullScreen: {
+        // borderWidth: 1,
+        height: '100%'
+    },
     viewContainerInfo: { 
         // marginRight: 10,
         // marginLeft: 10,

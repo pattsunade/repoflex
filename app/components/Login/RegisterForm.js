@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
-import { clean } from "../../utils/rut";
+import { clean, validarRut } from "../../utils/rut";
 
 const formato = (objeto) => {
     return{
@@ -99,44 +99,20 @@ function RegisterForm() {
         }
     } 
     const onEnd = (e,type) => { 
-        if(type == 'rut') { 
-            const rut = clean(e.nativeEvent.text).toUpperCase();
+        if(type == 'rut'){ 
+            const rut = clean(e.nativeEvent.text);
             const rutLen = rut.length;
             if(rutLen==0) { 
                 setRutCorrect(2);
-            } 
-            else if (rutLen<7) { 
+            } else if(rutLen<7) { 
                 setRutCorrect(3);
             } else { 
-                var sum = 0;
-                var mult = 2;
-                for(let i=rutLen-2;i>=0;i--) { 
-                    if (mult > 7){
-                        mult = 2;
-                    }
-                    sum += parseInt(rut[i]*mult);
-                    mult++;
-                }
-                var res = 11-sum%11;
-                if (res == 11) { 
-                    res = 0;
-                }
-                if (rut[rutLen-1] == "K") { 
-                    if (res!=10) { 
-                        setRutCorrect(0);
-                    } 
-                    else { 
-                        setRutCorrect(1);
-                        setFormData({ ...formData, [type]: rut });
-                    }
-                }
-                
-                else if (res != parseInt(rut[rutLen-1]))
-                { setRutCorrect(0);
-                }
-                else
-                { setRutCorrect(1);
-                setFormData({ ...formData, [type]: rut });
+                const isRutValid = validarRut(rut);
+                if(isRutValid === true) {
+                    setRutCorrect(1);
+                    setFormData({ ...formData, [type]: rut });
+                } else {
+                    setRutCorrect(0);
                 }
             }
         }

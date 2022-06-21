@@ -8,7 +8,7 @@ import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from '../../utils/BackEndConnect';
-import { clean } from "../../utils/rut";
+import { clean, validarRut } from "../../utils/rut";
 
 
 function CreateAccount(){
@@ -29,10 +29,9 @@ function RecoverPassword() {
     return(
 		<Text style={styles.textRegister}>
 			¿Olvidaste tu contraseña?{" "}
-		<Text style={styles.btnRegister} onPress={() => navigation.navigate("recoverpassword")}
-		>
-			Recupérala
-		</Text>
+			<Text style={styles.btnRegister} onPress={() => navigation.navigate("recoverpassword")}>
+				Recupérala
+			</Text>
 		</Text>
 	);
 }
@@ -167,45 +166,23 @@ export default function LoginForm() {
 
   	const handleOnEnd = (e,type) => { 
 		if(type == 'rut'){ 
-			const rut = clean(e.nativeEvent.text);
-			const rutLen = rut.length;
-			if(rutLen==0) { 
-				setRutCorrect(2);
-			}
-			else if(rutLen<7){ 
-				setRutCorrect(3);
-			}
+            const rut = clean(e.nativeEvent.text).toUpperCase();
+            const rutLen = rut.length;
+            if(rutLen==0) { 
+                setRutCorrect(2);
+            } 
+			else if (rutLen<7) { 
+                setRutCorrect(3);
+            } 
 			else { 
-				let sum = 0;
-				let mult = 2;
-				for(let i=rutLen-2;i>=0;i--){ 
-					if (mult > 7){
-					mult = 2;
-				}
-				sum += parseInt(rut[i]*mult);
-				mult++;
-				}
-				let res = 11-sum%11;
-				if (res == 11) { 
-					res = 0;
-				}
-				if (rut[rutLen-1] == "k"){ 
-					if (res!=10){ 
-						setRutCorrect(0);
-					}
-					else { 
-						setRutCorrect(1);
-						setFormData({ ...formData, [type]: rut });
-					}
-				}
-				else if (res != parseInt(rut[rutLen-1])){ 
-					setRutCorrect(0);
-				}
-				else { 
-					setRutCorrect(1);
-					setFormData({ ...formData, [type]: rut });
-				}
-			}
+                const isRutValid = validarRut(rut);
+                if(isRutValid === true) {
+                    setRutCorrect(1);
+                    setFormData({ ...formData, [type]: rut });
+                } else {
+                    setRutCorrect(0);
+                }
+            }
 		}
 		else { 
 			if(e.nativeEvent.text.length==0) { 

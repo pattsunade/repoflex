@@ -8,154 +8,128 @@ import { validateEmail } from "../../utils/validations";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import BackEndConnect from "../../utils/BackEndConnect";
+import { clean, validarRut } from "../../utils/rut";
+
+const formato = (objeto) => {
+    return {
+        usr : objeto.usr,
+    };
+}
 
 export default function RecoverPasswordForm () {
-  const [loading, setLoading] = useState(false);
-  const [rutCorrect, setRutCorrect] = useState(2);
-  const [formData, setFormData] = useState(defaultFormValue());
-  const [changedRut, setChangedRut] = useState("");
-  const navigation = useNavigation();
-
-  function onEnd(e,type)
-  { const rut = clean(e.nativeEvent.text);
-    const rutLen = rut.length;
-    if(rutLen==0)
-    { setRutCorrect(2);
-    }
-    else if(rutLen<7)
-    { setRutCorrect(3)
-    }
-    else
-    { var sum = 0;
-      var mult = 2;
-      for(let i=rutLen-2;i>=0;i--)
-      { if (mult > 7){
-          mult = 2;
-        }
-        sum += parseInt(rut[i]*mult);
-        mult++;
-      }
-      var res = 11-sum%11;
-      if (res == 11)
-      { res = 0;
-      }
-      if (rut[rutLen-1] == "k")
-      { if (res!=10)
-        { setRutCorrect(0);
-        }
-        else
-        { setRutCorrect(1);
-          setFormData({ ...formData, [type]: rut });
-        }
-      }
-      else if (res != parseInt(rut[rutLen-1]))
-      { setRutCorrect(0);
-      }
-      else
-      { setRutCorrect(1);
-        setFormData({ ...formData, [type]: rut });
-      }
-    }
-  }
-
-  function defaultFormValue()
-  { return {
-      usr: ""
-    };
-  }
-
-  function formato(objeto) {
-  return{
-    usr : objeto.usr,
-    };
-  }
-
-  function format(rut)
-  { if (rut.length>0)
-    { rut = clean(rut);
-      var result = rut.slice(-4, -1) + '-' + rut.substr(rut.length - 1);
-      for (var i = 4; i < rut.length; i += 3) {
-        result = rut.slice(-3 - i, -i) + '.' + result
-      }
-      setChangedRut(result);
-    }
-    else
-    { setChangedRut("");
-    }
-  }
-
-  function clean(rut)
-  { return typeof rut === 'string'
-      ? rut.replace(/^0+|[^0-9kK]+/g, '')
-      : ''
-  }
-
-  function onSubmit() 
-  { setLoading(true);
-    BackEndConnect("POST","sndma",formato(formData))
-    .then((ans) =>
-    { if (ans.ans.stx != "ok")
-      { Toast.show(
-        { type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: ans.ans.msg
-          }
-        });
-        setLoading(false);
-      }
-      else
-      { navigation.navigate("newPassword",{
-          rut:formData.usr
-        });
-        setLoading(false);
-      }
-    })
-    .catch((ans)=>
-    { Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Por favor, intenta más tarde.'
-        }
-      });
-      setLoading(false);
+    const [loading, setLoading] = useState(false);
+    const [rutCorrect, setRutCorrect] = useState(2);
+    const [formData, setFormData] = useState({
+        usr: "",
     });
-  }
+    const [changedRut, setChangedRut] = useState("");
+    const navigation = useNavigation();
 
-  return (
-  <>
-    { loading ? (<Loading text="Cargando"/>):
-      (<View style={styles.formContainer}>
-        <View style={styles.searchSection}>
-          <TextInput
-            placeholder="Ingrese su rut"
-            placeholderTextColor="#AC9DC9"
-            style={styles.inputForm}
-            onEndEditing={(e) => onEnd(e,"usr")}
-            maxLength={12}
-            onChangeText={(e) => format(e)}
-            secureTextEntry={Platform.OS === 'ios' ? false : true}
-            keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
-            autoCapitalize="none"
-            value={changedRut}
-          />
-        </View>
-        <View style={styles.viewError}>
-        { rutCorrect == 0 ?
-          (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
-          rutCorrect == 3 ?
-          (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
-          (<></>)
+    const onEnd = (e,type)=> { 
+        const rut = clean(e.nativeEvent.text).toUpperCase();
+        const rutLen = rut.length;
+        if(rutLen==0) { 
+            setRutCorrect(2);
+        } else if(rutLen<7) { 
+            setRutCorrect(3);
+        } else { 
+            const isRutValid = validarRut(rut);
+            if(isRutValid === true) {
+                setRutCorrect(1);
+                setFormData({ ...formData, [type]: rut });
+            } else {
+                setRutCorrect(0);
+            }
         }
-        </View>
-        <Button
-          title="Recuperar contraseña"
-          containerStyle={styles.btnContainerLogin}
-          buttonStyle={styles.btnLogin}
-          onPress={onSubmit}
-          disabled={rutCorrect != 1 ? (true):(false)}
-        />
-      </View>)
     }
-  </>
-  )
+
+  
+
+    const format = (rut)=> { 
+        if (rut.length>0) { 
+            rut = clean(rut).toUpperCase();
+            var result = rut.slice(-4, -1) + '-' + rut.substr(rut.length - 1);
+            for (var i = 4; i < rut.length; i += 3) {
+                result = rut.slice(-3 - i, -i) + '.' + result
+            }
+            setChangedRut(result);
+        }
+        else { 
+            setChangedRut("");
+        }
+    }
+
+    const onSubmit = () => { 
+        setLoading(true);
+        BackEndConnect("POST","sndma",formato(formData)) 
+        .then((ans) => { 
+            if (ans.ans.stx != "ok") { 
+                Toast.show({ 
+                    type: 'error',
+                    props: {
+                        onPress: () => {}, 
+                        text1: 'Error', 
+                        text2: ans.ans.msg
+                    }
+                });
+            setLoading(false);
+            }
+            else { 
+                navigation.navigate("newPassword",{
+                    rut:formData.usr
+                });
+                setLoading(false);
+            }
+        })
+        .catch((ans)=> { 
+            Toast.show({ 
+                type: 'error',
+                props: {
+                    onPress: () => {}, 
+                    text1: 'Error', 
+                    text2: 'Por favor, intenta más tarde.'
+                }
+            });
+            setLoading(false);
+        });
+    }
+
+    if (loading ) {
+        return <Loading text="Cargando"/>
+    }
+    return (
+        <View style={styles.formContainer}>
+            <View style={styles.searchSection}>
+            <TextInput
+                placeholder="Ingrese su rut"
+                placeholderTextColor="#AC9DC9"
+                style={styles.inputForm}
+                onEndEditing={(e) => onEnd(e,"usr")}
+                maxLength={12}
+                onChangeText={(e) => format(e)}
+                secureTextEntry={Platform.OS === 'ios' ? false : true}
+                keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
+                autoCapitalize="none"
+                value={changedRut}
+            />
+            </View>
+            <View style={styles.viewError}>
+            { rutCorrect == 0 ?
+            (<Text style={styles.textDescriptionError}>{" "}El rut ingresado es incorrecto.</Text>):
+            rutCorrect == 3 ?
+            (<Text style={styles.textDescriptionError}>{" "}Debes ingresar mínimo 7 dígitos.</Text>):
+            (<></>)
+            }
+            </View>
+            <Button
+            title="Recuperar contraseña"
+            containerStyle={styles.btnContainerLogin}
+            buttonStyle={styles.btnLogin}
+            onPress={onSubmit}
+            disabled={rutCorrect != 1 ? (true):(false)}
+            />
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -175,7 +149,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingRight: 10,
     paddingBottom: 10,
-    paddingLeft: 0,
+    paddingLeft: 10,
     width: "100%",
     backgroundColor: '#fff',
     borderRadius: 20

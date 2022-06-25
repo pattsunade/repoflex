@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BackEndConnect from '../../utils/BackEndConnect';
+import backendRequest from '../../utils/BackEndConnect';
 import { clean, validarRut } from "../../utils/rut";
 
 
@@ -57,96 +57,106 @@ export default function LoginForm() {
 	const [passCorrect, setPassCorrect] = useState(2);
 	const ref_input2 = useRef();
 	const navigation = useNavigation();
-	const onSubmit = () => { 
+	const onSubmit = async() => { 
 		setLoading(true);
-		if (isEmpty(formData.rut) || isEmpty(formData.psw) || !rutCorrect || !passCorrect)
-		{ Toast.show(
-		{ type: 'error',
-			props: {onPress: () => {}, text1: 'Error', text2: "Verifica los campos ingresados."
-			}
-		});
-		setLoading(false);
+		if (isEmpty(formData.rut) || isEmpty(formData.psw) || !rutCorrect || !passCorrect) { 
+			Toast.show({ 
+				type: 'error',
+				props: {
+					onPress: () => {}, 
+					text1: 'Error', 
+					text2: "Verifica los campos ingresados."
+				}
+			});
+			setLoading(false);
 		}
-		else
-		{ BackEndConnect("POST","auten",formatoObjeto(formData)).then(async (response) => 
-		{ if (response.ans.stx === "nk")
-			{ Toast.show(
-			{ type: 'error',
-				props: {onPress: () => {}, text1: 'Error', text2: 'Porfavor intenta más tarde'
+		else { 
+			console.log("> auten");
+			backendRequest("POST","auten",formatoObjeto(formData))
+			.then((response) => { 
+				console.log("success" , response);
+				if (response.ans.stx === "nk") { 
+					Toast.show({ 
+						type: 'error',
+						props: {
+							onPress: () => {}, 
+							text1: 'Error', 
+							text2: 'Porfavor intenta más tarde'
+						}
+					});
 				}
-			});
-			setLoading(false);
-			}
-			else if (response.ans.stx === "wk")
-			{ Toast.show(
-			{ type: 'error',
-				props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
+				else if (response.ans.stx === "wk") { 
+					Toast.show({ 
+						type: 'error',
+						props: {
+							onPress: () => {}, 
+							text1: 'Error', 
+							text2: response.ans.msg
+						}
+					});
 				}
-			});
-			setLoading(false);
-			}
-			else if (response.ans.stx === "uk")
-			{ navigation.navigate("emailverification",
-			{ rut:formData.rut,
-				psw:formData.psw
-			});
-			setLoading(false);
-			}
-			else if(response.ans.stx === "rk")
-			{ navigation.reset({ 
-			index: 0,
-				routes: 
-				[ { name: 'rejected'
+				else if (response.ans.stx === "uk") { 
+					navigation.navigate("emailverification", { 
+						rut:formData.rut,
+						psw:formData.psw
+					});
 				}
-				],
-			});
-			setLoading(false);
-			}
-			else if(response.ans.stx === "vk")
-			{ navigation.reset({ 
-			index: 0,
-				routes: 
-				[ { name: 'outdated'
+				else if(response.ans.stx === "rk") { 
+					navigation.reset({
+						index: 0,
+						routes: [{ 
+							name: 'rejected'
+						}],
+					});
+					
 				}
-				],
-			});
-			setLoading(false);
-			}
-			else
-			{ let matrix = (response.hdr.mtx.match(/1/g) || []).length;
-			let stp = response.ans.stp;
-			if (matrix>=parseInt(stp))
-			{ AsyncStorage.setItem('@usr',formData.rut)
-				navigation.reset(
-				{ index: 0,
-				routes: 
-				[ { name: 'home'
+				else if(response.ans.stx === "vk") { 
+					navigation.reset({ 
+						index: 0,
+						routes: [{ 
+							name: 'outdated'
+						}],
+					});
+				}
+				else { 
+					let matrix = (response.hdr.mtx.match(/1/g) || []).length;
+					let stp = response.ans.stp;
+					if (matrix>=parseInt(stp)) { 
+						AsyncStorage.setItem('@usr',formData.rut)
+						navigation.reset({ 
+							index: 0,
+							routes: [{ 
+								name: 'home'
+							}],
+						});
 					}
-				],
-				});
-			}
-			else
-			{ navigation.reset(
-				{ index: 0,
-				routes: [
-					{ name: 'homeregister',
-					params: { mtx:matrix,stp:stp }
+					else { 
+						navigation.reset({ 
+							index: 0,
+							routes: [{ 
+								name: 'homeregister',
+								params: { 
+									mtx:matrix,
+									stp:stp
+								}
+							}],
+						});
 					}
-				],
+				}
+			})
+			.catch((response) => { 
+				Toast.show({ 
+					type: 'error',
+					props: {
+						onPress: () => {}, 
+						text1: 'Error', 
+						text2: "Error de comunicación, intenta más tarde"
+					}
 				});
-			}
-			setLoading(false);
-			}
-		})
-		.catch((response) => 
-		{ setLoading(false);
-			Toast.show(
-			{ type: 'error',
-			props: {onPress: () => {}, text1: 'Error', text2: "Error de comunicación, intenta más tarde"
-			}
-			});
-			console.log(response);
-		});
+			})
+			.finally(() => {
+				setLoading(false);
+			})
 		}
 		};
 

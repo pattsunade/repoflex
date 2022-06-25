@@ -7,7 +7,7 @@ import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BackEndConnect from '../../utils/BackEndConnect';
+import backendRequest from '../../utils/BackEndConnect';
 import moment from 'moment';
 import { RefreshControl } from 'react-native';
 
@@ -74,7 +74,8 @@ export default function HomeApp(props) {
 
     const getHomeData = React.useCallback((latitude,longitude) => { 
 
-        BackEndConnect('POST','house',formato(latitude,longitude)).then((response) => { 
+        backendRequest('POST','house',formato(latitude,longitude)).then((response) => {
+            console.log("success",response);
             const notificaciones = [];
             for (var i = 0; i < response.ans.noti.length; i++) { 
                 var counter = response.ans.noti[i];
@@ -96,21 +97,21 @@ export default function HomeApp(props) {
             setWork(response.ans.work);
             setLoading(false);
         })
-        .catch((ans) => 
-        { console.log(ans);
-            Toast.show(
-            { type: 'error',
-                props: 
-                { onPress: () => {}, text1: 'Error', text2: 'Error conexión. Porfavor inicia sesión nuevamente'
+        .catch((ans) => { 
+            console.log("fail", ans);
+            Toast.show({ 
+                type: 'error',
+                props: { 
+                    onPress: () => {}, 
+                    text1: 'Error', 
+                    text2: 'Error conexión. Porfavor inicia sesión nuevamente'
                 }
-            }
-            );
-            navigation.reset(
-            { index: 0,
-            routes: [
-                { name: 'login',
-                }
-            ],
+            });
+            navigation.reset({ 
+                index: 0,
+                routes: [{ 
+                    name: 'login',
+                }],
             });
         }
         );

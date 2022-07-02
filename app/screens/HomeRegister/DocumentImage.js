@@ -8,55 +8,46 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import Modal from "../../components/Modal";
 import InfoSelfie from "./InfoImages/InfoSelfie.js";
 import Loading from "../../components/Loading";
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 import Toast from 'react-native-toast-message';
-
-export default function DocumentImage({route}) {
-  const {mode} = route.params;
-  const navigation = useNavigation();
-  const [image, setImage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [imageDocumentSelfie, setImageDocumentSelfie] = useState("");
-  const [formData, setFormData] = useState(defaultFormValue());
-  const [isVisibleInfoSelfie, setIsVisibleInfoSelfie] = useState(false);
-  const activities =
-  [ {tit:'Fotografía frontal',
-     des:'Debe ser una foto clara para que podamos identificarte.'
+import sndfi from "../../utils/connection/transacciones/sndfi";
+const activities =  [
+    {tit:'Fotografía frontal',
+    des:'Debe ser una foto clara para que podamos identificarte.'
     },
     {tit:'Cédula de identidad frontal',
-     des:'Verificaremos que la fotografía coincida con la parte frontal de la cédula de identidad.'
+    des:'Verificaremos que la fotografía coincida con la parte frontal de la cédula de identidad.'
     },
     {tit:'Cédula de identidad reverso',
-     des:'Verificaremos que la fotografía coincida con el reverso de la cédula de identidad.'
+    des:'Verificaremos que la fotografía coincida con el reverso de la cédula de identidad.'
     },
     {tit:'Certificado de Antecedentes',
-     des:'Pide tu certificado en el Registro Civil en línea, toma un pantallazo y subelo aquí.'
+    des:'Pide tu certificado en el Registro Civil en línea, toma un pantallazo y subelo aquí.'
     }
-  ];
+];
+export default function DocumentImage({route}) {
+    const {mode} = route.params;
+    const navigation = useNavigation();
+    const [image, setImage] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [imageDocumentSelfie, setImageDocumentSelfie] = useState("");
+    const [formData, setFormData] = useState({
+        nfil: mode,
+        tfil: 1,
+        file: "", 
+    });
+    const [isVisibleInfoSelfie, setIsVisibleInfoSelfie] = useState(false);
 
-  function onChange (e, type) {
-    setFormData({ ...formData, [type]:e });
-  }
-
-  function defaultFormValue() {
-    return {
-      nfil: mode,
-      tfil: 1,
-      file: "", 
-    };
-  }
-
-  function formato(objeto) {
-    return{
-      nfil : mode,
-      tfil: 1,
-      file : objeto.file
-    };
-  }
-
-  async function sendimage() {
-    await BackEndConnect("POST","sndfi",formato(formData));
-  }
+    const onChange = (e, type) => {
+        setFormData({ ...formData, [type]:e });
+    }
+    const sendimage = async() => {
+        await sndfi({
+            nfil : mode,
+            tfil: 1,
+            file : formData.file
+        })
+    }
 
   const compress = async (uri) =>
   { const manipResult = await ImageManipulator.manipulateAsync(

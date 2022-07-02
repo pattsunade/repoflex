@@ -3,72 +3,74 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity }
 import { Divider, Button} from 'react-native-elements';
 import { useNavigation } from "@react-navigation/native";
 
-export default function ListTaskAssigned(props) {
-  const navigation = useNavigation();
-  const {data} = props;
-  return (
-    <View>
-      <FlatList 
-        data={data}
-        renderItem={(data) => <Tarea lista={data} />}
-        keyExtractor={(item, index) => index.toString()}
-      />
-    </View>
-  )
+function ListTaskAssigned(props) {
+	const navigation = useNavigation();
+	const {data} = props;
+	return (
+		<View>
+		<FlatList 
+			data={data}
+			renderItem={(data) => <Tarea lista={data} />}
+			keyExtractor={(item, index) => index.toString()}
+		/>
+		</View>
+	)
 }
+
 function Tarea(props){
-  const navigation = useNavigation();
-  const {lista} = props;
-  const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = lista.item;
-  return(
-    <TouchableOpacity style={styles.TouchTask}>
-      <View style={styles.viewTareas}>
-        <View style={styles.circleViewRZ}>
-          <Text style={styles.circleText}>{sig}</Text>
-        </View>
-        <Text style={styles.textTypeTask}>{typ}</Text>
-      </View>
-      <View style={styles.viewTareas}>
-        <Text style={styles.textTitleTask}>{tit}</Text>  
-      </View>
-      <View>
-        <Text style={styles.idText}>id:{tid}</Text>
-      </View>
-      <Divider style= {styles.divider} />
-      <View style={styles.viewTareasTexto}>
-        <View>
-          <Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
-        </View>
-      </View>
-      <View style={styles.viewTareasTexto}>
-        <View>
-          <Text style={styles.textTask2}>A pagar: <Text style={styles.textRTask}>$ {amo}</Text></Text>
-        </View>
-      </View>
-      <View style={styles.viewBtn}>
-        <Button
-          title="Ver detalles"
-          containerStyle={styles.btnContainer2}
-          buttonStyle={styles.btn2}
-          onPress={() => navigation.navigate("detailtask",{
-            tit:tit,
-            typ:typ,
-            tid:tid,
-            pla:pla,
-            amo:amo,
-            det:det,
-            tim:tim,
-            nqu:nqu,
-            npi:npi,
-            nre:nre,
-            sig:sig,
-            start:true
-          })}
-        />
-      </View>
-    </TouchableOpacity>
-  );
+	const navigation = useNavigation();
+	const {lista} = props;
+	const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig} = lista.item;
+	return(
+		<TouchableOpacity style={styles.TouchTask}>
+			<View style={styles.viewTareas}>
+				<View style={styles.circleViewRZ}>
+				<Text style={styles.circleText}>{sig}</Text>
+				</View>
+				<Text style={styles.textTypeTask}>{typ}</Text>
+			</View>
+			<View style={styles.viewTareas}>
+				<Text style={styles.textTitleTask}>{tit}</Text>  
+			</View>
+			<View>
+				<Text style={styles.idText}>id:{tid}</Text>
+			</View>
+			<Divider style= {styles.divider} />
+			<View style={styles.viewTareasTexto}>
+				<View>
+				<Text style={styles.textTask}>Lugar: <Text style={styles.textRTask}>{pla}</Text></Text>
+				</View>
+			</View>
+			<View style={styles.viewTareasTexto}>
+				<View>
+				<Text style={styles.textTask2}>A pagar: <Text style={styles.textRTask}>$ {amo}</Text></Text>
+				</View>
+			</View>
+			<View style={styles.viewBtn}>
+				<Button
+				title="Ver detalles"
+				containerStyle={styles.btnContainer2}
+				buttonStyle={styles.btn2}
+				onPress={() => navigation.navigate("detailtask",{
+					tit:tit,
+					typ:typ,
+					tid:tid,
+					pla:pla,
+					amo:amo,
+					det:det,
+					tim:tim,
+					nqu:nqu,
+					npi:npi,
+					nre:nre,
+					sig:sig,
+					start:true
+				})}
+				/>
+			</View>
+		</TouchableOpacity>
+	);
 }
+export default ListTaskAssigned;
 
 const styles = StyleSheet.create({
   TouchTask:{

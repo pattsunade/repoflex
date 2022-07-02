@@ -3,16 +3,14 @@ import { StyleSheet, Text, View, ScrollView, Alert, Dimensions} from 'react-nati
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { Button, Divider, Card } from "react-native-elements";
 import { setStatusBarHidden } from 'expo-status-bar'
-import { useNavigation } from "@react-navigation/native";
 import { Video } from 'expo-av';
 import VideoPlayer from 'expo-video-player';
-import BackEndConnect from "../../utils/BackEndConnect";
 import Loading from "../../components/Loading";
+import cours from "../../utils/connection/transacciones/cours";
 
 const { width, height } = Dimensions.get('window');
 
 export default function Training ({ navigation, route }) {
-  const [testUri, setTestUri] = useState("");
   const [course,setCourse] = useState("");
   const [value,setValue] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -20,20 +18,23 @@ export default function Training ({ navigation, route }) {
   const refVideo = useRef(null);
   const refScrollView = useRef(null);
 
-  useEffect(() =>
-  { setLoading(true)
-    async function getData()
-      { const uri = await BackEndConnect("POST","cours").then((ans)=>
-        { console.log(ans.ans.lnk);
-          setCourse(ans.ans.lnk);
+  useEffect(() => { 
+    setLoading(true)
+    const getData = async() => { 
+        cours()
+        .then((ans)=> { 
+            console.log(ans.ans.lnk);
+            setCourse(ans.ans.lnk);
         })
         .catch((ans) => {
-          console.log(ans);
-        });
-        setLoading(false);
-      }
-      getData();
-  },[])
+            console.log(ans);
+        })
+        .finally(() => {
+            setLoading(false);
+        })
+    }
+    getData();
+},[])
 
   const onSubmit = () =>
   { Alert.alert(

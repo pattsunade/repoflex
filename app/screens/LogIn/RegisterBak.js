@@ -3,7 +3,7 @@ import { StyleSheet, View} from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RegisterForm from "../../components/Login/RegisterForm";
-import BackEndConnect from "../../utils/BackEndConnect"
+import BackEndConnect from '../../utils/connection/backendHandler'
 import Loading from "../../components/Loading";
 
 export default function Register() {

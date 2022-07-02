@@ -5,7 +5,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import Toast from "react-native-easy-toast";
 import { useNavigation } from "@react-navigation/native";
 import { Divider, Button } from 'react-native-elements';
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 
 export default function DetailTask({route,navigation}) 
 { const toastRef = useRef();

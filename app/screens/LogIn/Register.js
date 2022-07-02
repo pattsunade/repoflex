@@ -1,9 +1,7 @@
 import React, { useState,useRef,useCallback } from "react";
 import { StyleSheet, View} from "react-native";
-import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RegisterForm from "../../components/Login/RegisterForm";
-import BackEndConnect from "../../utils/BackEndConnect"
 
 export default function Register() {
     return(

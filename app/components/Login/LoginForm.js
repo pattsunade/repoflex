@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import backendRequest from '../../utils/BackEndConnect';
+import backendRequest from '../../utils/connection/backendHandler';;
 import { clean, validarRut } from "../../utils/rut";
 
 

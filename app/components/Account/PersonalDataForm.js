@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
 import { Picker } from "@react-native-picker/picker";
 import Toast from 'react-native-toast-message';
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 
 export default function PersonalDataForm (props) {
   const {data,lists} = props;

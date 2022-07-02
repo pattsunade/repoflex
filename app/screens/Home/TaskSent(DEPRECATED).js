@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useNavigation } from "@react-navigation/native";
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 import ListTask from "../../components/Home/ListTask";
 
 export default function TaskSent({route}) {

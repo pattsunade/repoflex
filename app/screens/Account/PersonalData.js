@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import PersonalDataForm from "../../components/Account/PersonalDataForm";
 import Loading from "../../components/Loading";
 import Toast from 'react-native-toast-message';
-import BackEndConnect from '../../utils/BackEndConnect';
+import BackEndConnect from '../../utils/connection/backendHandler';;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 

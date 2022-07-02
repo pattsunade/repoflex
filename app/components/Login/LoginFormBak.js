@@ -7,7 +7,7 @@ import { validateEmail } from "../../utils/validations";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BackEndConnect from '../../utils/BackEndConnect';
+import BackEndConnect from '../../utils/connection/backendHandler';;
 
 export default function LoginForm()
 { const [showPassword, setShowPassword] = useState(false);

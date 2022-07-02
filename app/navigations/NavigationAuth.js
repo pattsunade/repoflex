@@ -8,9 +8,6 @@ import HomeStack from "./HomeStack";
 import HomeRegisterStack from "./HomeRegisterStack";
 import TaskStack from "./TaskStack";
 import AccountStack from "./AccountStack";
-import * as Location from 'expo-location';
-import * as Notifications from 'expo-notifications';
-import BackEndConnect from '../utils/BackEndConnect';
 
 function SplashScreen() {
   return (

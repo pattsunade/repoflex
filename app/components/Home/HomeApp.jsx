@@ -2,12 +2,10 @@ import React, { useState,useRef,useEffect,useCallback } from 'react';
 import { StyleSheet, View, Text,Picker, Switch, Animated, ScrollView,TouchableOpacity,Dimensions,SafeAreaView, Pressable } from 'react-native';
 import { Input, Icon, Button, ListItem, Card} from 'react-native-elements';
 import Loading from '../Loading';
-import { size, isEmpty,map } from 'lodash';
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import backendRequest from '../../utils/BackEndConnect';
+import backendRequest from '../../utils/connection/backendHandler';;
 import moment from 'moment';
 import { RefreshControl } from 'react-native';
 
@@ -62,19 +60,20 @@ export default function HomeApp(props) {
     const [lati, setLati] = useState();
     const [long, setLong] = useState();
     const [loading, setLoading] = useState(true);
-    const [isEnabled, setIsEnabled] = useState(false);
+    // const [isEnabled, setIsEnabled] = useState(false);
     const [dateObj, setDateObj] = useState(new Date());
     const [displayDate, setDisplayDate] = useState('');
-    const [number, setNumber] = useState(0);
+    // const [number, setNumber] = useState(0);
     // const RZ = String(rank).charAt(0);
     // const RR = String(rank).charAt(2);
     // const RI = String(rank).charAt(4);
 
     
 
-    const getHomeData = React.useCallback((latitude,longitude) => { 
+    const getHomeData = React.useCallback(async(latitude,longitude) => { 
 
-        backendRequest('POST','house',formato(latitude,longitude)).then((response) => {
+        await backendRequest('POST','house',formato(latitude,longitude))
+        .then((response) => {
             console.log("success",response);
             const notificaciones = [];
             for (var i = 0; i < response.ans.noti.length; i++) { 
@@ -95,9 +94,9 @@ export default function HomeApp(props) {
             setLevl(response.ans.levl);
             setNoti(notificaciones);
             setWork(response.ans.work);
-            setLoading(false);
         })
         .catch((ans) => { 
+
             console.log("fail", ans);
             Toast.show({ 
                 type: 'error',
@@ -113,8 +112,11 @@ export default function HomeApp(props) {
                     name: 'login',
                 }],
             });
-        }
-        );
+        })
+        .finally(() => {
+            setLoading(false);
+        })
+
     },[])
 
     const [refreshing, setRefreshing] = React.useState(false)
@@ -134,7 +136,7 @@ export default function HomeApp(props) {
         const willFocusSubscription = navigation.addListener('focus', async() => {
             setLoading(true);
             await getHomeData(999,999);
-            setLoading(true);
+            setLoading(false);
         });
         return willFocusSubscription;
     },[navigation]);

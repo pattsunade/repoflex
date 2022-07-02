@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, Alert, TouchableOpacity ,Dimensions
 import { Button, Divider,Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import BackEndConnect from '../../utils/BackEndConnect'
+import BackEndConnect from '../../utils/connection/backendHandler';
 import TaskQuestion from '../../components/Tasks/TaskQuestion';
 import Loading from '../../components/Loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';

@@ -5,17 +5,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
 
-import BackEndConnect from '../../utils/BackEndConnect';
+import BackEndConnect from '../../utils/connection/backendHandler';;
 import ListTask from '../../components/Home/ListTask';
 
-export default function TaskAvailable({route}) {
-  const {lati,long} = route.params;
-  const navigation = useNavigation();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState('');
-
-  function formato() {
+function formato() {
     return{
       tat: 1,
       lat: lati,
@@ -23,44 +16,53 @@ export default function TaskAvailable({route}) {
     };
   }
 
-  useFocusEffect(
-    useCallback(() => 
-    { (() => 
-      { BackEndConnect('POST','tasks',formato()).then(async (response) =>
-        { const array = response.ans.tas;
-          setMsg(response.ans.msg);
-          setData(array);
-          setLoading(false);
-        })
-        .catch((ans) => 
-          { console.log(ans);
-            Toast.show(
-              { type: 'error',
-                props: 
-                { onPress: () => {}, text1: 'Error', text2: 'Error conexión. Porfavor inicia sesión nuevamente'
-                }
-              }
-            );
-            navigation.reset(
-            { index: 0,
-              routes: [
-                { name: 'login',
-                }
-              ],
-            });
-          }
-        );
-      })();
-    },[])
-  );
+export default function TaskAvailable({route}) {
+    const {lati,long} = route.params;
+    const navigation = useNavigation();
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [msg, setMsg] = useState('');
 
-  return(
+  
+
+    useFocusEffect(useCallback(() => {
+        BackEndConnect('POST','tasks',formato())
+        .then(async (response) => { 
+            const array = response.ans.tas;
+            setMsg(response.ans.msg);
+            setData(array);
+            setLoading(false);
+        })
+        .catch((ans) => { 
+            console.log(ans);
+            Toast.show({ 
+                type: 'error',
+                props: { 
+                    onPress: () => {}, 
+                    text1: 'Error', 
+                    text2: 'Error conexión. Porfavor inicia sesión nuevamente'
+                }
+            });
+            navigation.reset({ 
+                index: 0,
+                routes: [{ 
+                    name: 'login',
+                }],
+            });
+        }
+        );
+    },[]));
+    if (loading) {
+        return (
+            <View style={styles.loaderTask}>
+                <ActivityIndicator  size='large' color='#0000ff'/>
+                <Text>Cargando Tareas...</Text>
+            </View>
+        )
+    } 
+    return(
   <>
-    { loading ? 
-      ( <View style={styles.loaderTask}>
-          <ActivityIndicator  size='large' color='#0000ff'/>
-          <Text>Cargando Tareas...</Text>
-        </View>):
+    {
       data == null ?
       ( <View>
           <Text style={styles.title}>{msg}</Text>

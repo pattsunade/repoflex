@@ -7,7 +7,7 @@ import * as firebase from "firebase";
 import { validateEmail } from "../../utils/validations";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 import { clean, validarRut } from "../../utils/rut";
 
 const formato = (objeto) => {

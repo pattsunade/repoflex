@@ -1,17 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { BACKEND } from '../../envVariables';
 import Semaphore from './semaforo';
 
-// const IP = "http://prod.repoflex.cl:30000/app";
-const BACKEND = "http://104.237.140.131:30000/app"
-// console.log(BACKEND);
-console.log("-------------------------------------------------------------------------");
+// semaforo que controla la cantidad request que se hacen al mismo tiempo
 const throttler = new Semaphore(1);
 
-
-
 const connect = async(method, req, body, ott, txi, phid) => {
-	console.log("---- connect start ----")
+	console.log("> body", body)
 	let backResponse = await fetch(BACKEND, {
 		method: method,
 		headers: {
@@ -31,7 +27,7 @@ const connect = async(method, req, body, ott, txi, phid) => {
 	try {
 		let toJson = await backResponse.json();
 		let toAns = await JSON.parse(toJson.ans);
-		// console.log("Backans-->",toAns);
+		console.log("Backans-->",toAns);
 		return toAns;
 	} catch(error) {
 		// console.log("error-->",error);
@@ -39,12 +35,10 @@ const connect = async(method, req, body, ott, txi, phid) => {
 	}
 }
 
-// Esta parte del codigo es un asco, pero funciona
+// Esta parte del codigo es un asco, pero funciona llamandao una callback
 // No entiendo como funciona lo de la matriz
 const handleRequest =  async(cb,method=null, req=null, body=null) => {
-	// console.log(method, req, body)
 	let ret1 = await AsyncStorage.multiGet(['@ott','@txi']).then(async (ans) => {
-		// console.log("ottSaved-->",ans);
 		let prevOtt;
 		let txi;
 		
@@ -65,7 +59,8 @@ const handleRequest =  async(cb,method=null, req=null, body=null) => {
 		});
 		// console.log(expoPushToken);
 		// console.log(expoPushToken.data.slice(18,-1));
-		let ret2 = await connect(method, req, body, prevOtt, txi, expoPushToken.data.slice(18,-1)).then(async(ans1) => { 
+		let ret2 = await connect(method, req, body, prevOtt, txi, expoPushToken.data.slice(18,-1))
+		.then(async(ans1) => { 
 			console.log("connect ans", ans1);
 			try{
 			  if('mtx' in ans1.hdr)
@@ -81,23 +76,19 @@ const handleRequest =  async(cb,method=null, req=null, body=null) => {
 			  console.log(e);
 			}
 		  });
-		//   cb(ret2)
-		// return 
 		});
-	;
 }
+// maneja la request que se debe procesar
 const throttleRequest = async(cb, method=null, req=null, body=null) => {
 	await throttler.callFunction(handleRequest, cb, method, req, body)
 		.catch(error => console.log(error))
 }
 
-
-const backendRequest = async(...args) => {
-	// console.log(args)
+// encapsula la request
+const backendRequest = async(...args) => { 
     let fetchedData;
     await throttleRequest((request) => {fetchedData = request}, ...args)
 	console.log("fetchedData", fetchedData)
-	// return "this a return test"
     return fetchedData
 }
 

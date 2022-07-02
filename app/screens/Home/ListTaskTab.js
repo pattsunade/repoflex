@@ -1,12 +1,7 @@
-import React,{ useEffect,useState,useCallback } from 'react';
-import { Card } from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator} from 'react-native';
-import { Divider, Button } from 'react-native-elements';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Toast from 'react-native-toast-message';
-import BackEndConnect from '../../utils/BackEndConnect';
 import ListTask from './ListTask';
 
 export default function ListTaskTab({route}){ 

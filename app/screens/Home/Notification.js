@@ -1,11 +1,6 @@
-import React, { useState,useRef,useCallback } from "react";
+import React, { useRef } from "react";
 import { StyleSheet, View} from "react-native";
-import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Toast from "react-native-easy-toast";
-import { useNavigation } from "@react-navigation/native";
-
-import BackEndConnect from "../../utils/BackEndConnect";
 import ListNotification from "../../components/Home/ListNotification";
 
 export default function Notification({route,navigation}) {

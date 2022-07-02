@@ -4,7 +4,7 @@ import { Button, Card, Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import * as WebBrowser from 'expo-web-browser';
 import ParsedText from 'react-native-parsed-text';
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 
 export default function TermsAndConditions (props) {
   const {masterTitle,paragraph,fut} = props;

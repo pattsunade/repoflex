@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 import ListTaskInProgress from "../../components/Home/ListTaskInProgress";
 
 export default function TaskInProgress({route}) {

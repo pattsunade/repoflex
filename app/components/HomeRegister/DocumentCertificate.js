@@ -7,7 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
 import Modal from "../Modal";
 import InfoCertificate from "../HomeRegister/InfoImages/InfoCertificate";
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 import Loading from "../Loading";
 
 export default function DocumentCertificate (props) {

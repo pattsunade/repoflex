@@ -5,59 +5,60 @@ import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import TermsAndConditions from "../../components/HomeRegister/TermsAndConditions";
-import BackEndConnect from "../../utils/BackEndConnect";
 import Loading from "../../components/Loading";
+import terco from "../../utils/connection/transacciones/terco";
 
 export default function Firm () {
-  const navigation = useNavigation();
-  const [masterTitle, setMasterTitle] = useState();
-  const [paragraph, setParagraft] = useState([]);
-  const [fut, setFut] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  useFocusEffect(
-    useCallback(() =>
-    { BackEndConnect("POST","terco").then(async (response) =>
-      { if (response.ans.stx === "ok")
-        { var mst = response.ans.mat;
-          setMasterTitle(mst);
-          setParagraft(response.ans.par);
-          setFut(response.ans.fut);
-          setLoading(false);
-        }
-        else
+    const navigation = useNavigation();
+    const [masterTitle, setMasterTitle] = useState();
+    const [paragraph, setParagraft] = useState([]);
+    const [fut, setFut] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
+    useFocusEffect(
+        useCallback(() => { 
+        terco("POST","terco")
+        .then(async (response) => { 
+            if (response.ans.stx === "ok") { 
+                var mst = response.ans.mat;
+                setMasterTitle(mst);
+                setParagraft(response.ans.par);
+                setFut(response.ans.fut);
+                setLoading(false);
+            }
+            else
+            { Toast.show({
+            type: 'error',
+            props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde' + response.ans.stx
+                }
+            });
+            navigation.reset(
+            { index: 0,
+                routes: [
+                { name: 'login',
+                }
+                ],
+            });
+            setLoading(false);
+            }
+        })
+        .catch((response) =>
         { Toast.show({
-          type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde' + response.ans.stx
-            }
-          });
-          navigation.reset(
-          { index: 0,
+            type: 'error',
+            props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde' + response.ans.stx
+                }
+            });
+            navigation.reset(
+            { index: 0,
             routes: [
-              { name: 'login',
-              }
+                { name: 'login',
+                }
             ],
-          });
-          setLoading(false);
-        }
-      })
-      .catch((response) =>
-      { Toast.show({
-          type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta más tarde' + response.ans.stx
-            }
+            });
+            setLoading(false);
         });
-        navigation.reset(
-        { index: 0,
-          routes: [
-            { name: 'login',
-            }
-          ],
-        });
-        setLoading(false);
-      });
-    }, [])
-  );
+        }, [])
+    );
 
   return (
     <ScrollView>

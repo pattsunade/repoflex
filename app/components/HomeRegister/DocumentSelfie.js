@@ -8,7 +8,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import Modal from "../Modal";
 import InfoSelfie from "../HomeRegister/InfoImages/InfoSelfie";
 import Loading from "../Loading";
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 
 export default function DocumentSelfie (props) {
 const { toastRef, setIsLoading, navigation} = props;

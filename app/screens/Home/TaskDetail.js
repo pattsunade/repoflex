@@ -1,229 +1,251 @@
 import React, { useEffect,useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator} from 'react-native';
 import { Card } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
 import { Divider, Button } from 'react-native-elements';
-import BackEndConnect from '../../utils/BackEndConnect';
 import Toast from 'react-native-toast-message';
-import Loading from '../../components/Loading';
+import taskq from '../../utils/connection/transacciones/taskq';
+import assgn from '../../utils/connection/transacciones/assgn';
+import taskAbort from '../../utils/connection/transacciones/abort';
 
-export default function TaskDetail({route,navigation}) 
-{ const {tit,typ,tid,pla,amo,sig,wen,start,abort,assign} = route.params;
-  const [loading, setLoading] = useState(true);
-  const [taskDetail, setTaskDetail] = useState();
-  const [det,setDet] = useState();
-  const [tim,setTim] = useState();
-  const [nqu,setNqu] = useState();
-  const [npi,setNpi] = useState();
-  const [nre,setNre] = useState();
-  const [loadingText, setLoadingText] = useState('Cargando detalles...');
 
-  function getTaskDetail()
-  { BackEndConnect('POST','taskq',formato()).then((response) => 
-    { if(response.ans.stx==='ok')
-      { setDet(response.ans.det);
-        setNqu(response.ans.nqu);
-        setNpi(response.ans.npi);
-        setNre(response.ans.nre);
-        setTim(response.ans.tim);
-        setLoading(false);
-      }
-      else
-      { navigation.reset({
-          index: 0,
-          routes: 
-          [ { name: 'login',
+
+function TaskDetail({route,navigation}) { 
+    const {tit,typ,tid,pla,amo,sig,wen,start,abort,assign} = route.params;
+    const [loading, setLoading] = useState(true);
+    const [det,setDet] = useState();
+    const [tim,setTim] = useState();
+    const [nqu,setNqu] = useState();
+    const [npi,setNpi] = useState();
+    const [nre,setNre] = useState();
+    const [loadingText, setLoadingText] = useState('Cargando detalles...');
+
+    const getTaskDetail = () => { 
+        taskq({tid: tid })
+        .then((response) => { 
+            if(response.ans.stx==='ok') { 
+                setDet(response.ans.det);
+                setNqu(response.ans.nqu);
+                setNpi(response.ans.npi);
+                setNre(response.ans.nre);
+                setTim(response.ans.tim);
+                setLoading(false);
             }
-          ],
+            else { 
+                navigation.reset({
+                    index: 0,
+                    routes: [{ 
+                        name: 'login',
+                    }],
+                });
+                Toast.show({ 
+                    type: 'error',
+                    props: {
+                        onPress: () => {}, 
+                        text1: 'Error', 
+                        text2: 'Error de conexión, por favor intenta nuevamente '
+                    },
+                    autohide: false
+                });
+            }
+        })
+        .catch((ans) => { 
+            Toast.show({ 
+                type: 'error',
+                props: {
+                    onPress: () => {}, 
+                    text1: 'Error', 
+                    text2: 'Error de conexión, por favor intenta nuevamente '
+                },
+                autohide: false
+            });
+            navigation.reset({
+                index: 0,
+                routes: [{ 
+                    name: 'login',
+                }],
+            });
         });
-        Toast.show(
-        { type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '
-          },
-          autohide: false
+    }
+
+    useEffect(()=> { 
+        getTaskDetail();
+    },[]);
+
+    const assingFun = () => { 
+        setLoadingText('Asignando tarea...');
+        setLoading(true);
+        assgn({tid: tid})
+        .then(async (response) => { 
+            if(response.ans.stx!='ok'){
+                Toast.show({ 
+                    type: 'error',
+                    props: {
+                        onPress: () => {}, 
+                        text1: 'Error', 
+                        text2: response.ans.msg
+                    },
+                    autohide: false
+                });
+            }
+            navigation.goBack();
+            setLoading(false);
+        })
+        .catch((ans) => { 
+            console.log(ans);
+            Toast.show({ 
+                type: 'error',
+                props: {
+                    onPress: () => {}, 
+                    text1: 'Error', 
+                    text2: 'Error de conexión, por favor intenta nuevamente '
+                },
+                autohide: false
+            });
+            setLoading(false);
         });
-      }
-    })
-    .catch((ans) =>
-    { Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '
-        },
-        autohide: false
-      });
-      navigation.reset({
-        index: 0,
-        routes: 
-        [ { name: 'login',
-          }
-        ],
-      });
-    });
-  }
+    }
+    const startFun = () => { 
+        navigation.reset({ 
+            index: 0,
+            routes: [{ 
+                name: 'task',
+                params: {tid:tid,completed:0,backAnsFormat:null,quest:null,update:null,frontAnsFormat:null}
+            }],
+        })
+    }
 
-  useEffect(()=>
-  { getTaskDetail();
-  },[]);
-
-  function formato()
-  { return{
-      tid: tid,
-    };
-  }
-
-
-  function assingFun()
-  { setLoadingText('Asignando tarea...');
-    setLoading(true);
-    BackEndConnect('POST','assgn',formato()).then(async (response) => 
-    { if(response.ans.stx!='ok'){
-      Toast.show(
-        { type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
-          },
-          autohide: false
+    const abortFun = () => { 
+        setLoadingText('Asignando tarea...')
+        setLoading(true);
+        taskAbort({tid: tid })
+        .then(async (response) => { 
+            if(response.ans.stx!="ok") { 
+                Toast.show({
+                    type: 'error',
+                    props: {
+                        onPress: () => {}, 
+                        text1: 'Error', 
+                        text2: response.ans.msg
+                    },
+                    autohide: false
+                });
+            }
+            navigation.reset({
+                index: 0,
+                routes: [{
+                    name: 'home',
+                }],
+            })
+        })
+        .catch((error) => { 
+            console.log(error);
+            Toast.show({ 
+                type: 'error',
+                props: {
+                    onPress: () => {}, 
+                    text1: 'Error', 
+                    text2: 'Error de conexión, por favor intenta nuevamente'
+                },
+                autohide: false
+            });
         });
-      }
-      navigation.goBack();
-      setLoading(false);
-    })
-    .catch((ans) =>
-    { console.log(ans);
-      Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente '
-        },
-        autohide: false
-      });
-      setLoading(false);
-    });
-  }
+    }
 
-  function startFun()
-  { navigation.reset(
-    { index: 0,
-      routes: 
-      [ { name: 'task',
-          params: {tid:tid,completed:0,backAnsFormat:null,quest:null,update:null,frontAnsFormat:null}
-        }
-      ],
-    })
-  }
-
-  function abortFun()
-  { setLoadingText('Asignando tarea...')
-    setLoading(true);
-    BackEndConnect("POST","abort",formato()).then(async (response) => 
-    { if(response.ans.stx!="ok")
-      { Toast.show(
-        {
-          type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: response.ans.msg
-          },
-          autohide: false
-        });
-      }
-      navigation.reset({
-      index: 0,
-      routes: 
-      [ {
-          name: 'home',
-        }
-      ],
-      })
-    })
-    .catch((ans) =>
-    { console.log(ans);
-      Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: 'Error de conexión, por favor intenta nuevamente'
-        },
-        autohide: false
-      });
-    });
-  }
-
-  return(
-  <>
-    { loading ? (
-      <View style={styles.loaderTask}>
-        <ActivityIndicator  size="large" color="#0000ff"/>
-        <Text>{loadingText}</Text>
-      </View>)
-      :(<Card style={styles.parentView}>
-          <View style={styles.taskTypeView}>
-            <View style={styles.circleView}>
-              <Text style={styles.circleText}>{sig}</Text>
+    if (loading) {
+        return (
+            <View style={styles.loaderTask}>
+                <ActivityIndicator  size="large" color="#0000ff"/>
+                <Text>{loadingText}</Text>
             </View>
-            <Text style={styles.taskTypeText}>{typ}</Text>
-          </View>
-          <Text style={styles.taskTitleText}>{tit}</Text>
-          <Text style={styles.textId}>id:{tid}</Text>
-          <Divider style= {styles.divider} />
-          <View style={styles.taskTextView}>            
-            <Text style={styles.taskText}>Lugar: <Text style={styles.taskDetail}>{pla}</Text></Text>
-            <Text style={styles.taskText}>Fecha: <Text style={styles.textDetail}>{wen.substring(4,6)}/{wen.substring(2,4)}/{wen.substring(0,2)} {wen.substring(6,8)}:{wen.substring(8,10)}</Text></Text>
-            <Text style={styles.taskText}>Detalle: <Text style={styles.taskDetail}>{det} </Text></Text>
-            <Text style={styles.taskText}>A pagar: <Text style={styles.boldTaskDetail}>$ {amo}</Text></Text>
-            { parseInt(tim) > 0 && <Text style={styles.taskText}>Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text></Text>
-            }
-          </View>
-          <Divider style= {styles.divider}/>
-          <View style={styles.activityView}>
-            <Text style={styles.activityTitleText}>DETALLE DE ACTIVIDADES</Text>
-            <Text style={styles.activityDetailNumber}>{nqu} <Text>Preguntas</Text></Text>
-            <Text style={styles.activityDetailNumber}>{npi} <Text>Fotografías</Text></Text>
-            <Text style={styles.activityDetailNumber}>{nre} <Text>Reposición</Text></Text>
-          </View>
-          <View style={styles.btnView}>
-            { assign && (
-                <Button
-                  title='Asignar'
-                  containerStyle={styles.btnContainer}
-                  buttonStyle={styles.btn}
-                  onPress={() =>assingFun()}
-                />
-              )
-            }
-            { abort && (
-                <Button
-                  title="Abortar"
-                  containerStyle={styles.btnContainer}
-                  buttonStyle={styles.btn}
-                  onPress={() =>abortFun()}
-                />
-              )
-            }
-            { start && (
-                <Button
-                  title='Iniciar'
-                  containerStyle={styles.btnContainer}
-                  buttonStyle={styles.btn}
-                  onPress={() => startFun()}
-                />
-              )
-            }
-          </View>
+        )
+    }
+    return(
+        <Card style={styles.parentView}>
+            <View style={styles.taskTypeView}>
+                <View style={styles.circleView}>
+                <Text style={styles.circleText}>{sig}</Text>
+                </View>
+                <Text style={styles.taskTypeText}>{typ}</Text>
+            </View>
+            <Text style={styles.taskTitleText}>{tit}</Text>
+            <Text style={styles.textId}>id:{tid}</Text>
+            <Divider style= {styles.divider} />
+            <View style={styles.taskTextView}>            
+                <Text style={styles.taskText}>
+                    Lugar: <Text style={styles.taskDetail}>{pla}</Text>
+                </Text>
+                <Text style={styles.taskText}>
+                    Fecha: <Text style={styles.textDetail}>{wen.substring(4,6)}/{wen.substring(2,4)}/{wen.substring(0,2)} {wen.substring(6,8)}:{wen.substring(8,10)}</Text>
+                </Text>
+                <Text style={styles.taskText}>
+                    Detalle: <Text style={styles.taskDetail}>{det} </Text>
+                </Text>
+                <Text style={styles.taskText}>
+                    A pagar: <Text style={styles.boldTaskDetail}>$ {amo}</Text>
+                </Text>
+                { parseInt(tim) > 0 && (
+                <Text style={styles.taskText}>
+                    Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text>
+                </Text>
+                )
+                }
+            </View>
+            <Divider style= {styles.divider}/>
+            <View style={styles.activityView}>
+                <Text style={styles.activityTitleText}>DETALLE DE ACTIVIDADES</Text>
+                <Text style={styles.activityDetailNumber}>{nqu} <Text>Preguntas</Text></Text>
+                <Text style={styles.activityDetailNumber}>{npi} <Text>Fotografías</Text></Text>
+                <Text style={styles.activityDetailNumber}>{nre} <Text>Reposición</Text></Text>
+            </View>
+            <View style={styles.btnView}>
+                { assign && (
+                    <Button
+                    title='Asignar'
+                    containerStyle={styles.btnContainer}
+                    buttonStyle={styles.btn}
+                    onPress={() =>assingFun()}
+                    />
+                )
+                }
+                { abort && (
+                    <Button
+                    title="Abortar"
+                    containerStyle={styles.btnContainer}
+                    buttonStyle={styles.btn}
+                    onPress={() =>abortFun()}
+                    />
+                )
+                }
+                { start && (
+                    <Button
+                    title='Iniciar'
+                    containerStyle={styles.btnContainer}
+                    buttonStyle={styles.btn}
+                    onPress={() => startFun()}
+                    />
+                )
+                }
+            </View>
         </Card>
-      )
-    }    
-  </>
-  );
+    );
 }
+export default TaskDetail;
+const styles = StyleSheet.create({ 
+    parentView: { 
+        marginRight: 10,
+        marginLeft: 10,
+        marginTop:20,
+        borderWidth: 1,
+        borderColor: '#c7c7c7',
+        padding: 10,
+        borderRadius:15
 
-const styles = StyleSheet.create(
-{ parentView:
-  { marginRight: 10,
-    marginLeft: 10,
-    marginTop:20,
-    borderWidth: 2,
-    borderColor: '#000000'
-  },
-  taskTypeView:
-  { flexDirection:'row',
-    margin:3,
-    borderRadius:1
-  },
+    },
+    taskTypeView: { 
+        flexDirection:'row',
+        margin:3,
+        
+    },
   circleView:
   { width:35,
     height:35,

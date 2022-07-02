@@ -2,7 +2,7 @@ import React, { useRef,useState } from "react";
 import { StyleSheet,StatusBar, Text, View, ScrollView,  TouchableOpacity ,Dimensions,SafeAreaView} from 'react-native';
 import { Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from '../../utils/connection/backendHandler';
 import Toast from 'react-native-toast-message';
 import Loading from "../../components/Loading";
 

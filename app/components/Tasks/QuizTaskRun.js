@@ -3,125 +3,119 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Image, Platform, Activit
 import { Input, Divider, Icon, Button, CheckBox} from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import { Rating, AirbnbRating } from 'react-native-ratings';
-import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BackEndConnect from "../../utils/BackEndConnect";
+import BackEndConnect from "../../utils/connection/backendHandler";
 import Toast from 'react-native-toast-message';
-import Loading from '../Loading';
 import moment from "moment";
 
 
 export default function QuizTaskRun (props) {
-  const {questions,tid,completed,prevAns} = props;
-  console.log("prevAns->",prevAns);
-  const navigation = useNavigation();
-  // const [showScore, setShowScore] = useState(false);
-  // const [score, setScore] = useState(0);
-  const [input, setInput] = useState(prevAns);
-  const [checked, setChecked] = useState(prevAns ? prevAns:[]);
-  const [stars, setStars] = useState(prevAns ? prevAns:0);
-  const [image, setImage] = useState(prevAns);
-  const [date, setDate] = useState(questions.aty == 6 && prevAns ? new Date(Date.parse('20'+prevAns.substr(0,2)+'/'+
-      prevAns.substr(2,2)+'/'+prevAns.substr(4,2)+
-      ' '+prevAns.substr(6,2)+':'+prevAns.substr(8,2))):
-    new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [show, setShow] = useState(false);
-  const [mode, setMode] = useState('date');
-  const [displayDate, setDisplayDate] = useState(questions.aty == 6 && prevAns ? prevAns.substr(4,2)+'/'+
-      prevAns.substr(2,2)+'/'+prevAns.substr(0,2):null);
-  const [displayTime, setDisplayTime] = useState(questions.aty == 6 && prevAns ? prevAns.substr(6,2)+':'+
-      prevAns.substr(8,2):null);
-  const [disabledContinue, setDisabledContinue] = useState(prevAns ? false:true);
-  const [qid, setQid] = useState(0);
-  const [formData, setFormData] = useState([]);
-  const [formDataPic, setFormDataPic] = useState(defaultFormValuePic());
-  const [pictureData, setPictureData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState("Guardando respuestas...");
+	const {questions,tid,completed,prevAns} = props;
+	// console.log("prevAns->",prevAns);
+	const navigation = useNavigation();
+	// const [showScore, setShowScore] = useState(false);
+	// const [score, setScore] = useState(0);
+	const [input, setInput] = useState(prevAns);
+	const [checked, setChecked] = useState(prevAns ? prevAns:[]);
+	const [stars, setStars] = useState(prevAns ? prevAns:0);
+	const [image, setImage] = useState(prevAns);
+	const [date, setDate] = useState(questions.aty == 6 && prevAns ? new Date(Date.parse('20'+prevAns.substr(0,2)+'/'+
+		prevAns.substr(2,2)+'/'+prevAns.substr(4,2)+
+		' '+prevAns.substr(6,2)+':'+prevAns.substr(8,2))):
+		new Date());
+	const [selectedDate, setSelectedDate] = useState(null);
+	const [selectedTime, setSelectedTime] = useState(null);
+	const [show, setShow] = useState(false);
+	const [mode, setMode] = useState('date');
+	const [displayDate, setDisplayDate] = useState(questions.aty == 6 && prevAns ? prevAns.substr(4,2)+'/'+
+		prevAns.substr(2,2)+'/'+prevAns.substr(0,2):null);
+	const [displayTime, setDisplayTime] = useState(questions.aty == 6 && prevAns ? prevAns.substr(6,2)+':'+
+		prevAns.substr(8,2):null);
+	const [disabledContinue, setDisabledContinue] = useState(prevAns ? false:true);
+	const [qid, setQid] = useState(0);
+	const [formData, setFormData] = useState([]);
+	const [formDataPic, setFormDataPic] = useState({
+		tid: tid,
+		qid: qid,
+		file: "" 
+	});
+	const [pictureData, setPictureData] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [loadingText, setLoadingText] = useState("Guardando respuestas...");
 
-  function defaultFormValuePic() 
-  { return {
-      tid: tid,
-      qid: qid,
-      file: "" 
-    };
-  }
+	const formatoPic = (objeto,qidd) => { 
+		return {
+			tid: tid,
+			qid: qidd,
+			file: objeto.file
+		};
+	}
 
-  function formatoPic(objeto,qidd) 
-  { return {
-      tid: tid,
-      qid: qidd,
-      file: objeto.file
-    };
-  }
+	const onChange = (e) => { 
+		setInput(e.nativeEvent.text);
+		setDisabledContinue(false);
+	}
 
-  function onChange(e)
-  { setInput(e.nativeEvent.text);
-    setDisabledContinue(false);
-  }
+	const handleAnswerOptionClickPic = (qidd) => { 
+		setLoading(true);
+		if(formDataPic.file.length>0)
+		{ setQid(qidd)
+		// if (qid) {
+		//   setScore(score + 1);
+		// }
+		sendimage(qidd).then(() =>
+		{ AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
+			{ if (prevAns)
+			{ navigation.navigate(
+				{ name:'task',
+				params:
+				{ tid:tid,
+					backAnsFormat:{qid:qidd,aid:'pic'},
+					frontAnsFormat:image,
+					update:true
+				},
+				merge: true
+				});
+			}
+			else
+			{ navigation.navigate(
+				{ name:'task',
+				params:
+				{ completed:completed+1,
+					tid:tid,
+					backAnsFormat:{qid:qidd,aid:"pic"},
+					frontAnsFormat:image
+				},
+				merge: true
+				});
+			}
+			});
+		}).catch((ans) =>
+			{ console.log(ans);
+			}
+		);
+		}
+		else
+		{ Toast.show(
+		{ type: 'error',
+			props: 
+			{ onPress: () => {}, text1: 'Error', text2: "Debes subir una foto."
+			}
+		});
+		}
+	}
 
-  function handleAnswerOptionClickPic(qidd) 
-  { setLoading(true);
-    if(formDataPic.file.length>0)
-    { setQid(qidd)
-      // if (qid) {
-      //   setScore(score + 1);
-      // }
-      sendimage(qidd).then(() =>
-      { AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
-        { if (prevAns)
-          { navigation.navigate(
-            { name:'task',
-              params:
-              { tid:tid,
-                backAnsFormat:{qid:qidd,aid:'pic'},
-                frontAnsFormat:image,
-                update:true
-              },
-              merge: true
-            });
-          }
-          else
-          { navigation.navigate(
-            { name:'task',
-              params:
-              { completed:completed+1,
-                tid:tid,
-                backAnsFormat:{qid:qidd,aid:"pic"},
-                frontAnsFormat:image
-              },
-              merge: true
-            });
-          }
-        });
-      }).catch((ans) =>
-        { console.log(ans);
-        }
-      );
-    }
-    else
-    { Toast.show(
-      { type: 'error',
-        props: 
-        { onPress: () => {}, text1: 'Error', text2: "Debes subir una foto."
-        }
-      });
-    }
-  }
+	const onChangePic = (e, type) => { 
+		setFormDataPic({ ...formDataPic, [type]:e });
+		setDisabledContinue(false);
+	}
 
-  function onChangePic (e, type)
-  { setFormDataPic({ ...formDataPic, [type]:e });
-    setDisabledContinue(false);
-  }
-
-  async function sendimage(qidd)
-  { return await BackEndConnect("POST","taskp",formatoPic(formDataPic,qidd));
-  }
+	const sendimage = async(qidd) => { 
+		return await BackEndConnect("POST","taskp",formatoPic(formDataPic,qidd));
+	}
 
   const compress = async (uri) => 
   { const manipResult = await ImageManipulator.manipulateAsync

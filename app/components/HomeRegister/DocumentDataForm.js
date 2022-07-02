@@ -7,7 +7,7 @@ import { size,isEmpty,map,isInteger } from 'lodash';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import Toast from 'react-native-toast-message';
-import BackEndConnect from '../../utils/BackEndConnect';
+import BackEndConnect from '../../utils/connection/backendHandler';;
 
 export default function DocumentDataForm(props) {
   const { lists } = props;

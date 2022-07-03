@@ -8,21 +8,10 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import backendRequest from '../../utils/connection/backendHandler';;
 import moment from 'moment';
 import { RefreshControl } from 'react-native';
+import house from '../../utils/connection/transacciones/house';
+import { formatNumberDots } from '../../utils/numeros';
 
-const formato = (lati,longi) => { 
-    return{
-        lat: lati,
-        lon: longi
-    };
-}
-
-function CustomListItem ({
-	onPress,
-	leftIcon,
-	counter, 
-	text,
-    ...props
-}) {
+function CustomListItem ({onPress, leftIcon, counter, text, ...props }) {
 	return (
 		<ListItem onPress={onPress} {...props}>
 			{leftIcon}
@@ -41,7 +30,97 @@ function CustomListItem ({
 	)
 }
 
-export default function HomeApp(props) {
+function HelloUser ({ name, levl }) {
+    const navigation = useNavigation();
+    return (
+        <View style={styles.viewContainerInfo} >
+            <Pressable 
+                style={styles.userAccountContainer} 
+                onPress={ () => navigation.navigate('account',{ 
+                    nameuser:name,
+                    level:levl})}
+            >
+                <Icon
+                    size={40}
+                    type='material-community'
+                    name='account-circle'
+                    color= '#5300eb'
+                    containerStyle={styles.btnContainer}
+                />
+                <Text style={styles.textUserAccout}>
+                    Hola {name}
+                </Text> 
+            </Pressable>
+        </View>
+    )
+}
+
+function UserDataCard({ location, date, amount,  }){
+    return (
+        <Card containerStyle={styles.cardStyle}>
+            <View style={styles.cardContainerAccount}>
+                <Text style={styles.cardAccoutText}> Mi cuenta </Text>
+                {/* <View style={styles.achievement}>
+                    <View style = {styles.achievementContainer}>
+                            <Text style={styles.circleViewRZ}>{RZ}</Text>
+                            <Text style={styles.circleViewRR}>{RR}</Text>
+                            <Text style={styles.circleViewRI}>{RI}</Text>
+                        
+                    </View>
+                </View> */}
+            </View>
+            <Text style={styles.cardUpdateText}> Última actualización: {date}</Text>
+            <Text style={styles.cardLocationText}> Ubicación {location} </Text>
+            <View style={styles.cardContainerMoney}>
+                <Text style={styles.cardBalanceMoneyText}> Saldo a favor </Text>
+                <Text >
+                    <Text style={styles.cardMoneyAmountText1}> $ </Text>
+                    <Text style={styles.cardMoneyAmountText2}>{formatNumberDots(amount)}</Text>
+                </Text>
+            </View>
+            
+        </Card>
+    )
+}
+
+function TaskMenuList ({available, assigned, send, finished, lati, long}) {
+    const navigation = useNavigation();
+    return (
+        <View>
+            <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
+
+            <CustomListItem 
+                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                text={"Disponibles"}
+                counter={available}
+                onPress={()=> navigation.navigate('listtask',{lati,long,type:1,start:true,assign:true,title:'Tareas Disponibles'})}    
+                bottomDivider
+            />
+            <CustomListItem 
+                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                text={"Asignadas"}
+                counter={assigned}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
+                bottomDivider
+            />
+            <CustomListItem 
+                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                text={"Enviadas"}
+                counter={send}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
+                bottomDivider
+            />
+            <CustomListItem 
+                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
+                text={"Finalizadas"}
+                counter={finished}
+                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
+            />
+        </View>
+    )
+}
+
+export default function HomeApp() {
     const navigation = useNavigation();
     const [name, setName] = useState();
     const [rank, setRank] = useState();
@@ -55,7 +134,7 @@ export default function HomeApp(props) {
     const [loca, setLoca] = useState();
     const [levl, setLevl] = useState();
     const [noti, setNoti] = useState();
-    const [tenp, setTenp] = useState();
+    // const [tenp, setTenp] = useState();
     const [work, setWork] = useState();
     const [lati, setLati] = useState();
     const [long, setLong] = useState();
@@ -70,11 +149,10 @@ export default function HomeApp(props) {
 
     
 
-    const getHomeData = React.useCallback(async(latitude,longitude) => { 
+    const getHomeData = React.useCallback(async() => { 
 
-        await backendRequest('POST','house',formato(latitude,longitude))
+        await house()
         .then((response) => {
-            console.log("success",response);
             const notificaciones = [];
             for (var i = 0; i < response.ans.noti.length; i++) { 
                 var counter = response.ans.noti[i];
@@ -89,8 +167,8 @@ export default function HomeApp(props) {
             setEnvi(response.ans.envi);
             // setChck(response.ans.chck);
             setFini(response.ans.fini);
-            if(latitude!=999)
-                setLoca(response.ans.loca);
+            // if(latitude!=999)
+            setLoca(response.ans.loca);
             setLevl(response.ans.levl);
             setNoti(notificaciones);
             setWork(response.ans.work);
@@ -123,23 +201,20 @@ export default function HomeApp(props) {
     const onRefresh = React.useCallback(async() => {
 		setRefreshing(true)
 		console.log("i am refreshing");
-		const location = await Location.getCurrentPositionAsync({});
-		await getHomeData(
-			location.coords.latitude.toString(), 
-			location.coords.longitude.toString(),
-		)
+		// const location = await Location.getCurrentPositionAsync({});
+		await getHomeData()
 		setRefreshing(false)
 
 	},[])
 
-    React.useEffect(() => {
-        const willFocusSubscription = navigation.addListener('focus', async() => {
-            setLoading(true);
-            await getHomeData(999,999);
-            setLoading(false);
-        });
-        return willFocusSubscription;
-    },[navigation]);
+    // React.useEffect(() => {
+    //     const willFocusSubscription = navigation.addListener('focus', async() => {
+    //         setLoading(true);
+    //         await getHomeData();
+    //         setLoading(false);
+    //     });
+    //     return willFocusSubscription;
+    // },[navigation]);
 
     React.useEffect(() => { 
         const run = async() => {
@@ -183,111 +258,11 @@ export default function HomeApp(props) {
             <ScrollView refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={20}/>
             }>
-                <View style={styles.viewContainerInfo} >
-                    <Pressable 
-                        style={styles.userAccountContainer} 
-                        onPress={ () => navigation.navigate('account',{ 
-                            nameuser:name,
-                            level:levl})}
-                        >
-                        <Icon
-                            size={40}
-                            type='material-community'
-                            name='account-circle'
-                            color= '#5300eb'
-                            containerStyle={styles.btnContainer}
-                        />
-                        <Text style={styles.textUserAccout}>
-                            Hola {name}
-                        </Text> 
-                    </Pressable>                    
-                    {/* <View style={{flexDirection:'column'}}>
-                        <Text style={styles.texttitle}>Ubicación:</Text>
-                        <Text style={{fontWeight:'bold'}}> {loca}</Text>
-                        <Text style={styles.texttitle2}>Última actualización:</Text>
-                        <Text style={{fontWeight:'bold'}}> {displayDate}</Text>
-                        <Text style={styles.texttitleSaludo}>Hola, </Text>
-                        <Text style={styles.texttitleNombre}>
-                        {name}.
-                        </Text>
-                    </View> */}
-                    
-                    {/* <View style={{flexDirection:'column',justifyContent:'space-around','marginLeft':25}}>
-                        <Icon
-                            size={40}
-                            type='material-community'
-                            name='refresh'
-                            color= '#5300eb'
-                            containerStyle={styles.btnContainer}
-                            onPress={()=>setDateObj(new Date())}
-                        />
-                        
-                    </View> */}
-                </View>
                 
-                <Card containerStyle={styles.cardStyle}>
-                    <View style={styles.cardContainerAccount}>
-                        <Text style={styles.cardAccoutText}> Mi cuenta </Text>
-                        {/* <View style={styles.achievement}>
-                            <View style = {styles.achievementContainer}>
-                                    <Text style={styles.circleViewRZ}>{RZ}</Text>
-                                    <Text style={styles.circleViewRR}>{RR}</Text>
-                                    <Text style={styles.circleViewRI}>{RI}</Text>
-                             
-                            </View>
-                        </View> */}
-                    </View>
-                    <Text style={styles.cardUpdateText}> Última actualización: {displayDate}</Text>
-                    <Text style={styles.cardLocationText}> Ubicación {loca} </Text>
-                    <View style={styles.cardContainerMoney}>
-                        <Text style={styles.cardBalanceMoneyText}> Saldo a favor </Text>
-                        <Text >
-                            <Text style={styles.cardMoneyAmountText1}> $ </Text>
-                            <Text style={styles.cardMoneyAmountText2}>{amou}</Text>
-                        </Text>
-                    </View>
-                    
-                </Card>
-
+                <HelloUser name={name} levl={levl} />
+                <UserDataCard location={loca} date={displayDate} amount={amou} />
+                <TaskMenuList available={avai} assigned={asgn} send={envi} finished={fini} lati={lati} long={long} />
                 
-
-                {/* <TouchableOpacity style={styles.customBtn}>
-                    <Text style={styles.customBtnTextContent}>Tienes un saldo a favor de </Text>
-                    <Text style={styles.customBtnTextContentPrice}>$ {amou}</Text>
-
-                </TouchableOpacity> */}
-                    <View>
-                    <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
-                    </View>
-                    <View>
-                        <CustomListItem 
-                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                            text={"Disponibles"}
-                            counter={avai}
-                            onPress={()=> navigation.navigate('listtask',{lati,long,type:1,start:true,assign:true,title:'Tareas Disponibles'})}    
-                            bottomDivider
-                        />
-                        <CustomListItem 
-                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                            text={"Asignadas"}
-                            counter={asgn}
-                            onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
-                            bottomDivider
-                        />
-                        <CustomListItem 
-                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                            text={"Enviadas"}
-                            counter={envi}
-                            onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
-                            bottomDivider
-                        />
-                        <CustomListItem 
-                            leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                            text={"Finalizadas"}
-                            counter={fini}
-                            onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
-                        />
-                </View>
             </ScrollView>
         </SafeAreaView>
     );

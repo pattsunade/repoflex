@@ -36,7 +36,6 @@ export default function Login() {
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>
         <Text>Versión v0.68.0</Text>
-        <Text>Dev</Text>
       </View>
     </ScrollView>
   )

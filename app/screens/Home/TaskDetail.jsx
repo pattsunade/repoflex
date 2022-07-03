@@ -1,12 +1,86 @@
 import React, { useEffect,useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator} from 'react-native';
 import { Card } from 'react-native-paper';
-import { Divider, Button } from 'react-native-elements';
+import { Divider, Button, Icon } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 import taskq from '../../utils/connection/transacciones/taskq';
 import assgn from '../../utils/connection/transacciones/assgn';
 import taskAbort from '../../utils/connection/transacciones/abort';
+import {formatearFechaHora} from '../../utils/fechas'
+import {formatNumberDots} from '../../utils/numeros'
 
+
+function CircleIcon ({text}) {
+	return (
+		<View style={customStyle.circleView}>
+			<Text style={customStyle.circleText}>{text}</Text>
+		</View>
+	)
+}
+
+function TaskTitle({name, type, id, sig}) {
+	return (
+		<View style={customStyle.taskTypeView}>
+			<CircleIcon text={sig}/>
+			<View style={customStyle.titleTaskSection}>
+				<Text style={customStyle.textTitleTask}>{name}</Text>  
+				<Text style={customStyle.taskTypeText}>{type}</Text>
+			</View>
+			<Text style={customStyle.textId}>id:{id}</Text>
+		</View>
+	)
+}
+
+
+function TaskData ({location, date, amount, detail, time}) {
+
+	return (
+		<View style={customStyle.taskTextView}>
+
+			<View style={customStyle.taskIconTextContainer}>
+                <View style={customStyle.taskElementContainer}>
+                    <Text style={customStyle.taskElementMiniText}>Local</Text>
+                    <Text style={customStyle.taskDetail}>{location}</Text>
+                </View>
+                <Icon  
+					type='material-community' 
+					name='store-outline'
+					iconStyle={customStyle.detailIcon}
+				/>
+			</View>
+            <View style={customStyle.taskIconTextContainer}>
+                <View style={customStyle.taskElementContainer}>
+                    <Text style={customStyle.taskElementMiniText}>Fecha y hora</Text>
+                    <Text style={customStyle.taskDetail}>{formatearFechaHora(date)}</Text>
+                </View>
+                <Icon 
+					type='material-community' 
+					name='calendar-clock-outline'
+					iconStyle={customStyle.detailIcon}
+				/>
+			</View>
+
+            <Text style={customStyle.taskElementMiniText}>
+                Descripción
+            </Text>
+            <View style={customStyle.taskDetailContainer}>
+                <Text style={customStyle.taskDetailText}>
+                    {/* Detalle: <Text style={styles.taskDetail}> </Text> */}
+                    {detail}
+                </Text>
+            </View>
+			<Text style={customStyle.taskText}>
+				A pagar: <Text style={customStyle.boldTaskDetail}>${formatNumberDots(amount)}</Text>
+			</Text>
+            
+            { parseInt(time) > 0 && (
+                <Text style={styles.taskText}>
+                    Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text>
+                </Text>
+                )}
+		</View>
+	)	
+}
 
 
 function TaskDetail({route,navigation}) { 
@@ -161,35 +235,9 @@ function TaskDetail({route,navigation}) {
     }
     return(
         <Card style={styles.parentView}>
-            <View style={styles.taskTypeView}>
-                <View style={styles.circleView}>
-                <Text style={styles.circleText}>{sig}</Text>
-                </View>
-                <Text style={styles.taskTypeText}>{typ}</Text>
-            </View>
-            <Text style={styles.taskTitleText}>{tit}</Text>
-            <Text style={styles.textId}>id:{tid}</Text>
+            <TaskTitle sig={sig} name={tit} type={typ} id={tid} />
             <Divider style= {styles.divider} />
-            <View style={styles.taskTextView}>            
-                <Text style={styles.taskText}>
-                    Lugar: <Text style={styles.taskDetail}>{pla}</Text>
-                </Text>
-                <Text style={styles.taskText}>
-                    Fecha: <Text style={styles.textDetail}>{wen.substring(4,6)}/{wen.substring(2,4)}/{wen.substring(0,2)} {wen.substring(6,8)}:{wen.substring(8,10)}</Text>
-                </Text>
-                <Text style={styles.taskText}>
-                    Detalle: <Text style={styles.taskDetail}>{det} </Text>
-                </Text>
-                <Text style={styles.taskText}>
-                    A pagar: <Text style={styles.boldTaskDetail}>$ {amo}</Text>
-                </Text>
-                { parseInt(tim) > 0 && (
-                <Text style={styles.taskText}>
-                    Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text>
-                </Text>
-                )
-                }
-            </View>
+			<TaskData location={pla} date={wen} amount={amo} detail={det} time={tim}/>
             <Divider style= {styles.divider}/>
             <View style={styles.activityView}>
                 <Text style={styles.activityTitleText}>DETALLE DE ACTIVIDADES</Text>
@@ -230,6 +278,109 @@ function TaskDetail({route,navigation}) {
     );
 }
 export default TaskDetail;
+const customStyle = StyleSheet.create({
+    circleView: {
+		width: 35,
+		height: 35,
+		borderRadius: 20,
+		backgroundColor: '#6A17DF',
+		justifyContent: 'center',
+		marginRight:5
+	},
+	circleText: {
+		fontWeight: 'bold', 
+		fontSize: 20,
+		textAlign: 'center',
+		color:'#fff'
+	},
+    taskTypeView: {
+        flexDirection: 'row',
+        margin:3,
+        borderRadius:1,
+        alignItems: 'center',
+        // borderWidth: 1
+    },
+    titleTaskSection: {
+        marginEnd: 'auto'
+    },
+    textTitleTask:{
+        fontWeight: 'bold', 
+        fontSize: 20,
+        paddingTop: 0,
+        // marginBottom: -3, 
+    },
+    taskTypeText: {
+        marginTop: -4,
+        color: '#929492',
+    },
+    textId:{
+        height: '100%',
+        marginTop: 'auto',
+        marginLeft:5,
+        fontSize: 10,
+        // borderWidth: 1,
+    },
+    taskTextView: { 
+		// flexDirection:'column',
+		margin: 1,
+		borderRadius:0,
+		// borderWidth: 1
+	},
+    taskIconTextContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+        // borderWidth: 1
+    },	
+    taskElementContainer: {
+        marginEnd: 'auto'
+    },
+    taskElementMiniText: {
+        // marginTop: -4,
+        color: '#929492',
+        // borderWidth: 1
+    },
+    detailIcon: {
+        color: "purple",
+        fontSize: 25,
+        // marginEnd: 5,
+        // borderWidth: 1,
+    },
+    taskDetail: { 
+		fontSize: 16,
+		// borderWidth: 1
+	},
+    taskDetailBold: { 
+		fontSize: 16,
+		fontWeight: 'bold'
+		// borderWidth: 1
+	},
+    taskText:{
+		marginLeft:5,
+		marginTop: 5,
+		// marginRight:70,
+		fontSize: 20,
+		// borderWidth: 1
+	},
+    boldTaskDetail: { 
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'purple'
+    },
+    taskDetailContainer: {
+        backgroundColor: '#F0F0F0',
+        padding: 10,
+        marginTop: 5,
+        borderRadius: 10
+    },
+    taskDetailText: {
+        color: '#505050'
+    },
+    taskLiteralDetail: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    }
+})
 const styles = StyleSheet.create({ 
     parentView: { 
         marginRight: 10,

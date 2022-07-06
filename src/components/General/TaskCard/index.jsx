@@ -19,8 +19,7 @@ function TaskData ({location, date, amount}) {
 
 	return (
 		<View style={styles.taskTextView}>
-            <View>
-            </View>
+			
             <Text style={styles.taskElementMiniText}>Local</Text>
 
 			<View style={styles.taskIconTextContainer}>
@@ -35,7 +34,6 @@ function TaskData ({location, date, amount}) {
 			</View>
 
             <Text style={styles.taskElementMiniText}>Fecha y hora</Text>
-
 			<View style={styles.taskIconTextContainer}>
                 <Text style={styles.taskDetail}>{formatearFechaHora(date)}</Text>
                 <View style={styles.iconStyleContainer}>

@@ -4,7 +4,9 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator} from 'react-native
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import tasks from 'api/transacciones/tasks';
-import TaskCard from 'components/TaskCard/TaskCard';
+import TaskCard from 'components/General/TaskCard';
+import { TextInput } from 'react-native-gesture-handler';
+import { Searchbar } from 'react-native-paper';
 
 export default function ListTask({route}){ 
 	const navigation = useNavigation();
@@ -87,8 +89,6 @@ export default function ListTask({route}){
 
   	useFocusEffect(
 		useCallback(() => { 
-		// console.log('me llamaron');
-		// setLoading(true);
 		if (pendingTaskList!= '0') { 
 			const unsubscribe = fetchTasks(requestNum,type);
 			return () => unsubscribe;
@@ -111,6 +111,11 @@ export default function ListTask({route}){
 	}
 	return(
 		<View style={styles.listView}>
+			<View>
+				<Searchbar 
+					placeholder="Type Here..."
+				/>
+			</View>
 			<FlatList 
 				data={taskList}
 				renderItem={(data) => <TaskCard lista={data} start={start} assign={assign} abort={abort}/>}
@@ -126,8 +131,6 @@ export default function ListTask({route}){
 
 const styles = StyleSheet.create({
 	listView: {
-		// marginRight: 10,
-		// marginLeft: 10,
 	},
 	taskElementContainer: {
         marginEnd: 'auto'

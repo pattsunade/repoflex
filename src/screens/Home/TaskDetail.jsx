@@ -8,6 +8,8 @@ import assgn from 'api/transacciones/assgn';
 import taskAbort from 'api/transacciones/abort';
 import {formatearFechaHora} from 'utils/fechas'
 import {formatNumberDots} from 'utils/numeros'
+import TaskCardExtended from 'components/General/TaskCardExtended';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 function CircleIcon ({text}) {
@@ -86,6 +88,7 @@ function TaskData ({location, date, amount, detail, time}) {
 function TaskDetail({route,navigation}) { 
     const {tit,typ,tid,pla,amo,sig,wen,start,abort,assign} = route.params;
     const [loading, setLoading] = useState(true);
+    const [taskData, setTaskData] = React.useState({})
     const [det,setDet] = useState();
     const [tim,setTim] = useState();
     const [nqu,setNqu] = useState();
@@ -102,6 +105,13 @@ function TaskDetail({route,navigation}) {
                 setNpi(response.ans.npi);
                 setNre(response.ans.nre);
                 setTim(response.ans.tim);
+                setTaskData({
+                    det: response.ans.det,
+                    nqu: response.ans.nqu,
+                    npi: response.ans.npi,
+                    nre: response.ans.nre,
+                    tim: response.ans.tim,
+                })
                 setLoading(false);
             }
             else { 
@@ -234,47 +244,42 @@ function TaskDetail({route,navigation}) {
         )
     }
     return(
-        <Card style={styles.parentView}>
-            <TaskTitle sig={sig} name={tit} type={typ} id={tid} />
-            <Divider style= {styles.divider} />
-			<TaskData location={pla} date={wen} amount={amo} detail={det} time={tim}/>
-            <Divider style= {styles.divider}/>
-            <View style={styles.activityView}>
-                <Text style={styles.activityTitleText}>DETALLE DE ACTIVIDADES</Text>
-                <Text style={styles.activityDetailNumber}>{nqu} <Text>Preguntas</Text></Text>
-                <Text style={styles.activityDetailNumber}>{npi} <Text>Fotografías</Text></Text>
-                <Text style={styles.activityDetailNumber}>{nre} <Text>Reposición</Text></Text>
-            </View>
-            <View style={styles.btnView}>
-                { assign && (
-                    <Button
-                    title='Asignar'
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={styles.btn}
-                    onPress={() =>assingFun()}
-                    />
-                )
+        <ScrollView>
+            <TaskCardExtended 
+                data={{
+                    ...route.params,
+                    ...taskData
+                }}
+                buttons={
+                    <> 
+                    { assign && (
+                        <Button
+                            title='Asignar'
+                            containerStyle={styles.btnContainer}
+                            buttonStyle={styles.btn}
+                            onPress={() =>assingFun()}
+                        />
+                    )}
+                    { abort && (
+                        <Button
+                            title="Abortar"
+                            containerStyle={styles.btnContainer}
+                            buttonStyle={styles.btn}
+                            onPress={() =>abortFun()}
+                        />
+                    )}
+                    { start && (
+                        <Button
+                            title='Iniciar'
+                            containerStyle={styles.btnContainer}
+                            buttonStyle={styles.btn}
+                            onPress={() => startFun()}
+                        />
+                    )}
+                    </>
                 }
-                { abort && (
-                    <Button
-                    title="Abortar"
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={styles.btn}
-                    onPress={() =>abortFun()}
-                    />
-                )
-                }
-                { start && (
-                    <Button
-                    title='Iniciar'
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={styles.btn}
-                    onPress={() => startFun()}
-                    />
-                )
-                }
-            </View>
-        </Card>
+            />
+        </ScrollView>
     );
 }
 export default TaskDetail;
@@ -419,10 +424,10 @@ const styles = StyleSheet.create({
     margin:1,
     borderRadius:1
   },
-  btnView:
-  { flexDirection:'row',
+  btnView: { 
+    flexDirection:'row',
     justifyContent:'center'
-  },
+},
   taskDetailView:
   { flexDirection:'row',
     marginRight:10,

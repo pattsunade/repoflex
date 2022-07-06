@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import tasks from 'api/transacciones/tasks';
 import TaskCard from 'components/General/TaskCard';
-import { TextInput } from 'react-native-gesture-handler';
 import { Searchbar } from 'react-native-paper';
+import InputSearchBar from 'components/General/InputSearchBar';
 
 export default function ListTask({route}){ 
 	const navigation = useNavigation();
@@ -20,10 +20,12 @@ export default function ListTask({route}){
 	const [taskHomeNum, setTaskHomeNum] = useState(0);
 	const [msg, setMsg] = useState('');
 
-	const fetchTasks = (pag,tat) => { 
-		tasks({
+	
+	const fetchTasks = async(pag,tat, search) => { 
+		await tasks({
 			pag: pag,
 			tat: tat,
+			search: search,
 		})
 		.then(async (response) => { 
 			if (response.ans.stx === 'ok') { 
@@ -84,17 +86,29 @@ export default function ListTask({route}){
 	const refreshTaskList = () => { 
 		setRefreshLoading(true);
 		setRequestNum(1);
-		fetchTasks(1,type);
+		fetchTasks(1,type, searchValue);
 	}
-
   	useFocusEffect(
 		useCallback(() => { 
 		if (pendingTaskList!= '0') { 
-			const unsubscribe = fetchTasks(requestNum,type);
+			const unsubscribe = fetchTasks(requestNum,type, searchValue);
 			return () => unsubscribe;
 		}
 		}, [requestNum])
 	);
+	
+
+
+	// Searchbar
+	const [searchValue, setSearchValue] = React.useState('')
+	const onChangeTextSearch = React.useCallback(value => setSearchValue(value))
+	const [isFetching, setIsFetching] = React.useState(false)
+	const onSubmitEditingSearch = async() => {
+		setIsFetching(true)
+		setRequestNum(1)
+		await fetchTasks(1, type, searchValue)
+		setIsFetching(false);
+	}
 
 	if (loading) {
 		return (
@@ -111,20 +125,33 @@ export default function ListTask({route}){
 	}
 	return(
 		<View style={styles.listView}>
-			<View>
-				<Searchbar 
-					placeholder="Type Here..."
+			<View style={styles.searchBarContainer}>
+				<InputSearchBar 
+					// label={'Local'}
+					placeHolder={'Local'}
+					value={searchValue}
+					onChangeText={onChangeTextSearch}
+					onSubmitEditing={onSubmitEditingSearch}
+					
 				/>
 			</View>
-			<FlatList 
-				data={taskList}
-				renderItem={(data) => <TaskCard lista={data} start={start} assign={assign} abort={abort}/>}
-				keyExtractor={(item, index) => index.toString()}
-				onEndReached={()=>pendingTaskList!= '0' && setRequestNum(requestNum+1)}
-				onEndReachedThreshold={3}
-				refreshing={refreshLoading}
-				onRefresh={()=>refreshTaskList()}
-			/>
+			{isFetching?(
+				<View style={styles.fetchingContainer}>
+					<ActivityIndicator color={"#7B53AE"} size="large" />
+				</View>
+
+			):(
+				<FlatList 
+					data={taskList}
+					renderItem={(data) => <TaskCard lista={data} start={start} assign={assign} abort={abort}/>}
+					keyExtractor={(item, index) => index.toString()}
+					onEndReached={()=>pendingTaskList!= '0' && setRequestNum(requestNum+1)}
+					onEndReachedThreshold={3}
+					refreshing={refreshLoading}
+					onRefresh={()=>refreshTaskList()}
+				/>
+			)} 
+
 		</View>
 	)
 }
@@ -132,9 +159,17 @@ export default function ListTask({route}){
 const styles = StyleSheet.create({
 	listView: {
 	},
+	searchBarContainer: {
+		marginHorizontal: 20,
+		marginTop: 20
+	},	
+	fetchingContainer: {
+		marginTop: 50
+	},	
 	taskElementContainer: {
         marginEnd: 'auto'
     },
+
     taskElementMiniText: {
         // marginTop: -4,
         color: '#929492',

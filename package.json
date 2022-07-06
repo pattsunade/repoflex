@@ -84,6 +84,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "babel-plugin-module-resolver": "^4.1.0",
     "babel-preset-expo": "9.0.1",
     "yarn-upgrade-all": "^0.5.4"
   },

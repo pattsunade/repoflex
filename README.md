@@ -42,12 +42,17 @@ Add the following system variables:
 
 Clone the repository and run `$ yarn`.
 
+Add the following variables in the repository project:
+* on android/local.properties
+    > sdk.dir=/Users/zolbit/Library/Android/sdk
+* on repoflex/android/gradle.properties
+    > org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_333.jdk/Contents/Home
+
 Finally connect an android v8.0 or higher device and run `$ expo run:android`. Make sure it has USB debugging turned on.
 
 If gradle throws 'kotlin could not find the required jdk tools in the java installation', [check this article](https://docs.oracle.com/javase/9/install/installation-jdk-and-jre-macos.htm#JSJIG-GUID-577CEA7C-E51C-416D-B9C6-B1469F45AC78)
 
-on repoflex/android7gradle.properties
-org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_333.jdk/Contents/Home
+
 
 ### Ios
 

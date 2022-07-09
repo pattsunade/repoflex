@@ -3,30 +3,31 @@ import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
 import { Divider } from "react-native-elements";
 import LoginForm from "../../components/Login/LoginForm";
 import * as Notifications from 'expo-notifications';
-
+import Constants from "expo-constants";
+// import repoLogo from "assets/img/repoLogo.png"
 export default function Login() {
 
-  const [check, setCheck] = useState(false);
-  useEffect(() => {
-    (async () => {
-      let permisions = await Notifications.requestPermissionsAsync({
-      ios: {
-        allowAlert: true,
-        allowBadge: true,
-        allowSound: true,
-        allowAnnouncements: true,
-        },
-      });
-    })();
+	const [check, setCheck] = useState(false);
+  useEffect(() => {(
+		async () => {
+		let permisions = await Notifications.requestPermissionsAsync({
+			ios: {
+				allowAlert: true,
+				allowBadge: true,
+				allowSound: true,
+				allowAnnouncements: true,
+				},
+			});
+		})();
   }, [check]);
 
   return(
     <ScrollView>
-      <Image 
-        source={require("../../../assets/img/repoLogo.png")}
-        resizeMode="contain"
-        style={styles.logo}
-      />
+		<Image 
+			source={require("../../../assets/img/repoLogo.png")}
+			resizeMode="contain"
+			style={styles.logo}
+		/>
       <View 
         style={styles.viewContainer}
       >
@@ -35,7 +36,7 @@ export default function Login() {
       <Divider style={styles.divider} />
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>
-        <Text>Versión v0.68.0</Text>
+        <Text>Versión v{Constants.manifest.version}</Text>
       </View>
     </ScrollView>
   )

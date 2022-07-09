@@ -10,6 +10,8 @@
         "navigations/*": ["./src/navigations/*"],
         "utils/*": ["./src/utils/*"],
         "api/*": ["./src/api/*"],
+        "assets/*": ["./assets/*"],
+
 
 
       }

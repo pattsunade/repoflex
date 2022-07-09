@@ -25,7 +25,7 @@ export default function ListTask({route}){
 		await tasks({
 			pag: pag,
 			tat: tat,
-			search: search,
+			// search: search,
 		})
 		.then(async (response) => { 
 			if (response.ans.stx === 'ok') { 
@@ -101,14 +101,14 @@ export default function ListTask({route}){
 
 	// Searchbar
 	const [searchValue, setSearchValue] = React.useState('')
-	const onChangeTextSearch = React.useCallback(value => setSearchValue(value))
 	const [isFetching, setIsFetching] = React.useState(false)
-	const onSubmitEditingSearch = async() => {
-		setIsFetching(true)
-		setRequestNum(1)
-		await fetchTasks(1, type, searchValue)
-		setIsFetching(false);
-	}
+	// const onChangeTextSearch = React.useCallback(value => setSearchValue(value))
+	// const onSubmitEditingSearch = async() => {
+	// 	setIsFetching(true)
+	// 	setRequestNum(1)
+	// 	await fetchTasks(1, type, searchValue)
+	// 	setIsFetching(false);
+	// }
 
 	if (loading) {
 		return (
@@ -119,22 +119,15 @@ export default function ListTask({route}){
 		)
 	}
 	if (taskList.length==0) {
-		<View>
-			<Text style={styles.title}>{msg}</Text>
-		</View>
+		return (
+			<View>
+				<Text style={styles.title}>{msg}</Text>
+			</View>
+		)
 	}
 	return(
 		<View style={styles.listView}>
-			<View style={styles.searchBarContainer}>
-				<InputSearchBar 
-					// label={'Local'}
-					placeHolder={'Local'}
-					value={searchValue}
-					onChangeText={onChangeTextSearch}
-					onSubmitEditing={onSubmitEditingSearch}
-					
-				/>
-			</View>
+			
 			{isFetching?(
 				<View style={styles.fetchingContainer}>
 					<ActivityIndicator color={"#7B53AE"} size="large" />
@@ -142,9 +135,21 @@ export default function ListTask({route}){
 
 			):(
 				<FlatList 
+					// ListHeaderComponent={
+					// 	<View style={styles.searchBarContainer}>
+					// 		<InputSearchBar 
+					// 			// label={'Local'}
+					// 			placeHolder={'Local'}
+					// 			value={searchValue}
+					// 			onChangeText={onChangeTextSearch}
+					// 			onSubmitEditing={onSubmitEditingSearch}
+								
+					// 		/>
+					// 	</View>
+					// }
 					data={taskList}
-					renderItem={(data) => <TaskCard lista={data} start={start} assign={assign} abort={abort}/>}
-					keyExtractor={(item, index) => index.toString()}
+					renderItem={data => <TaskCard lista={data} start={start} assign={assign} abort={abort}/>}
+					keyExtractor={item => item.tid}
 					onEndReached={()=>pendingTaskList!= '0' && setRequestNum(requestNum+1)}
 					onEndReachedThreshold={3}
 					refreshing={refreshLoading}
@@ -161,7 +166,8 @@ const styles = StyleSheet.create({
 	},
 	searchBarContainer: {
 		marginHorizontal: 20,
-		marginTop: 20
+		marginTop: 20,
+		// marginBottom: 20
 	},	
 	fetchingContainer: {
 		marginTop: 50

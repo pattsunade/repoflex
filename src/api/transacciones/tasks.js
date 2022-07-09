@@ -9,7 +9,7 @@ const tasks = async({ pag, tat, search }) => {
         pag: pag, //requested page
         lat: location.coords.latitude.toString(),
         lon: location.coords.longitude.toString(),
-        sea: search,
+        // sea: search,
     })
 }
 

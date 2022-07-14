@@ -20,10 +20,10 @@ const styles = StyleSheet.create({
 		margin:3,
 		borderRadius:1,
 		alignItems: 'center',
-		// borderWidth: 1
 	},
     titleTaskSection: {
-		marginEnd: 'auto'
+		marginEnd: 'auto',
+		flex: 1
 	},
     textTitleTask:{
 		fontWeight: 'bold', 
@@ -36,11 +36,9 @@ const styles = StyleSheet.create({
 		color: '#929492'
 	},
     textId:{
-		height: '100%',
-		marginTop: 'auto',
-		marginLeft:5,
+		textAlign:'right',
+		marginBottom: -10,
 		fontSize: 10,
-		// borderWidth: 1,
 	},
     taskTextView: { 
 		// flexDirection:'column',
@@ -93,11 +91,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'purple'
     },
-
     card: { 
 		marginRight: 20,
 		marginLeft: 20,
-		marginTop:20,
+		marginTop:10,
 		marginBottom:20,
 		borderRadius:15,
 		borderWidth: 1, // important
@@ -125,6 +122,36 @@ const styles = StyleSheet.create({
 		marginHorizontal:8,
 		marginBottom:10,
 	},
+    taskDetailContainer: {
+        backgroundColor: '#F0F0F0',
+        padding: 10,
+        marginTop: 5,
+        borderRadius: 10
+    },
+    taskDetailText: {
+        color: '#505050'
+    },
+    taskLiteralDetail: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    activityView:{
+        flexDirection:'column',
+        alignItems:'center'
+    },
+    activityTitleText: { 
+        fontWeight:'bold',
+        fontSize: 20,
+        marginTop:10,
+    },
+    activityDetailNumber:{ 
+        fontSize: 20,
+        marginTop:10
+    },
+    btnView2: { 
+        flexDirection:'row',
+        justifyContent:'center'
+    },
 })
 
 export default styles

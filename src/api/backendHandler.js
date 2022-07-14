@@ -7,7 +7,7 @@ import Semaphore from './semaforo';
 const throttler = new Semaphore(1);
 
 const connect = async(method, req, body, ott, txi, phid) => {
-	console.log("> body", body)
+	// console.log("> body", body)
 	let backResponse = await fetch(API, {
 		method: method,
 		headers: {
@@ -61,7 +61,7 @@ const handleRequest =  async(cb,method=null, req=null, body=null) => {
 		// console.log(expoPushToken.data.slice(18,-1));
 		let ret2 = await connect(method, req, body, prevOtt, txi, expoPushToken.data.slice(18,-1))
 		.then(async(ans1) => { 
-			console.log("connect ans", ans1);
+			// console.log("connect ans", ans1);
 			try{
 			  if('mtx' in ans1.hdr)
 				await AsyncStorage.multiSet([['@ott',ans1.hdr.ott],['@txi',ans1.hdr.txi.toString()],['@mtx',ans1.hdr.mtx]]);
@@ -88,7 +88,7 @@ const throttleRequest = async(cb, method=null, req=null, body=null) => {
 const backendRequest = async(...args) => { 
     let fetchedData;
     await throttleRequest((request) => {fetchedData = request}, ...args)
-	console.log("fetchedData", fetchedData)
+	// console.log("fetchedData", fetchedData)
     return fetchedData
 }
 

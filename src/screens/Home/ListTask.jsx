@@ -1,56 +1,70 @@
 import React,{ useState,useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, ScrollView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import tasks from 'api/transacciones/tasks';
-import TaskCard from 'components/General/TaskCard';
+import TaskCard from 'components/General/TaskCard/SimpleTaskCard';
 import { Searchbar } from 'react-native-paper';
 import InputSearchBar from 'components/General/InputSearchBar';
+import { sleep } from 'utils/time';
+import useMountedComponent from 'utils/hooks/useMountedComponent';
+import * as Location from 'expo-location';
 
 export default function ListTask({route}){ 
-	const navigation = useNavigation();
-	const {lati,long,start,abort,assign,type} = route.params;
-	const [taskList, setTaskList] = useState([]);
-	const [loading, setLoading] = useState(true); // 
-	const [refreshLoading, setRefreshLoading] = useState(false);
-	// const [refresh, setRefresh] = useState(false);
-	const [requestNum, setRequestNum] = useState(1);
-	const [pendingTaskList, setPendingTaskList] = useState();
-	const [taskHomeNum, setTaskHomeNum] = useState(0);
-	const [msg, setMsg] = useState('');
-
+	const {start,abort,assign,type} = route.params; // route params
+	// Hooks
+	const isMounted = useMountedComponent(); // component to manage memory leaks
+	const navigation = useNavigation(); // allow to get the device location
 	
-	const fetchTasks = async(pag,tat, search) => { 
+	// Component States/Variables
+	const [taskList, setTaskList] = React.useState([]); // list of task
+	const userLocation = React.useRef({ // location paramateres
+		latitude: undefined,
+		longitude: undefined,
+	}); 
+	const pageList = React.useRef(1); // current page as ref
+	const [isScreenLoading, setIsScreenLoading] = React.useState(true); // intial loading
+	const [refreshLoading, setRefreshLoading] = React.useState(false); // refresh on pull down
+	const [canFetchMore, setCanFetchMore] = React.useState(true); // show status at end of list
+	const [backendMessage, setBackendMessage] = React.useState(''); // mesage from backend
+	// const [refresh, setRefresh] = useState(false);
+	// const [requestNum, setRequestNum] = useState(1);
+	// const [pendingTaskList, setPendingTaskList] = useState();
+	// const [taskHomeNum, setTaskHomeNum] = useState(0);
+
+	// reset some screens parameters
+	const resetScreenParameters = async() => {
+		pageList.current = 1; // reset page
+		// isMounted && setTaskList([])
+		const location = await Location.getCurrentPositionAsync({}); // location values
+		userLocation.current.latitude = location.coords.latitude.toString()
+		userLocation.current.longitude = location.coords.longitude.toString()
+
+	}
+	// Fetch task function
+	const fetchTasks = async(page,type, latitude, longitude) => {
+		console.log("number page", page);
 		await tasks({
-			pag: pag,
-			tat: tat,
-			// search: search,
-		})
-		.then(async (response) => { 
+			page: page, 
+			type: type, 
+			latitude: latitude, 
+			longitude: longitude})
+		.then(async (response) => {
 			if (response.ans.stx === 'ok') { 
-				let taskArray = response.ans.tax;
-				let taskNum = parseInt(response.ans.knx);
-				let taskTypeArray = response.ans.ltt;
-				let newHomeTaskNum = taskHomeNum+taskNum;
-				setMsg(response.ans.msg);
-				setPendingTaskList(response.ans.mas);
-				setTaskHomeNum(newHomeTaskNum);
-				if(taskArray != undefined) { 
-					for(let i=0;i<taskNum;i++) { 
-						let taskType = taskArray[i].lto;
-						taskArray[i]['sig'] = taskTypeArray[taskType].sig;
-						taskArray[i]['typ'] = taskTypeArray[taskType].typ;
+				setBackendMessage(response.ans.msg)
+				if (response.ans.tax) {
+					const typesOfTask = response.ans.ltt;
+					const newArrayTask = response.ans.tax.map(task => ({
+						...task,
+						sig: typesOfTask[task.lto].sig,
+						typ: typesOfTask[task.lto].typ,
+					}))
+					if (isMounted) {
+						page === 1? setTaskList(newArrayTask):setTaskList(prevTask => [...prevTask, ...newArrayTask]);
+						response.ans.mas === 0 && setCanFetchMore(false);
 					}
-					if(pag>1) {
-						setTaskList(taskList.concat(taskArray));
-					}
-					else {
-						setTaskList(taskArray);
-					}
-				}
-				setRefreshLoading(false);
-				setLoading(false);
+				} 
 			}
 			else { 
 				Toast.show({ 
@@ -71,7 +85,7 @@ export default function ListTask({route}){
 		})
 		.catch((e) => { 
 			console.log(e);
-			setLoading(false);
+			setIsScreenLoading(false);
 			Toast.show({ 
 				type: 'error',
 				props: {
@@ -82,35 +96,47 @@ export default function ListTask({route}){
 			});
 		});
 	}
-
-	const refreshTaskList = () => { 
-		setRefreshLoading(true);
-		setRequestNum(1);
-		fetchTasks(1,type, searchValue);
-	}
-  	useFocusEffect(
-		useCallback(() => { 
-		if (pendingTaskList!= '0') { 
-			const unsubscribe = fetchTasks(requestNum,type, searchValue);
-			return () => unsubscribe;
-		}
-		}, [requestNum])
-	);
 	
+	// initial/on screen fetch
+	useFocusEffect(
+		React.useCallback(() => {
+			const run = async() => {
+				isMounted && setIsScreenLoading(true);
+				await resetScreenParameters(); // reset query parameters
+				await fetchTasks(pageList.current, type, userLocation.current.latitude, userLocation.current.longitude);
+				isMounted && setIsScreenLoading(false);
+			}
+			run();
+		},[])	
+	)
 
-
+	const refreshTaskList = async() => { 
+		isMounted && setRefreshLoading(true);
+		await resetScreenParameters(); // reset query parameters
+		await fetchTasks(pageList.current, type, userLocation.current.latitude, userLocation.current.longitude);
+		isMounted && setRefreshLoading(false);
+	}
+	
+	// fetch more task at the end of the list
+	const isFetchingMore = React.useRef(false); // limit accidetnasl fetch  
+	const fetchOnEnd = async() => {
+		if (isFetchingMore.current === false) {
+			isFetchingMore.current = true;
+			pageList.current += 1;
+			await fetchTasks(
+				pageList.current, 
+				type, 
+				userLocation.current.latitude, 
+				userLocation.current.longitude
+			)
+			isFetchingMore.current = false;
+		}
+	}
 	// Searchbar
-	const [searchValue, setSearchValue] = React.useState('')
+	// const [searchValue, setSearchValue] = React.useState('')
 	const [isFetching, setIsFetching] = React.useState(false)
-	// const onChangeTextSearch = React.useCallback(value => setSearchValue(value))
-	// const onSubmitEditingSearch = async() => {
-	// 	setIsFetching(true)
-	// 	setRequestNum(1)
-	// 	await fetchTasks(1, type, searchValue)
-	// 	setIsFetching(false);
-	// }
 
-	if (loading) {
+	if (isScreenLoading) {
 		return (
 			<View style={styles.loaderTask}>
 				<ActivityIndicator  size="large" color="#0000ff"/>
@@ -121,19 +147,20 @@ export default function ListTask({route}){
 	if (taskList.length==0) {
 		return (
 			<View>
-				<Text style={styles.title}>{msg}</Text>
+				<Text style={styles.title}>{backendMessage}</Text>
 			</View>
 		)
 	}
 	return(
-		<View style={styles.listView}>
-			
+		<>
+			<View style={styles.listView}>		
 			{isFetching?(
 				<View style={styles.fetchingContainer}>
 					<ActivityIndicator color={"#7B53AE"} size="large" />
 				</View>
 
-			):(
+			):(<>
+
 				<FlatList 
 					// ListHeaderComponent={
 					// 	<View style={styles.searchBarContainer}>
@@ -150,19 +177,34 @@ export default function ListTask({route}){
 					data={taskList}
 					renderItem={data => <TaskCard lista={data} start={start} assign={assign} abort={abort}/>}
 					keyExtractor={item => item.tid}
-					onEndReached={()=>pendingTaskList!= '0' && setRequestNum(requestNum+1)}
-					onEndReachedThreshold={3}
+					onEndReachedThreshold={2}
+					onEndReached={fetchOnEnd}
 					refreshing={refreshLoading}
 					onRefresh={()=>refreshTaskList()}
+					ListFooterComponent={
+						<View style={styles.fetchMoreContainer}>
+							{canFetchMore? (
+								<ActivityIndicator color={"#7B53AE"} size="large"/>
+							):(null)}
+						</View>
+					}
+			
 				/>
-			)} 
+				
+			</>)} 
 
-		</View>
+
+			</View>
+		</>
+		
 	)
 }
 
 const styles = StyleSheet.create({
 	listView: {
+	},
+	fetchMoreContainer: {
+		marginBottom: 10,
 	},
 	searchBarContainer: {
 		marginHorizontal: 20,

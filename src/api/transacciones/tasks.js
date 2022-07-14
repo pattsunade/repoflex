@@ -1,14 +1,13 @@
 import backendRequest from "../backendHandler"
 import * as Location from 'expo-location';
 
-const tasks = async({ pag, tat, search }) => {
-    const location = await Location.getCurrentPositionAsync({});
+const tasks = async({ page, type, latitude, longitude }) => {
 
     return await backendRequest('POST','tasks',{
-        tat: tat,
-        pag: pag, //requested page
-        lat: location.coords.latitude.toString(),
-        lon: location.coords.longitude.toString(),
+        tat: type,
+        pag: page, //requested page
+        lat: latitude.toString(),
+        lon: longitude.toString(),
         // sea: search,
     })
 }

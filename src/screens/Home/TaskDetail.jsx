@@ -1,89 +1,12 @@
 import React, { useEffect,useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator} from 'react-native';
-import { Card } from 'react-native-paper';
-import { Divider, Button, Icon } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 import taskq from 'api/transacciones/taskq';
 import assgn from 'api/transacciones/assgn';
 import taskAbort from 'api/transacciones/abort';
-import {formatearFechaHora} from 'utils/fechas'
-import {formatNumberDots} from 'utils/numeros'
-import TaskCardExtended from 'components/General/TaskCardExtended';
+import TaskCardExtended from 'components/General/TaskCard/ExtendedCardTask';
 import { ScrollView } from 'react-native-gesture-handler';
-
-
-function CircleIcon ({text}) {
-	return (
-		<View style={customStyle.circleView}>
-			<Text style={customStyle.circleText}>{text}</Text>
-		</View>
-	)
-}
-
-function TaskTitle({name, type, id, sig}) {
-	return (
-		<View style={customStyle.taskTypeView}>
-			<CircleIcon text={sig}/>
-			<View style={customStyle.titleTaskSection}>
-				<Text style={customStyle.textTitleTask}>{name}</Text>  
-				<Text style={customStyle.taskTypeText}>{type}</Text>
-			</View>
-			<Text style={customStyle.textId}>id:{id}</Text>
-		</View>
-	)
-}
-
-
-function TaskData ({location, date, amount, detail, time}) {
-
-	return (
-		<View style={customStyle.taskTextView}>
-
-			<View style={customStyle.taskIconTextContainer}>
-                <View style={customStyle.taskElementContainer}>
-                    <Text style={customStyle.taskElementMiniText}>Local</Text>
-                    <Text style={customStyle.taskDetail}>{location}</Text>
-                </View>
-                <Icon  
-					type='material-community' 
-					name='store-outline'
-					iconStyle={customStyle.detailIcon}
-				/>
-			</View>
-            <View style={customStyle.taskIconTextContainer}>
-                <View style={customStyle.taskElementContainer}>
-                    <Text style={customStyle.taskElementMiniText}>Fecha y hora</Text>
-                    <Text style={customStyle.taskDetail}>{formatearFechaHora(date)}</Text>
-                </View>
-                <Icon 
-					type='material-community' 
-					name='calendar-clock-outline'
-					iconStyle={customStyle.detailIcon}
-				/>
-			</View>
-
-            <Text style={customStyle.taskElementMiniText}>
-                Descripción
-            </Text>
-            <View style={customStyle.taskDetailContainer}>
-                <Text style={customStyle.taskDetailText}>
-                    {/* Detalle: <Text style={styles.taskDetail}> </Text> */}
-                    {detail}
-                </Text>
-            </View>
-			<Text style={customStyle.taskText}>
-				A pagar: <Text style={customStyle.boldTaskDetail}>${formatNumberDots(amount)}</Text>
-			</Text>
-            
-            { parseInt(time) > 0 && (
-                <Text style={styles.taskText}>
-                    Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text>
-                </Text>
-                )}
-		</View>
-	)	
-}
-
 
 function TaskDetail({route,navigation}) { 
     const {tit,typ,tid,pla,amo,sig,wen,start,abort,assign} = route.params;

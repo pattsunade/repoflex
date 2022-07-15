@@ -7,20 +7,23 @@ import Constants from "expo-constants";
 // import repoLogo from "assets/img/repoLogo.png"
 export default function Login() {
 
-	const [check, setCheck] = useState(false);
-  useEffect(() => {(
-		async () => {
-		let permisions = await Notifications.requestPermissionsAsync({
-			ios: {
-				allowAlert: true,
-				allowBadge: true,
-				allowSound: true,
-				allowAnnouncements: true,
-				},
-			});
-		})();
-  }, [check]);
+	// const [check, setCheck] = useState(false);
+	useEffect(() => {(
+			async () => {
+			let permisions = await Notifications.requestPermissionsAsync({
+				ios: {
+					allowAlert: true,
+					allowBadge: true,
+					allowSound: true,
+					allowAnnouncements: true,
+					},
+				});
+			})();
+	}, []);
 
+	React.useEffect(() => {
+		
+	},[])
   return(
     <ScrollView>
 		<Image 
@@ -28,11 +31,9 @@ export default function Login() {
 			resizeMode="contain"
 			style={styles.logo}
 		/>
-      <View 
-        style={styles.viewContainer}
-      >
-        <LoginForm/>
-      </View>
+		<View style={styles.viewContainer}>
+        	<LoginForm/>
+      	</View>
       <Divider style={styles.divider} />
       <View style={styles.textRegister}>
         <Text>Un producto de Zolbit</Text>

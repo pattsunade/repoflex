@@ -44,7 +44,7 @@ export default function ListTask({route}){
 	}
 	// Fetch task function
 	const fetchTasks = async(page,type, latitude, longitude) => {
-		console.log("number page", page);
+		// console.log("number page", page);
 		await tasks({
 			page: page, 
 			type: type, 
@@ -52,7 +52,7 @@ export default function ListTask({route}){
 			longitude: longitude})
 		.then(async (response) => {
 			if (response.ans.stx === 'ok') { 
-				setBackendMessage(response.ans.msg)
+				isMounted && setBackendMessage(response.ans.msg);
 				if (response.ans.tax) {
 					const typesOfTask = response.ans.ltt;
 					const newArrayTask = response.ans.tax.map(task => ({

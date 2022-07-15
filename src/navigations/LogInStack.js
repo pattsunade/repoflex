@@ -8,6 +8,7 @@ import NewPassword from "../screens/LogIn/NewPassword";
 import Rejected from "../screens/LogIn/Rejected";
 import EmailVerification from "../screens/LogIn/EmailVerification";
 import Outdated from "../screens/LogIn/Outdated";
+import LoginForm from "screens/LogIn/LoginForm";
 
 const Stack = createStackNavigator();
 export default function LogInStack({route})
@@ -20,7 +21,7 @@ export default function LogInStack({route})
     <Stack.Navigator initialRouteName={value}>
       <Stack.Screen
         name="login"
-        component={Login}
+        component={LoginForm}
         options={{title: "Iniciar Sesión",headerShown: false}}
       />
       <Stack.Screen

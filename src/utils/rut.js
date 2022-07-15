@@ -1,5 +1,7 @@
 export const rutRegex = /^[0-9]{0,8}[-|‐]{0,1}[0-9kK]{0,1}$/
 export const rutBasicRgex = /^[0-9]{0,8}[0-9kK]{0,1}$/
+export const rutRegexDots = /^[0-9]{0,2}[\.]?[0-9]{0,3}[\.]?[0-9]{0,3}[-|‐]{0,1}[0-9kK]{0,1}$/
+
 export function clean (rut) {
     return typeof rut === 'string'
         ? rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase()
@@ -36,7 +38,7 @@ export function validarRut (rut) {
     return v === rut.slice(-1)
 }
   
-export function format (rut, options = {
+export function formatRut (rut, options = {
     dots: true
 }) {
     rut = clean(rut)

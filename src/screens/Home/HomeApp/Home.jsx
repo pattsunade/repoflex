@@ -1,7 +1,7 @@
 import React, { useState,useRef,useEffect,useCallback } from 'react';
 import { StyleSheet, View, Text,Picker, Switch, Animated, ScrollView,TouchableOpacity,Dimensions,SafeAreaView, Pressable } from 'react-native';
 import { Input, Icon, Button, ListItem, Card} from 'react-native-elements';
-import Loading from '../Loading';
+import Loading from '../../../components/Loading';
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -120,7 +120,7 @@ function TaskMenuList ({available, assigned, send, finished, lati, long}) {
     )
 }
 
-export default function HomeApp() {
+export default function Home() {
     const navigation = useNavigation();
     const [name, setName] = useState();
     const [rank, setRank] = useState();
@@ -206,15 +206,6 @@ export default function HomeApp() {
 		setRefreshing(false)
 
 	},[])
-
-    // React.useEffect(() => {
-    //     const willFocusSubscription = navigation.addListener('focus', async() => {
-    //         setLoading(true);
-    //         await getHomeData();
-    //         setLoading(false);
-    //     });
-    //     return willFocusSubscription;
-    // },[navigation]);
 
     React.useEffect(() => { 
         const run = async() => {

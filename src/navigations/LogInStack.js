@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Landing from "../screens/LogIn/Landing";
-import Login from "../screens/LogIn/Login";
+// import Login from "../screens/LogIn/Login";
 import Register from "../screens/LogIn/Register";
 import RecoverPassword from "../screens/LogIn/RecoverPassword";
 import NewPassword from "../screens/LogIn/NewPassword";

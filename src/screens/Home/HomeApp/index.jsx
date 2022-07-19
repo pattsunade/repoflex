@@ -1,38 +1,33 @@
 import React from "react";
 import {StyleSheet,View,ActivityIndicator,Text} from "react-native";
-import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
 import LocationPermissionsScreen from "components/General/Permissions/LocationPermissionsScreen";
 import Home from "screens/Home/HomeApp/Home";
 
 function HomeApp() {
-    const [isLoading, setIsLoading] = React.useState(true); // set loading state
+    // const [isLoading, setIsLoading] = React.useState(true); // set loading state
+
+    React.useEffect(() => {(
+        async () => {
+        let permisions = await Notifications.requestPermissionsAsync({
+            ios: {
+                allowAlert: true,
+                allowBadge: true,
+                allowSound: true,
+                allowAnnouncements: true,
+                },
+            });
+        })();
+    }, []);
+
+
     const [localizationGranted, setLocalizationGranted] = React.useState(false); // 
 
-    const enableLocation = async() => {
-        const { status } = await Location.requestForegroundPermissionsAsync()
-        if (status === 'granted') {
-            setLocalizationGranted(true)
-        }
-    }
-    React.useEffect(() => {
-        const run = async() => {
-            await enableLocation();
-            setIsLoading(false)
-        }
-        run();
-    },[])
-
-    
-    if(isLoading === true) {
-        return (
-            <View style={styles.loaderTask}>
-                <ActivityIndicator  size="large" color="#0000ff"/>
-                <Text>Cargando...</Text>
-            </View>
-        )
+    const onPermissionGranted = () => {
+        setLocalizationGranted(true);
     }
     if (localizationGranted === false) {
-        return <LocationPermissionsScreen onPressEnable={enableLocation}/>
+        return <LocationPermissionsScreen onPermissionGranted={onPermissionGranted}/>
     } 
     
     return (

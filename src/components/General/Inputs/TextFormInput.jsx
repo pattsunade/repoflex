@@ -10,7 +10,7 @@ function TextFormInput({
     blurOnSubmit = false,
     value,
     keyboardType = "default",
-    autoCapitalize = "none",
+    autoCapitalize = "sentences",
     errorText,
     showError
 }, ref) {

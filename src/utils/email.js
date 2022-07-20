@@ -6,9 +6,6 @@ export const validateEmail = (email) => {
     } else {
         return false;
     }
-};
+  };
 
-export function validateNumber(number){
-    const re = /^(\+?56)?(\s?)(0?9)(\s?)[9876543]\d{7}$/;
-    return re.test(number);
-}
+export const phoneRegex = /^[0-9]{0,12}$/

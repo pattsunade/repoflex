@@ -5,7 +5,6 @@ import * as MediaLibrary from 'expo-media-library';
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
-import Modal from "../Modal";
 import InfoCertificate from "../HomeRegister/InfoImages/InfoCertificate";
 import BackEndConnect from 'api/backendHandler';
 

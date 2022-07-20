@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import ChangePassword from "../screens/Account/ChangePassword.js";
-import PersonalData from "../screens/Account/PersonalData.js";
+import PersonalData from "screens/Account/PersonalData.js";
 import FrecuentQuestions from "../screens/Account/FrequentQuestions.js";
 import Account from "../screens/Account/Account.js";
 import About from "../screens/Account/About.js";

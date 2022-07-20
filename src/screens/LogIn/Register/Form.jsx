@@ -8,6 +8,7 @@ import { Button } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 import useMountedComponent from 'utils/hooks/useMountedComponent';
 import { formatRut, rutRegexDots, validarRut } from 'utils/rut';
+import { validateNumber } from 'utils/validations';
 
 
 function Form () {
@@ -68,8 +69,11 @@ function Form () {
         if (value === '') {
             setIsPhoneValid(undefined)
         }
+        else if (validateNumber(value) === false){
+            setIsPhoneValid(false);
+        }
         else {
-            setIsPhoneValid(true)
+            setIsPhoneValid(true);
         }
     },[])
 

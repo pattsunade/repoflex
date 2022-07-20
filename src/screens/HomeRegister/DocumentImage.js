@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, ScrollView, Text, Alert, Dimensions, Platform, Image } from "react-native";
 import { Icon, Avatar, Input, Button } from "react-native-elements";
-import * as MediaLibrary from 'expo-media-library';
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
-import Modal from "../../components/Modal";
 import InfoSelfie from "./InfoImages/InfoSelfie.js";
 import Loading from "../../components/Loading";
-import BackEndConnect from 'api/backendHandler';
 import Toast from 'react-native-toast-message';
 import sndfi from "api/transacciones/sndfi";
 const activities =  [

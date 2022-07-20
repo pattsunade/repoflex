@@ -7,7 +7,7 @@ import Semaphore from './semaforo';
 const throttler = new Semaphore(1);
 
 const connect = async(method, req, body, ott, txi, phid) => {
-	// console.log("> body", body)
+	console.log("> body", body)
 	let backResponse = await fetch(API, {
 		method: method,
 		headers: {

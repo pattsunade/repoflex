@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { ListItem, Button,Icon } from "react-native-elements";
 import { map } from "lodash";
 
-import Modal from "../Modal";
+import Modal from "../../navigations/Modal";
 import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
 import ChangeEmailForm from "./ChangeEmailForm";
 import ChangePasswordForm from "./ChangePasswordForm";

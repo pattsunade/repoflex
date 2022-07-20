@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
 import { Divider,Icon } from "react-native-elements";
 
-import Modal from "../../../components/Modal";
+import Modal from 'components/Modal';
 
 
 export default function InfoSelfie (props) {

@@ -60,7 +60,6 @@ function Form() {
         setIsSubmiting(true)
         await auten({ user: formData.user, password: formData.password })
             .then(response => {
-                console.log(response);
                 if(response.ans.stx === 'ok') {
                     const matrixLength = (response.hdr.mtx.match(/1/g) || []).length;
                     const stp = response.ans.stp;
@@ -70,6 +69,18 @@ function Form() {
 							index: 0,
 							routes: [{ 
 								name: 'home'
+							}],
+						});
+                    }
+                    else {
+                        navigation.reset({ 
+							index: 0,
+							routes: [{ 
+								name: 'homeregister',
+								params: { 
+									mtx:response.hdr.mtx,
+									stp:response.hdr.stp
+								}
 							}],
 						});
                     }

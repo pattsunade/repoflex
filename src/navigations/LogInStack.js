@@ -8,7 +8,9 @@ import Register from "../screens/LogIn/Register";
 import RecoverPassword from "../screens/LogIn/RecoverPassword";
 import NewPassword from "../screens/LogIn/NewPassword";
 import Rejected from "../screens/LogIn/Rejected";
+// import EmailVerification from "../screens/LogIn/EmailVerificationBack";
 import EmailVerification from "../screens/LogIn/EmailVerification";
+
 import Outdated from "../screens/LogIn/Outdated";
 import Login from "screens/LogIn/Login";
 

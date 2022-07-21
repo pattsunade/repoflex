@@ -153,25 +153,36 @@ export default function Home() {
 
         await house()
         .then((response) => {
-            const notificaciones = [];
-            for (var i = 0; i < response.ans.noti.length; i++) { 
-                var counter = response.ans.noti[i];
-                notificaciones.push(counter);
+            if (response.ans.stx === 'ok') {
+                const notificaciones = [];
+                for (var i = 0; i < response.ans.noti.length; i++) { 
+                    var counter = response.ans.noti[i];
+                    notificaciones.push(counter);
+                }
+                setAmou(response.ans.amou);
+                setName(response.ans.name);
+                setRank(response.ans.rank);
+                setAvai(response.ans.avai);
+                setAsgn(response.ans.asgn);
+                // setProc(response.ans.proc);
+                setEnvi(response.ans.envi);
+                // setChck(response.ans.chck);
+                setFini(response.ans.fini);
+                // if(latitude!=999)
+                setLoca(response.ans.loca);
+                setLevl(response.ans.levl);
+                setNoti(notificaciones);
+                setWork(response.ans.work);
+
             }
-            setAmou(response.ans.amou);
-            setName(response.ans.name);
-            setRank(response.ans.rank);
-            setAvai(response.ans.avai);
-            setAsgn(response.ans.asgn);
-            // setProc(response.ans.proc);
-            setEnvi(response.ans.envi);
-            // setChck(response.ans.chck);
-            setFini(response.ans.fini);
-            // if(latitude!=999)
-            setLoca(response.ans.loca);
-            setLevl(response.ans.levl);
-            setNoti(notificaciones);
-            setWork(response.ans.work);
+            else {
+                navigation.reset({ 
+                    index: 0,
+                    routes: [{ 
+                        name: 'login',
+                    }],
+                });
+            }
         })
         .catch((ans) => { 
 
@@ -241,7 +252,7 @@ export default function Home() {
     
     
 
-    if(loading) {
+    if(true) {
         return <Loading isVisible text='Cargando...' />
     } 
     return (

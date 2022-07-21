@@ -11,7 +11,7 @@ import Loading from "../Loading";
 import BackEndConnect from 'api/backendHandler';
 
 export default function DocumentSelfie (props) {
-const { toastRef, setIsLoading, navigation} = props;
+const { toastRef, navigation} = props;
 const [imageSelfie, setImageSelfie] = useState("");
 const [loading, setLoading] = useState(false);
 const [imageDocumentSelfie, setImageDocumentSelfie] = useState("");
@@ -82,55 +82,55 @@ const uploadDocuments = () =>{
         );
     }
 };
-return(
-  <>
-    { loading ? (<Loading text="Subiendo imagen..."/>):
-      ( <ScrollView>
-          <View style={styles.viewContainer}>
-            <Text style={styles.title}>Fotografía Frontal</Text>
-            <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
-            <View style={styles.wrapper}>
-              <View style={styles.container}>
-                <View>
-                  <Button
-                    title={ !imageSelfie ? "Toma tu foto aquí" : "Cambiar Foto"}
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={ !imageSelfie ? styles.btn : styles.btnCheck}
-                    onPress={uploadSelfie}
-                  />
-                </View>
-                <View>
-                <Icon
-                  type="material-community"
-                  name="information-outline"
-                  iconStyle={styles.iconLeft}
-                  size={25}
-                  onPress={() => setIsVisibleInfoSelfie(true)}
-                />
-                <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
-                </View>
-              </View>
-            </View>
-            <Image
-                source={imageSelfie ? {uri:imageDocumentSelfie} : require("../../../assets/no-image.png")}
-                resizeMode="contain"
-                style={styles.logo}
-            />
-            <Button
-              title="Siguiente"
-              containerStyle={styles.btnContainerNext}
-              buttonStyle={styles.btnNext}
-              onPress={uploadDocuments}
-            />
-            <View style={styles.viewZolbit}>
-              <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
-            </View>
-          </View>
-          </ScrollView>
-      )
+    if (loading === true) {
+        return (<Loading text="Subiendo imagen..."/>)
     }
-  </>
-  )
+    return(
+        <ScrollView>
+            <View style={styles.viewContainer}>
+                <Text style={styles.title}>
+                    Fotografía Frontal
+                </Text>
+                <Text style={styles.text}>Verificaremos que esta fotografía coincida con cedula de identidad.</Text>
+                <View style={styles.wrapper}>
+                <View style={styles.container}>
+                    <View>
+                    <Button
+                        title={ !imageSelfie ? "Toma tu foto aquí" : "Cambiar Foto"}
+                        containerStyle={styles.btnContainer}
+                        buttonStyle={ !imageSelfie ? styles.btn : styles.btnCheck}
+                        onPress={uploadSelfie}
+                    />
+                    </View>
+                    <View>
+                    <Icon
+                    type="material-community"
+                    name="information-outline"
+                    iconStyle={styles.iconLeft}
+                    size={25}
+                    onPress={() => setIsVisibleInfoSelfie(true)}
+                    />
+                    <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
+                    </View>
+                </View>
+                </View>
+                <Image
+                    source={imageSelfie ? {uri:imageDocumentSelfie} : require("../../../assets/no-image.png")}
+                    resizeMode="contain"
+                    style={styles.logo}
+                />
+                <Button
+                title="Siguiente"
+                containerStyle={styles.btnContainerNext}
+                buttonStyle={styles.btnNext}
+                onPress={uploadDocuments}
+                />
+                <View style={styles.viewZolbit}>
+                <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+                </View>
+            </View>
+        </ScrollView>
+    )
 }
 const styles = StyleSheet.create({
     viewContainer:{

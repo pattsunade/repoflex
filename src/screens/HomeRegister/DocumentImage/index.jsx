@@ -4,8 +4,8 @@ import { Icon, Avatar, Input, Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from 'expo-image-manipulator';
-import InfoSelfie from "./InfoImages/InfoSelfie.js";
-import Loading from "../../components/Loading";
+import InfoSelfie from "../InfoImages/InfoSelfie.js";
+import Loading from 'components/Loading';
 import Toast from 'react-native-toast-message';
 import sndfi from "api/transacciones/sndfi";
 const activities =  [
@@ -56,40 +56,46 @@ export default function DocumentImage({route}) {
     onChange(manipResult.base64,"file");
   };
 
-  const uploadSelfie = async () =>
-  { const resultPermissions = await ImagePicker.requestCameraPermissionsAsync();
-    if (resultPermissions === "denied")
-    { Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: "Debes dar permiso para abrir la cámara."
-        }
-      });
-    }
-    else
-    { let result = mode < 4 ? (await ImagePicker.launchCameraAsync({          
-          allowsEditing:true,
-          aspect: [4, 3],
-          quality: 1,
-          presentationStyle: 0
-        })):(await ImagePicker.launchImageLibraryAsync({
-          allowsEditing:true,
-          quality: 1,
-          presentationStyle: 0
-        }));
-      
-      // else
-      // { result = await ImagePicker.launchImageLibraryAsync({
-      //     allowsEditing:true,
-      //     quality: 1,
-      //     presentationStyle: 0
-      //   });
-      // }
-      if (!result.cancelled)
-      { compress(result.uri);
-        setImageDocumentSelfie(result.uri);
-      }
-    }
-  };
+	const uploadSelfie = async () => { 
+		const resultPermissions = await ImagePicker.requestCameraPermissionsAsync();
+		if (resultPermissions === "denied") { 
+			Toast.show({ 
+				type: 'error',
+				props: {
+					onPress: () => {}, 
+					text1: 'Error', 
+					text2: "Debes dar permiso para abrir la cámara."
+				}
+			});
+		}
+		else { 
+			let result = mode < 4 ? (
+			await ImagePicker.launchCameraAsync({          
+				allowsEditing:true,
+				aspect: [4, 3],
+				quality: 1,
+				presentationStyle: {
+					
+				}
+			})):(await ImagePicker.launchImageLibraryAsync({
+			allowsEditing:true,
+			quality: 1,
+			presentationStyle: 0
+			}));
+		
+		// else
+		// { result = await ImagePicker.launchImageLibraryAsync({
+		//     allowsEditing:true,
+		//     quality: 1,
+		//     presentationStyle: 0
+		//   });
+		// }
+		if (!result.cancelled)
+		{ compress(result.uri);
+			setImageDocumentSelfie(result.uri);
+		}
+		}
+	};
 
   const uploadDocuments = () =>{
     if(!image){
@@ -125,21 +131,21 @@ export default function DocumentImage({route}) {
             <View style={styles.wrapper}>
               <View style={styles.container}>
                 <View>
-                  <Button
-                    title={ !image ? "Toma tu foto aquí" : "Cambiar Foto"}
-                    containerStyle={styles.btnContainer}
-                    buttonStyle={ !image ? styles.btn : styles.btnCheck}
-                    onPress={uploadSelfie}
-                  />
+					<Button
+						title={ !image ? "Toma tu foto aquí" : "Cambiar Foto"}
+						containerStyle={styles.btnContainer}
+						buttonStyle={ !image ? styles.btn : styles.btnCheck}
+						onPress={uploadSelfie}
+					/>
                 </View>
                 <View>
-                  <Icon
-                    type="material-community"
-                    name="information-outline"
-                    iconStyle={styles.iconLeft}
-                    size={25}
-                    onPress={() => setIsVisibleInfoSelfie(true)}
-                  />
+					<Icon
+						type="material-community"
+						name="information-outline"
+						iconStyle={styles.iconLeft}
+						size={25}
+						onPress={() => setIsVisibleInfoSelfie(true)}
+					/>
                   <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
                 </View>
               </View>

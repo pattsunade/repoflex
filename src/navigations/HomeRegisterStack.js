@@ -1,9 +1,9 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import HomeRegister from "../screens/HomeRegister/HomeRegister";
-import DocumentData from "../screens/HomeRegister/DocumentData";
-import DocumentImage from "../screens/HomeRegister/DocumentImage";
-import Check from "../screens/HomeRegister/Check";
+import HomeRegister from "screens/HomeRegister/HomeRegister";
+import DocumentData from "screens/HomeRegister/DocumentData";
+import DocumentImage from "screens/HomeRegister/DocumentImage";
+import Check from "screens/HomeRegister/Check";
 // import DocumentSelfie from "../screens/HomeRegister/DocumentSelfie";
 // import DocumentFront from "../screens/HomeRegister/DocumentFront";
 // import DocumentReverse from "../screens/HomeRegister/DocumentReverse";

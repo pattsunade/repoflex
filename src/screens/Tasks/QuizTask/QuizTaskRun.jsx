@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackEndConnect from "api/backendHandler";
 import Toast from 'react-native-toast-message';
 import moment from "moment";
+import noImage from 'assets/no-image.png'
 
 
 export default function QuizTaskRun (props) {
@@ -42,9 +43,7 @@ export default function QuizTaskRun (props) {
 		qid: qid,
 		file: "" 
 	});
-	const [pictureData, setPictureData] = useState([]);
 	const [loading, setLoading] = useState(false);
-	const [loadingText, setLoadingText] = useState("Guardando respuestas...");
 
 	const formatoPic = (objeto,qidd) => { 
 		return {
@@ -387,7 +386,7 @@ export default function QuizTaskRun (props) {
               onPress={()=>upload()}
             />
             <Image
-              source={image ? {uri:image} : require("../../../assets/no-image.png")}
+              source={image ? {uri:image} : noImage}
               resizeMode="contain"
               style={styles.logo}
             />

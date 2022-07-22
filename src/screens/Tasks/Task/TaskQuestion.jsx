@@ -3,9 +3,7 @@ import { StyleSheet, Text, View, ScrollView, Alert, TouchableOpacity ,Dimensions
 import * as Progress from 'react-native-progress';
 import { Button,Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from '@react-navigation/native';
-import Loading from '../Loading';
-import backendRequest from 'api/backendHandler';;
+import Loading from 'components/Loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import taska from 'api/transacciones/taska';
@@ -138,18 +136,6 @@ export default function TaskQuestion (props) {
 		});
 	}
 
-//   function formato(data) {
-//     return {
-//       tid: tid,
-//       abc: data
-//     };
-//   }
-
-//   function formato2() 
-//   { return{
-//       tid: tid
-//     };
-//   }
 
 	useEffect(async () =>{ 
 		console.log("backAnsFormat->",backAnsFormat);
@@ -272,24 +258,24 @@ export default function TaskQuestion (props) {
 				})
 				}
 				{compArr.length>0 && <Text style={styles.subtitle}> Actividades completadas: {completed}</Text>}
-				{ compArr.map((arr,index) =>
-				{ return(
-					<TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
-						navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,prevAns:frontData[index]})
-					}>
-						<View style={styles.container}>
-						<Icon
-							type='material-community'
-							name='check-circle'
-							iconStyle={styles.iconLeft2}
-							size={35}
-						/>
-						<View style={styles.activityText}>
-							<Text style={styles.customBtnText}>{arr.tiq}</Text>
-							<Text style={styles.customBtnText}>Actividad completada {index+1}.</Text>
-						</View>
-						</View>
-					</TouchableOpacity>
+				{ compArr.map((arr,index) => { 
+					return(
+						<TouchableOpacity key={arr.qid} style={styles.customBtn} onPress={() =>
+							navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,prevAns:frontData[index]})
+						}>
+							<View style={styles.container}>
+							<Icon
+								type='material-community'
+								name='check-circle'
+								iconStyle={styles.iconLeft2}
+								size={35}
+							/>
+							<View style={styles.activityText}>
+								<Text style={styles.customBtnText}>{arr.tiq}</Text>
+								<Text style={styles.customBtnText}>Actividad completada {index+1}.</Text>
+							</View>
+							</View>
+						</TouchableOpacity>
 					)
 				})
 				}
@@ -302,7 +288,7 @@ export default function TaskQuestion (props) {
 				onPress={abortTask}
 				/>
 			</View>
-			</ScrollView>
+		</ScrollView>
 
 
 	</>)
@@ -410,7 +396,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   iconLeft2:{
-    color:'#6B35E2',
+    color:'#5cb85c',
     marginRight:15,
   },
   iconLeft3:{

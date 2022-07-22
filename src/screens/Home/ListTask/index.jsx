@@ -36,6 +36,7 @@ export default function ListTask({route}){
 	// reset some screens parameters
 	const resetScreenParameters = async() => {
 		pageList.current = 1; // reset page
+		
 		// isMounted && setTaskList([])
 		const location = await Location.getCurrentPositionAsync({}); // location values
 		userLocation.current.latitude = location.coords.latitude.toString()
@@ -62,7 +63,7 @@ export default function ListTask({route}){
 					}))
 					if (isMounted) {
 						page === 1? setTaskList(newArrayTask):setTaskList(prevTask => [...prevTask, ...newArrayTask]);
-						response.ans.mas === 0 && setCanFetchMore(false);
+						response.ans.mas === 0? setCanFetchMore(false): setCanFetchMore(true);
 					}
 				} 
 			}
@@ -120,7 +121,7 @@ export default function ListTask({route}){
 	// fetch more task at the end of the list
 	const isFetchingMore = React.useRef(false); // limit accidetnasl fetch  
 	const fetchOnEnd = async() => {
-		if (isFetchingMore.current === false) {
+		if (isFetchingMore.current === false && canFetchMore === true) {
 			isFetchingMore.current = true;
 			pageList.current += 1;
 			await fetchTasks(

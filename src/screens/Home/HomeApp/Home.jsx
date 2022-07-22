@@ -1,124 +1,21 @@
-import React, { useState,useRef,useEffect,useCallback } from 'react';
-import { StyleSheet, View, Text,Picker, Switch, Animated, ScrollView,TouchableOpacity,Dimensions,SafeAreaView, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, ScrollView, SafeAreaView, View } from 'react-native';
 import { Input, Icon, Button, ListItem, Card} from 'react-native-elements';
-import Loading from '../../../components/Loading';
+import Loading from 'components/Loading';
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import backendRequest from 'api/backendHandler';;
 import moment from 'moment';
 import { RefreshControl } from 'react-native';
 import house from 'api/transacciones/house';
 import { formatNumberDots } from 'utils/numeros';
+import HelloUser from './HelloUser';
+import UserDataCard from './UserDataCard';
+import TaskMenuList from './TaskMenuList';
+import { getCurrentTime } from 'utils/time';
 
-function CustomListItem ({onPress, leftIcon, counter, text, ...props }) {
-	return (
-		<ListItem onPress={onPress} {...props}>
-			{leftIcon}
-			<ListItem.Content>
-				<ListItem.Title style={styles.menuItem}>
-					{text}
-				</ListItem.Title>
-			</ListItem.Content>
-			<ListItem.Content>
-				<ListItem.Title style={styles.numberItem}>
-					{counter}
-				</ListItem.Title>
-			</ListItem.Content>
-			<ListItem.Chevron color='#6B35E2' />
-		</ListItem>
-	)
-}
 
-function HelloUser ({ name, levl }) {
-    const navigation = useNavigation();
-    return (
-        <View style={styles.viewContainerInfo} >
-            <Pressable 
-                style={styles.userAccountContainer} 
-                onPress={ () => navigation.navigate('account',{ 
-                    nameuser:name,
-                    level:levl})}
-            >
-                <Icon
-                    size={40}
-                    type='material-community'
-                    name='account-circle'
-                    color= '#5300eb'
-                    containerStyle={styles.btnContainer}
-                />
-                <Text style={styles.textUserAccout}>
-                    Hola {name}
-                </Text> 
-            </Pressable>
-        </View>
-    )
-}
 
-function UserDataCard({ location, date, amount,  }){
-    return (
-        <Card containerStyle={styles.cardStyle}>
-            <View style={styles.cardContainerAccount}>
-                <Text style={styles.cardAccoutText}> Mi cuenta </Text>
-                {/* <View style={styles.achievement}>
-                    <View style = {styles.achievementContainer}>
-                            <Text style={styles.circleViewRZ}>{RZ}</Text>
-                            <Text style={styles.circleViewRR}>{RR}</Text>
-                            <Text style={styles.circleViewRI}>{RI}</Text>
-                        
-                    </View>
-                </View> */}
-            </View>
-            <Text style={styles.cardUpdateText}> Última actualización: {date}</Text>
-            <Text style={styles.cardLocationText}> Ubicación {location} </Text>
-            <View style={styles.cardContainerMoney}>
-                <Text style={styles.cardBalanceMoneyText}> Saldo a favor </Text>
-                <Text >
-                    <Text style={styles.cardMoneyAmountText1}> $ </Text>
-                    <Text style={styles.cardMoneyAmountText2}>{formatNumberDots(amount)}</Text>
-                </Text>
-            </View>
-            
-        </Card>
-    )
-}
-
-function TaskMenuList ({available, assigned, send, finished, lati, long}) {
-    const navigation = useNavigation();
-    return (
-        <View>
-            <Text style={styles.texttitleResume}>RESUMEN DE MIS TAREAS</Text>      
-
-            <CustomListItem 
-                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                text={"Disponibles"}
-                counter={available}
-                onPress={()=> navigation.navigate('listtask',{lati,long,type:1,start:true,assign:true,title:'Tareas Disponibles'})}    
-                bottomDivider
-            />
-            <CustomListItem 
-                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                text={"Asignadas"}
-                counter={assigned}
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[2,3],start:[true,true],abort:[false,true],title:'Tareas Asignadas',names:['Pendientes','En progreso']})}
-                bottomDivider
-            />
-            <CustomListItem 
-                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                text={"Enviadas"}
-                counter={send}
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[4,5],title:'Tareas Enviadas',names:['Enviadas','En revisión']})}
-                bottomDivider
-            />
-            <CustomListItem 
-                leftIcon={<Icon name='view-list' color='#6B35E2'/>}
-                text={"Finalizadas"}
-                counter={finished}
-                onPress={()=> navigation.navigate('listtasktab',{lati,long,type:[6,7],title:'Tareas Finalizadas',names:['Finalizadas','Pagadas']})}
-            />
-        </View>
-    )
-}
 
 export default function Home() {
     const navigation = useNavigation();
@@ -138,22 +35,23 @@ export default function Home() {
     const [work, setWork] = useState();
     const [lati, setLati] = useState();
     const [long, setLong] = useState();
+    const [location, setLocation] = React.useState(undefined);
+    const [userLocation, setUserLocation] = React.useState("...")
+
     const [loading, setLoading] = useState(true);
     // const [isEnabled, setIsEnabled] = useState(false);
-    const [dateObj, setDateObj] = useState(new Date());
     const [displayDate, setDisplayDate] = useState('');
     // const [number, setNumber] = useState(0);
     // const RZ = String(rank).charAt(0);
     // const RR = String(rank).charAt(2);
     // const RI = String(rank).charAt(4);
-
-    
-
     const getHomeData = React.useCallback(async() => { 
 
         await house()
         .then((response) => {
+            
             if (response.ans.stx === 'ok') {
+                setDisplayDate(getCurrentTime())
                 const notificaciones = [];
                 for (var i = 0; i < response.ans.noti.length; i++) { 
                     var counter = response.ans.noti[i];
@@ -208,23 +106,24 @@ export default function Home() {
 
     },[])
 
+    
+
     const [refreshing, setRefreshing] = React.useState(false)
     const onRefresh = React.useCallback(async() => {
 		setRefreshing(true)
-		console.log("i am refreshing");
-		// const location = await Location.getCurrentPositionAsync({});
 		await getHomeData()
 		setRefreshing(false)
 
 	},[])
 
-    React.useEffect(() => { 
+    useFocusEffect(React.useCallback(() => {
         const run = async() => {
-            
-            setDisplayDate(moment(dateObj).format('DD/MM/YY HH:mm'));
-			let location = await Location.getCurrentPositionAsync({});
-			let latitude = location.coords.latitude.toString();
-			let longitude = location.coords.longitude.toString();
+            // setDisplayDate(moment(dateObj).format('DD/MM/YY HH:mm'));
+			const currentPosition = await Location.getCurrentPositionAsync({});
+            setLocation(currentPosition);
+
+			const latitude = currentPosition.coords.latitude.toString();
+			const longitude = currentPosition.coords.longitude.toString();
 			setLati(latitude);
 			setLong(longitude);
 			await getHomeData(latitude,longitude);
@@ -245,50 +144,57 @@ export default function Home() {
         })
         .finally(() => {
             setLoading(false);
-        })
-	},[dateObj]);
+        }) 
+    },[]));
+
 
     
-    
-    
 
-    if(true) {
+    React.useEffect(() => {
+        const updateLocation = async({latitude, longitude}) => {
+            const reverse = await Location.reverseGeocodeAsync({
+                latitude,
+                longitude,
+            })
+            setUserLocation(`${reverse[0].city}, ${reverse[0].street} ${reverse[0].streetNumber}`)
+        }
+        console.log("location > ", location)
+        if(location !== undefined) {
+            updateLocation({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+            });
+        }
+    },[location])
+
+
+    if(loading === true) {
         return <Loading isVisible text='Cargando...' />
     } 
     return (
-        <SafeAreaView style={styles.fullScreen}>
-            <ScrollView refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={20}/>
-            }>
-                
-                <HelloUser name={name} levl={levl} />
-                <UserDataCard location={loca} date={displayDate} amount={amou} />
+        // <SafeAreaView style={styles.fullScreen}>
+            <ScrollView 
+                refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={20}/> }
+                style={styles.screen}    
+            >
+                <View style={styles.helloUser}>
+                    <HelloUser name={name} levl={levl} />
+                </View>
+                <UserDataCard location={userLocation} date={displayDate} amount={amou} />
                 <TaskMenuList available={avai} assigned={asgn} send={envi} finished={fini} lati={lati} long={long} />
                 
             </ScrollView>
-        </SafeAreaView>
+        // </SafeAreaView>
     );
 }
 const styles = StyleSheet.create({ 
 
-    fullScreen: {
-        // borderWidth: 1,
-        height: '100%'
+    screen: {
+        height: '100%',
     },
-    viewContainerInfo: { 
-        // marginRight: 10,
-        // marginLeft: 10,
-        // paddingTop: 10,
-        marginBottom:0 
-    },
-    userAccountContainer: {
-        // borderWidth: 1,
-        marginTop:25,
-        paddingTop: 10,
-        paddingEnd: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        marginEnd: 'auto'
+    helloUser: {
+        marginTop: 40,
+        marginBottom: 10
     },
     textUserAccout: {
         fontSize: 20,

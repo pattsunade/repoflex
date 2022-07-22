@@ -3,7 +3,7 @@ import { StyleSheet, Text, View} from 'react-native';
 import {  Divider } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
-import QuizTaskRun from "../../components/Tasks/QuizTaskRun";
+import QuizTaskRun from "./QuizTaskRun";
 
 export default function QuizTask ({route,navigation}) {
   const {questions,tid,completed,prevAns} = route.params;

@@ -8,6 +8,7 @@ import InfoSelfie from "../InfoImages/InfoSelfie.js";
 import Loading from 'components/Loading';
 import Toast from 'react-native-toast-message';
 import sndfi from "api/transacciones/sndfi";
+import noImage from 'assets/no-image.png'
 const activities =  [
     {tit:'Fotografía frontal',
     des:'Debe ser una foto clara para que podamos identificarte.'
@@ -151,7 +152,7 @@ export default function DocumentImage({route}) {
               </View>
             </View>
             <Image
-              source={image ? {uri:imageDocumentSelfie} : require("../../../assets/no-image.png")}
+              source={image ? {uri:imageDocumentSelfie} : noImage}
               resizeMode="contain"
               style={styles.logo}
             />

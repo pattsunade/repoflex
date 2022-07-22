@@ -4,7 +4,7 @@ import { Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import BackEndConnect from 'api/backendHandler';
 import Toast from 'react-native-toast-message';
-import Loading from "../../components/Loading";
+import Loading from "components/Loading";
 
 export default function Training3 (props) {
   const { questions, tid } = props;
@@ -99,35 +99,35 @@ export default function Training3 (props) {
 }
 
 const styles = StyleSheet.create({
-  title:
-  { marginTop:50,
-    marginBottom:80,
-    marginHorizontal:20,
-    fontSize: 30,
-    textAlign:"center",
-    fontWeight: "bold"
-  },
-  text:
-  { marginTop:30,
-    marginBottom:10,
-    marginHorizontal:20,
-    fontSize: 20,
-    textAlign:"center"
-  },
-  texttitle:
-  { marginTop:50,
-    marginBottom:50,
-    marginHorizontal:20,
-    fontSize: 17,
-    textAlign:"justify"
-  },
-  btnContainer:
-  { marginTop: 20,
-    width: "95%",
-    marginLeft: 10,
-  },
-  btn:
-  { backgroundColor: "#6B35E2",
-    borderRadius: 50,
-  }
+	title: { 
+		marginTop:50,
+		marginBottom:80,
+		marginHorizontal:20,
+		fontSize: 30,
+		textAlign:"center",
+		fontWeight: "bold"
+	},
+	text: { 
+		marginTop:30,
+		marginBottom:10,
+		marginHorizontal:20,
+		fontSize: 20,
+		textAlign:"center"
+	},
+	texttitle: { 
+		marginTop:50,
+		marginBottom:50,
+		marginHorizontal:20,
+		fontSize: 17,
+		textAlign:"justify"
+	},
+	btnContainer: { 
+		marginTop: 20,
+		width: "95%",
+		marginLeft: 10,
+	},
+	btn: { 
+		backgroundColor: "#6B35E2",
+		borderRadius: 50,
+	}
 });

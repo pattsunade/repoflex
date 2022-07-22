@@ -1,13 +1,13 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import Task from "../screens/Tasks/Task";
-import QuizTask from "../screens/Tasks/QuizTask";
+import Task from "screens/Tasks/Task";
+import QuizTask from "screens/Tasks/QuizTask";
 
 const Stack = createStackNavigator();
 
-export default function TaskStack({route})
-{ const {tid,quest,backAnsFormat,completed,frontAnsFormat} = route.params;
+export default function TaskStack({route}) { 
+  const {tid,quest,backAnsFormat,completed,frontAnsFormat} = route.params;
   return(
     <Stack.Navigator>
       <Stack.Screen

@@ -8,6 +8,7 @@ import Toast from 'react-native-toast-message';
 import BackEndConnect from 'api/backendHandler';;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
+import usdat from "api/transacciones/usdat";
 
 export default function PersonalData({route}) {
   const [data,setData] = useState({});
@@ -30,9 +31,10 @@ export default function PersonalData({route}) {
   }
 
   useEffect(
-    useCallback(() =>
-    { BackEndConnect("POST","usdat",formato(usr)).then(async (response) =>
-      { if(response.ans.stx != 'ok')
+    useCallback(() => { 
+      usdat({user: usr})
+      .then(async (response) => { 
+        if(response.ans.stx != 'ok')
         { Toast.show(
             { type: 'error',
               props: 

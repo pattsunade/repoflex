@@ -2,8 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import { Overlay } from "react-native-elements";
 
-export default function Loading(props){
-    const { isVisible, text } = props;
+export default function Loading({text=""}){
     return (
       <View style={styles.loaderTask}>
         <ActivityIndicator  size="large" color="#0000ff"/>

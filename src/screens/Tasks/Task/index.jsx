@@ -4,102 +4,90 @@ import { Button, Divider,Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import BackEndConnect from 'api/backendHandler';
-import TaskQuestion from '../../components/Tasks/TaskQuestion';
-import Loading from '../../components/Loading';
+import TaskQuestion from './TaskQuestion';
+import Loading from 'components/Loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import taskd from 'api/transacciones/taskd';
 
-const { width, height } = Dimensions.get('window');
+// const { width, height } = Dimensions.get('window');
 
 export default function Task ({route}) {
-  const {quest,tid,backAnsFormat,completed,update,frontAnsFormat} = route.params;
-  const navigation = useNavigation();
-  const [error, setError] = useState(false);
-  const [questions, setQuestions] = useState(quest);
-  const [loading, setLoading] = useState(true);
-  
-  function formato()
-  { return{
-      tid: tid
-    };
-  }
+    const {quest,tid,backAnsFormat,completed,update,frontAnsFormat} = route.params;
+    const navigation = useNavigation();
+    const [error, setError] = useState(false);
+    const [questions, setQuestions] = useState(quest);
+    const [loading, setLoading] = useState(true);
+    
 
-  useEffect(() => 
-  { if(questions===undefined || questions === null)
-    { BackEndConnect('POST','taskd',formato()).then(async (response) =>
-      { if (response.ans.stx!='ok')
-        { await AsyncStorage.clear();
-          Toast.show(
-          { type: 'error',
+
+    React.useEffect(() => { 
+        if(questions===undefined || questions === null) { 
+        taskd().then(async (response) => { 
+            if (response.ans.stx!='ok') { 
+                await AsyncStorage.clear();
+                Toast.show({ 
+                    type: 'error',
+                    props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
+                },
+                autohide: false
+            });
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'login' }],
+            }); 
+            }
+            var questAns = response.ans.tas;
+            setQuestions(questAns);
+            questAns = JSON.stringify(questAns);
+            AsyncStorage.multiSet([['@quest',questAns],['@tid',tid.toString()],['@comp',completed.toString()]]);
+            setLoading(false);
+        })
+        .catch(async (ans) => { 
+            console.log(ans);
+            setError(true);
+            setLoading(false);
+            await AsyncStorage.clear();
+            Toast.show(
+            { type: 'error',
             props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
             },
             autohide: false
-          });
-          navigation.reset({
-            index: 0,
-            routes: 
-            [ { name: 'login',
-              }
-            ],
-          }); 
+            });
+            navigation.reset({
+                index: 0,
+                routes: [ { name: 'login' }],
+            });
+        });
         }
-        var questAns = response.ans.tas;
-        setQuestions(questAns);
-        questAns = JSON.stringify(questAns);
-        AsyncStorage.multiSet([['@quest',questAns],['@tid',tid.toString()],['@comp',completed.toString()]]);
-        setLoading(false);
-      })
-      .catch(async (ans) =>
-      { console.log(ans);
-        setError(true);
-        setLoading(false);
-        await AsyncStorage.clear();
-        Toast.show(
-        { type: 'error',
-          props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
-          },
-          autohide: false
-        });
-        navigation.reset({
-          index: 0,
-          routes: 
-          [ { name: 'login',
-            }
-          ],
-        });
-      });
+        else if(typeof questions == 'string') { 
+            setQuestions(JSON.parse(questions));
+            setLoading(false);
+        }
+        else { 
+            setLoading(false); 
+        }
+    },[questions])
+
+
+    if (loading) { 
+        return <Loading text={'Iniciando tarea...'}/>
     }
-    else if(typeof questions == 'string')
-    { setQuestions(JSON.parse(questions));
-      setLoading(false);
-    }
-    else
-    { setLoading(false); 
-    }
-  },[questions])
-  if (loading)
-  { return <Loading text='Iniciando tarea...' />
-  }
-  else
-  { if (error)
-    { return <View></View>
-    }
-    else
-    { return(
+    else if (error) { 
+        return <View></View>
+    } 
+    return(
         <ScrollView>
-          <View>
-            <TaskQuestion questions={questions} tid={tid} completed={completed} backAnsFormat={backAnsFormat} update={update} frontAnsFormat={frontAnsFormat}/>
-          </View>
-          <Divider style= {styles.divider} />
-          <View style={styles.viewZolbit}>
-            <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
-          </View>
-          { loading && (<Loading text={loadingText}/>)
-          }
+            <View>
+                <TaskQuestion questions={questions} tid={tid} completed={completed} backAnsFormat={backAnsFormat} update={update} frontAnsFormat={frontAnsFormat}/>
+            </View>
+            <Divider style= {styles.divider} />
+            <View style={styles.viewZolbit}>
+                <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>
+            </View> 
         </ScrollView>
-      )
-    }
-  } 
+    )
+    
 }
 
 const styles = StyleSheet.create({

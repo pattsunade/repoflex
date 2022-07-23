@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
 import { Divider } from "react-native-elements";
-import ChangePasswordForm from "../../components/Account/ChangePasswordForm";
+import ChangePasswordForm from "components/Account/ChangePasswordForm";
 
 export default function RecoverPassword({route}) {
   const usr = route.params.usr;

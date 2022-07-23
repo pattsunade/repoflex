@@ -1,12 +1,10 @@
 import React, {useRef, useState, useEffect,useContext} from "react";
 import {StyleSheet, View, Text, ScrollView} from "react-native";
 import { Button } from "react-native-elements";
-import * as firebase from "firebase";
-import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Loading from "../../components/Loading";
-import InfoUser from "../../components/Account/InfoUser";
-import AccountOptions from "../../components/Account/AccountOptions";
+import Loading from "components/Loading";
+import InfoUser from "components/Account/InfoUser";
+import AccountOptions from "components/Account/AccountOptions";
 
 export default function Account({route,navigation}) {
   const { nameuser,level} = route.params;

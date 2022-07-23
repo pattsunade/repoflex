@@ -9,26 +9,33 @@ function UserDataCard({ location, date, amount}){
     return (
         <Card containerStyle={styles.cardStyle}>
             <View style={styles.cardContainerTitle}>
-                <Text style={styles.cardAccoutText}> Mi cuenta </Text>
-                {/* <Icon 
-                    type='material-community'
-                    name='account-cog'
-                /> */}
+                <Text style={styles.cardAccoutText}> 
+                    Mi cuenta 
+                </Text>
             </View>
-            <Text style={styles.cardUpdateText}> Última actualización: {date}</Text>
-            <Text style={styles.cardLocationText}> Ubicación {location} </Text>
+            <Text style={styles.cardUpdateText}>
+                <Text style={styles.bold}>Última actualización:</Text> {date}
+            </Text>
+            <Text style={styles.cardLocationText}> 
+                <Text style={styles.bold}>Ubicación:</Text> {location} 
+            </Text>
             <View style={styles.cardContainerMoney}>
-                <Text style={styles.cardBalanceMoneyText}> Saldo a favor </Text>
-                <Text >
-                    <Text style={styles.cardMoneyAmountText1}> $ </Text>
+                <Text style={styles.cardBalanceMoneyText}> 
+                    Saldo a pagar 
+                </Text>
+                <Text>
+                    <Text style={styles.cardMoneyAmountText1}>$ </Text>
                     <Text style={styles.cardMoneyAmountText2}>{amount && formatNumberDots(amount)}</Text>
                 </Text>
             </View>
-            
+
         </Card>
     )
 }
 const styles = StyleSheet.create({
+    bold: {
+        fontWeight: 'bold'
+    },
     cardStyle: {
         borderWidth: 1,
         margin: 0,
@@ -36,9 +43,7 @@ const styles = StyleSheet.create({
         shadowColor: 'rgba(0,0,0, .2)',
         shadowOffset: { height: 0, width: 0 },
         shadowOpacity: 0, //default is 1
-        shadowRadius: 0//default is 1
-
-        
+        shadowRadius: 0//default is 1        
     },
     // card info
     cardContainerTitle: {

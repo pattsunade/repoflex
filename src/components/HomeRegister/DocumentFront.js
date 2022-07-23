@@ -51,7 +51,7 @@ export default function DocumentFront (props) {
       else {
           const result = await ImagePicker.launchCameraAsync({
               allowsEditing:true,
-              aspect: [4, 3],
+              // aspect: [4, 3],
               quality: 1,
               presentationStyle: 0
           });

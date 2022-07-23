@@ -8,11 +8,14 @@ import { formatNumberDots } from 'utils/numeros';
 import styles from './styles'
 import TaskTitle from './TaskTitle';
 
-function TaskBody ({location, date, amount, detail, time}) {
-
+function TaskBody ({location, date, amount, detail, time, id}) {
 	return (
 		<View style={styles.taskTextView}>
-            <Text style={styles.taskElementMiniText}>Local</Text>
+            <View style={styles.topContent}>
+            	<Text style={styles.taskElementMiniText}>Local</Text>
+            	{/* <Text style={styles.textId}>id: {id}</Text> */}
+			</View>
+
 			<View style={styles.taskIconTextContainer}>
                 <Text style={styles.taskDetail}>{location}</Text>
                 <View style={styles.iconStyleContainer}>
@@ -42,7 +45,7 @@ function TaskBody ({location, date, amount, detail, time}) {
             </Text>
             <View style={styles.taskDetailContainer}>
                 <Text style={styles.taskDetailText}>
-                    {detail}
+                    {detail.replace(/\^/gi,'\n')}
                 </Text>
             </View>
 			<Text style={styles.taskText}>
@@ -66,7 +69,7 @@ function TaskCardExtended({data, buttons}) {
 
             <Divider style= {styles.divider} />
 
-            <TaskBody location={pla} date={wen} amount={amo} detail={det} time={tim}/>
+            <TaskBody location={pla} date={wen} amount={amo} detail={det} time={tim}  id={tid}/>
             <Divider style= {styles.divider}/>
             <View style={styles.activityView}>
                 <Text style={styles.activityTitleText}>DETALLE DE ACTIVIDADES</Text>

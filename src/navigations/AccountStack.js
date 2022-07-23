@@ -1,10 +1,10 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import ChangePassword from "../screens/Account/ChangePassword.js";
-import PersonalData from "screens/Account/PersonalData.js";
-import FrecuentQuestions from "../screens/Account/FrequentQuestions.js";
-import Account from "../screens/Account/Account.js";
-import About from "../screens/Account/About.js";
+import ChangePassword from "screens/Account/ChangePassword";
+import PersonalData from "screens/Account/PersonalData";
+import FrecuentQuestions from "screens/Account/FAQ";
+import Account from "screens/Account/Account";
+import AboutApp from "screens/Account/AboutApp";
 
 export default function AccountStack({route}) { 
 	const Stack = createStackNavigator();
@@ -34,7 +34,7 @@ export default function AccountStack({route}) {
 			/>
 			<Stack.Screen
 				name="about"
-				component={About}
+				component={AboutApp}
 				options={{title: "Acerca de la app"}}
 			/>
 		</Stack.Navigator>

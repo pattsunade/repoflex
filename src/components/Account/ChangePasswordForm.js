@@ -8,6 +8,7 @@ import { validateEmail } from "utils/validations";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import BackEndConnect from 'api/backendHandler';
+import { clean } from "utils/rut";
 
 export default function NewPasswordForm (props) {
   const {usr} = props;
@@ -48,7 +49,7 @@ export default function NewPasswordForm (props) {
 
   function formato(objeto)
   { return {
-      usr: usr,
+      usr: clean(usr).toUpperCase(),
       pso: objeto.pso,
       psn: objeto.psn
     };

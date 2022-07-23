@@ -4,10 +4,7 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator, ScrollView} from '
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import tasks from 'api/transacciones/tasks';
-import TaskCard from 'components/General/TaskCard/SimpleTaskCard';
-import { Searchbar } from 'react-native-paper';
-import InputSearchBar from 'components/General/InputSearchBar';
-import { sleep } from 'utils/time';
+import SimpleTaskCard from 'components/General/TaskCard/SimpleTaskCard';
 import useMountedComponent from 'utils/hooks/useMountedComponent';
 import * as Location from 'expo-location';
 
@@ -163,20 +160,8 @@ export default function ListTask({route}){
 			):(<>
 
 				<FlatList 
-					// ListHeaderComponent={
-					// 	<View style={styles.searchBarContainer}>
-					// 		<InputSearchBar 
-					// 			// label={'Local'}
-					// 			placeHolder={'Local'}
-					// 			value={searchValue}
-					// 			onChangeText={onChangeTextSearch}
-					// 			onSubmitEditing={onSubmitEditingSearch}
-								
-					// 		/>
-					// 	</View>
-					// }
 					data={taskList}
-					renderItem={data => <TaskCard lista={data} start={start} assign={assign} abort={abort}/>}
+					renderItem={data => <SimpleTaskCard lista={data} start={start} assign={assign} abort={abort}/>}
 					keyExtractor={item => item.tid}
 					onEndReachedThreshold={2}
 					onEndReached={fetchOnEnd}

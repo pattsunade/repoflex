@@ -73,7 +73,7 @@ export default function DocumentImage({route}) {
 			let result = mode < 4 ? (
 			await ImagePicker.launchCameraAsync({          
 				allowsEditing:true,
-				aspect: [4, 3],
+				// aspect: [4, 3],
 				quality: 1,
 				presentationStyle: {
 					

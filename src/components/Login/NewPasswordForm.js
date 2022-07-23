@@ -8,6 +8,7 @@ import { validateEmail } from "utils/validations";
 import Loading from "../Loading";
 import Toast from 'react-native-toast-message';
 import BackEndConnect from 'api/backendHandler';
+import { clean } from "utils/rut";
 
 export default function NewPasswordForm (props) {
   const  { rut } = props;
@@ -40,7 +41,7 @@ export default function NewPasswordForm (props) {
 
   function defaultFormValue()
   { return {
-      usr: rut,
+      usr: clean(rut).toUpperCase(),
       psw: "",
       vcd: ""
     };

@@ -8,12 +8,14 @@ import { formatNumberDots } from 'utils/numeros';
 import styles from './styles'
 import TaskTitle from './TaskTitle';
 
-function TaskBody ({location, date, amount}) {
+function TaskBody ({location, date, amount, id}) {
 
 	return (
 		<View style={styles.taskTextView}>
-			
-            <Text style={styles.taskElementMiniText}>Local</Text>
+			<View style={styles.topContent}>
+            	<Text style={styles.taskElementMiniText}>Local</Text>
+            	{/* <Text style={styles.textId}>id: {id}</Text> */}
+			</View>
 
 			<View style={styles.taskIconTextContainer}>
                 <Text style={styles.taskDetail}>{location}</Text>
@@ -46,7 +48,7 @@ function TaskBody ({location, date, amount}) {
 }
 
 
-function TaskCard({lista,start,abort,assign}) {
+function SimpleTaskCard({lista,start,abort,assign}) {
 
     const navigation = useNavigation();
     const {tit,typ,tid,pla,amo,det,tim,nqu,npi,nre,sig,wen} = lista.item;
@@ -55,7 +57,7 @@ function TaskCard({lista,start,abort,assign}) {
         <Card style={styles.card}>
 			<TaskTitle sig={sig} name={tit} type={typ} id={tid} />
 			<Divider style= {styles.divider}/> 
-			<TaskBody location={pla} date={wen} amount={amo} />
+			<TaskBody location={pla} date={wen} amount={amo} id={tid}/>
             <View style={styles.btnView}>
 				<Button
 					title='Ver detalles'
@@ -79,4 +81,4 @@ function TaskCard({lista,start,abort,assign}) {
     )
 }
 
-export default TaskCard
+export default SimpleTaskCard

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import ListTask from './ListTask';
+import ListTask from '../ListTask';
 
 export default function ListTaskTab({route}){ 
   const navigation = useNavigation();

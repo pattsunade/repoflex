@@ -128,7 +128,6 @@ export default function Home() {
 			setLong(longitude);
 			await getHomeData(latitude,longitude);
         }
-		
         setLoading(true);
         run()
         .catch((e) => {
@@ -156,7 +155,7 @@ export default function Home() {
                 latitude,
                 longitude,
             })
-            setUserLocation(`${reverse[0].city}, ${reverse[0].street} ${reverse[0].streetNumber}`)
+            setUserLocation(`${reverse[0].street} ${reverse[0].streetNumber}, ${reverse[0].city}`)
         }
         console.log("location > ", location)
         if(location !== undefined) {

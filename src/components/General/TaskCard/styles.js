@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		backgroundColor: '#6A17DF',
 		justifyContent: 'center',
-		marginRight:5
+		marginRight:5,
 	},
     circleText: {
 		fontWeight: 'bold', 
@@ -15,30 +15,39 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		color:'#fff'
 	},
+	topTitle: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
     taskTypeView: {
 		flexDirection: 'row',
 		margin:3,
 		borderRadius:1,
-		alignItems: 'center',
+		// alignItems: '',
 	},
-    titleTaskSection: {
-		marginEnd: 'auto',
-		flex: 1
+    subTitle: {
+		marginStart: 40
+		// flexDirection: 'row'
+		// marginEnd: 'auto',
+		// flex: 1
 	},
     textTitleTask:{
+		flex:1,
 		fontWeight: 'bold', 
 		fontSize: 20,
-		paddingTop: 0,
+		// paddingTop: 0,
 		// marginBottom: -3, 
 	},
     taskTypeText: {
-		marginTop: -4,
+		// marginTop: -4,
+		// marginStart: 40,
 		color: '#929492'
 	},
     textId:{
-		textAlign:'right',
-		marginBottom: -10,
-		fontSize: 10,
+		color: '#929492',
+		// marginStart: 'auto',
+		fontWeight: 'bold'
+		// fontSize: 10,
 	},
     taskTextView: { 
 		// flexDirection:'column',
@@ -103,7 +112,7 @@ const styles = StyleSheet.create({
 	},
     divider:{
 		backgroundColor: '#6B35E2',
-		margin: 10  
+		marginVertical: 10  
 	},
     btnView:{
 		flexDirection:'row',
@@ -152,6 +161,9 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'center'
     },
+	topContent: {
+		flexDirection: 'row'
+	}
 })
 
 export default styles

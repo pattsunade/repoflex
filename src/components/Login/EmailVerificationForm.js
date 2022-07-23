@@ -8,6 +8,7 @@ import Toast from 'react-native-toast-message';
 import BackEndConnect from 'api/backendHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {validateEmail} from "utils/validations";
+import { clean } from "utils/rut";
 
 export default function EmailVerificationForm(props) {
   const { rut, psw } = props;
@@ -22,7 +23,7 @@ export default function EmailVerificationForm(props) {
 
   function sndvcDefaultFormValue()
   { return {
-      usr: rut,
+      usr: clean(rut).toUpperCase(),
       psw: psw,
       mail: ""
     };
@@ -30,21 +31,21 @@ export default function EmailVerificationForm(props) {
 
   function vermaDefaultFormValue()
   { return {
-      usr: rut,
+      usr: clean(rut).toUpperCase(),
       mvc: 0, 
     };
   }
 
   function vermaFormat(objeto) {
     return{
-      usr: rut,
+      usr: clean(rut).toUpperCase(),
       mvc : parseInt(objeto.mvc),
     };
   }
 
   function sndvcFormat(objeto) {
     return{
-      usr: rut,
+      usr: clean(rut).toUpperCase(),
       psw: psw,
       mail: objeto.mail
     };

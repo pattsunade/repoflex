@@ -1,20 +1,22 @@
-import React, { useRef } from "react";
-import { StyleSheet, View, ScrollView, Text,Image } from "react-native";
-import { Divider,Card,Icon } from "react-native-elements";
+import React from "react";
+import { StyleSheet, View,Text, Linking } from "react-native";
+import Constants from "expo-constants";
 
-
-export default function About() {
+function About() {
   return (
     <View style={styles.parentView}>
       <Text style={styles.textStyle}> Repoflex Móvil</Text>
-      <Text style={styles.textStyle}> Versión:0.68.0 </Text>
-      <Text style={styles.textStyle}> 2021 Zolbit </Text>
+      <Text style={styles.textStyle}> Versión v{Constants.manifest.version} </Text>
+      <Text style={styles.textStyle}> 2022 Zolbit </Text>
       <Text style={styles.textStyle}> Todos los derechos </Text>
       <Text style={styles.textStyle}> reservados </Text>
+      <Text style={styles.link} onPress={() => Linking.openURL('http://google.com')}>
+        Políticas de Privacidad
+      </Text>
     </View>
     )
 }
-
+export default About;
 const styles = StyleSheet.create({
   parentView: {
     flexDirection: 'column',
@@ -25,6 +27,9 @@ const styles = StyleSheet.create({
   },
   textStyle:{
     fontWeight:"bold",
-    fontSize: 25
+    fontSize: 20
+  },
+  link: {
+    color: 'blue'
   }
 });

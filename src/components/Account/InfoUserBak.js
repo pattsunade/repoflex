@@ -25,6 +25,7 @@ export default function InfoUser(props) {
     } else {
       const result = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
+        presentationStyle: 0,
         // aspect: [4, 3],
       });
 

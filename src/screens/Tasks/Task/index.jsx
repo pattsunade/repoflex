@@ -14,7 +14,7 @@ import taskd from 'api/transacciones/taskd';
 
 export default function Task ({route}) {
     const {quest,tid,backAnsFormat,completed,update,frontAnsFormat} = route.params;
-	console.log(tid)
+	  console.log(tid)
     const navigation = useNavigation();
     const [error, setError] = useState(false);
     const [questions, setQuestions] = useState(quest);
@@ -23,43 +23,43 @@ export default function Task ({route}) {
 
 
     React.useEffect(() => { 
-        if(questions===undefined || questions === null) { 
-        taskd({tid: tid}).then(async (response) => { 
-            if (response.ans.stx!='ok') { 
+        if(questions===undefined || questions === null) { // no question started
+            taskd({tid: tid}).then(async (response) => { 
+                if (response.ans.stx!='ok') { 
+                    await AsyncStorage.clear();
+                    Toast.show({ 
+                        type: 'error',
+                        props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
+                    },
+                    autohide: false
+                });
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'login' }],
+                }); 
+                }
+                var questAns = response.ans.tas;
+                setQuestions(questAns);
+                questAns = JSON.stringify(questAns);
+                AsyncStorage.multiSet([['@quest',questAns],['@tid',tid.toString()],['@comp',completed.toString()]]);
+                setLoading(false);
+            })
+            .catch(async (ans) => { 
+                console.log(ans);
+                setError(true);
+                setLoading(false);
                 await AsyncStorage.clear();
-                Toast.show({ 
-                    type: 'error',
-                    props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
+                Toast.show(
+                { type: 'error',
+                props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
                 },
                 autohide: false
+                });
+                navigation.reset({
+                    index: 0,
+                    routes: [ { name: 'login' }],
+                });
             });
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'login' }],
-            }); 
-            }
-            var questAns = response.ans.tas;
-            setQuestions(questAns);
-            questAns = JSON.stringify(questAns);
-            AsyncStorage.multiSet([['@quest',questAns],['@tid',tid.toString()],['@comp',completed.toString()]]);
-            setLoading(false);
-        })
-        .catch(async (ans) => { 
-            console.log(ans);
-            setError(true);
-            setLoading(false);
-            await AsyncStorage.clear();
-            Toast.show(
-            { type: 'error',
-            props: {onPress: () => {}, text1: 'Error', text2: 'Error interno, por favor inicia sesión nuevamente.'
-            },
-            autohide: false
-            });
-            navigation.reset({
-                index: 0,
-                routes: [ { name: 'login' }],
-            });
-        });
         }
         else if(typeof questions == 'string') { 
             setQuestions(JSON.parse(questions));

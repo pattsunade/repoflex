@@ -11,6 +11,7 @@ import BackEndConnect from "api/backendHandler";
 import Toast from 'react-native-toast-message';
 import moment from "moment";
 import noImage from 'assets/no-image.png'
+import taskp from "api/transacciones/taskp";
 
 
 export default function QuizTaskRun (props) {
@@ -113,7 +114,11 @@ export default function QuizTaskRun (props) {
 	}
 
 	const sendimage = async(qidd) => { 
-		return await BackEndConnect("POST","taskp",formatoPic(formDataPic,qidd));
+		return await taskp({
+			ticketId: tid,
+			questionId: qidd,
+			file: formDataPic.file,
+		})
 	}
 
   const compress = async (uri) => 
@@ -126,80 +131,79 @@ export default function QuizTaskRun (props) {
     onChangePic(manipResult.base64,"file");
   }
 
-  async function upload()
-  { const roll = await ImagePicker.requestCameraPermissionsAsync();
-    if (roll === "denied" || roll===false)
-    { Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: "Debes dar permiso para acceder a la cámara."
-        }
-      });
-    }
-    else
-    { const result = await ImagePicker.launchCameraAsync(
-      { allowsEditing:true,
-        quality: 1,
-        presentationStyle: 0
-      });
-      if (result.cancelled) 
-      { if (!image)
-        { Toast.show(
-          { type: 'error',
-            props: {onPress: () => {}, text1: 'Error', text2: "Debes tomar una foto."
-            }
-          });
-        }
-      }
-      else 
-      { compress(result.uri);
-        setImage(result.uri);
-      }
-    }
-  }
+	const uploadPhoto = async() => { 
+		const roll = await ImagePicker.requestCameraPermissionsAsync();
+		if (roll === "denied" || roll===false) { 
+			Toast.show({ 
+				type: 'error',
+				props: {onPress: () => {}, text1: 'Error', text2: "Debes dar permiso para acceder a la cámara."
+			}
+		});
+		}
+		else { 
+			const result = await ImagePicker.launchCameraAsync({ 
+				allowsEditing:true,
+				quality: 1,
+				presentationStyle: 0
+			});
+			if (result.cancelled) { 
+				if (!image) { 
+					Toast.show({ 
+						type: 'error',
+						props: {onPress: () => {}, text1: 'Error', text2: "Debes tomar una foto."
+					}
+				});
+			}
+		} else { 
+			compress(result.uri);
+			setImage(result.uri);
+		}
+		}
+	}
 
-  function handleAnswerOptionClick (backAns,qid,frontAns=null,)
-  { setLoading(true);
-    if (backAns!=null&&(backAns.length>0||backAns>0))
-    { formData.push({qid:qid,aid:backAns});
-      // if (res) 
-      //   setScore(score + 1);
-      if (prevAns)
-      { navigation.navigate(
-        { name:'task',
-          params: 
-          { tid:tid,
-            backAnsFormat:{qid:qid,aid:backAns},
-            frontAnsFormat:frontAns ? frontAns:backAns,
-            update:true
-          },
-          merge: true
-        });
-      }
-      else
-      { AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
-        { navigation.navigate(
-          { name:'task',
-            params: 
-            { completed:completed+1,
-              tid:tid,
-              backAnsFormat:{qid:qid,aid:backAns},
-              frontAnsFormat:frontAns ? frontAns:backAns
-            },
-            merge: true
-          });
-        });
-      }
-      setLoading(false);
-    }
-    else
-    { Toast.show(
-      { type: 'error',
-        props: 
-        { onPress: () => {}, text1: 'Error', text2: "El campo no puede estar vacío."
-        }
-      });
-    }
-  }
+	const handleAnswerOptionClick = (backAns,qid,frontAns=null,) => { 
+		setLoading(true);
+		if (backAns!=null&&(backAns.length>0||backAns>0))
+		{ formData.push({qid:qid,aid:backAns});
+		// if (res) 
+		//   setScore(score + 1);
+		if (prevAns)
+		{ navigation.navigate(
+			{ name:'task',
+			params: 
+			{ tid:tid,
+				backAnsFormat:{qid:qid,aid:backAns},
+				frontAnsFormat:frontAns ? frontAns:backAns,
+				update:true
+			},
+			merge: true
+			});
+		}
+		else
+		{ AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
+			{ navigation.navigate(
+			{ name:'task',
+				params: 
+				{ completed:completed+1,
+				tid:tid,
+				backAnsFormat:{qid:qid,aid:backAns},
+				frontAnsFormat:frontAns ? frontAns:backAns
+				},
+				merge: true
+			});
+			});
+		}
+		setLoading(false);
+		}
+		else
+		{ Toast.show(
+		{ type: 'error',
+			props: 
+			{ onPress: () => {}, text1: 'Error', text2: "El campo no puede estar vacío."
+			}
+		});
+		}
+	}
 
   const handleConfirm = (event, selectedDate) =>
   { if(Platform.OS === 'ios')
@@ -288,191 +292,220 @@ export default function QuizTaskRun (props) {
     handleAnswerOptionClick(altId,questions.qid,checked);
   }
 
-  return(
-    <>
-      {questions.aty == 1 ?
-        ( <View style={styles.activityParentView}>
-            <Text style={styles.title}>{questions.tiq}</Text>
-            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-            <TextInput
-              placeholder="Texto aquí"
-              style={styles.inputForm}
-              onChange={(e) => onChange(e)}
-              maxLength={128}
-              value={input}
-            />
-            <Button
-              containerStyle={styles.btnContainer}
-              buttonStyle={styles.btn} title="Siguiente"
-              disabled={disabledContinue}
-              onPress={() => handleAnswerOptionClick(input,questions.qid)}
-            />
-          </View>
-        ):questions.aty == 2 ?
-        ( <ScrollView>
-            <Text style={styles.title}>{questions.tiq}</Text>
-            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-            { questions.alt.map((answerOption) =>
-              { return <CheckBox
-                  title={answerOption.txt}
-                  checked={checked[answerOption.aid-1]}
-                  onPress={() => updateCheck(answerOption.aid,0)}
-                  key={answerOption.aid}
-                />
-              }
-            )}
-            <View style={styles.searchSection}>
-              <Button
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                disabled={disabledContinue}
-                title='Siguiente'
-                onPress={()=>finalMultiChoice()}
-              />
-            </View>
-          </ScrollView>
-        ):questions.aty == 3 ?
-        ( <ScrollView>
-            <Text style={styles.title}>{questions.tiq}</Text>
-            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-            { questions.alt.map((answerOption) =>
-              { return <CheckBox
-                  title={answerOption.txt}
-                  checked={checked[answerOption.aid-1]}
-                  onPress={() => updateCheck(answerOption.aid,1)}
-                  key={answerOption.aid}
-                />
-              }
-            )}
-            <View style={styles.searchSection}>
-              <Button
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                title="Siguiente"
-                disabled={disabledContinue}
-                onPress={()=>finalMultiChoice()}
-              />
-            </View>
-          </ScrollView>
-        ):questions.aty == 4 ?
-        ( <View>
-            <Text style={styles.title}>{questions.tiq}</Text>
-            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-            <AirbnbRating
-              count={7}
-              reviews={["1", "2", "3", "4", "5", "6", "7"]}
-              defaultRating={stars}
-              size={30}
-              onFinishRating={ratingFinish}
-            />
-            <View style={styles.searchSection}>
-              <Button 
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                title="Siguiente"
-                disabled={disabledContinue}
-                onPress={() => handleAnswerOptionClick(stars,questions.qid)}
-              />
-            </View>
-          </View>  
-        ):questions.aty == 5 || questions.aty == 7 ?
-        ( <View style={styles.activityParentView}>
-            <Text style={styles.title}>{questions.tiq}</Text>
-            <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-            <Button
-              title={ !image ? "Tomar foto" : "Cambiar Foto"}
-              containerStyle={styles.picContainerBtn}
-              buttonStyle={ !image ? styles.picBtn : styles.checkBtn}
-              onPress={()=>upload()}
-            />
-            <Image
-              source={image ? {uri:image} : noImage}
-              resizeMode="contain"
-              style={styles.logo}
-            />
-            { loading ? 
-              ( <View style={styles.loaderTask}>
-                  <ActivityIndicator  size="large" color="#0000ff"/>
-                  <Text>Subiendo imagen...</Text>
-                </View>
-              ):
-              ( <Button
-                  containerStyle={styles.btnContainer}
-                  buttonStyle={styles.btn}
-                  title="Siguiente"
-                  disabled={disabledContinue}
-                  onPress={() => handleAnswerOptionClickPic(questions.qid)}
-                />
-              )
-            }
-          </View>
-        ):questions.aty == 6 &&
-        ( Platform.OS === 'ios' ?
-          ( <View style={styles.IosDateActivityParentView}>
-              <Text style={styles.title}>{questions.tiq}</Text>
-              <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={date}
-                is24Hour={true}
-                mode='datetime'
-                onChange={handleConfirm}
-              />
-              <View style={{ alignItems: 'center',
-                             justifyContent: 'center'}}>
-                <Button 
-                  containerStyle={styles.btnContainer}
-                  buttonStyle={styles.btn}
-                  title="Siguiente"
-                  onPress={selectedDate == null ?
-                      () => handleAnswerOptionClick(moment(date).format('YYMMDDHHmm'),questions.qid):
-                      () => handleAnswerOptionClick(selectedDate,questions.qid)                        
-                    }
-                />
-              </View>
-            </View>
-          ):
-          ( <View style={styles.AndroidDateActivityParentView}>
-              <Text style={styles.title}>{questions.tiq}</Text>
-              <Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-              <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
-                    onPress={showDatePicker} title="Seleccionar fecha"/>
-              <Button containerStyle={styles.btnContainerDate} buttonStyle={styles.btnDate}
-                    onPress={showTimePicker} title="Seleccionar hora"/>
-              { show && ( 
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={true}
-                  display="default"
-                  onChange={handleConfirm}
-                />)
-              }
-              <Text style={styles.textDate}>Fecha: {displayDate}</Text>
-              <Text style={styles.textDate}>Hora:  {displayTime}</Text>
-              <Button 
-                containerStyle={styles.btnContainer}
-                buttonStyle={styles.btn}
-                title="Siguiente"
-                disabled={displayDate!= null && displayTime != null ? false:true}
-                onPress={() => handleAnswerOptionClick(selectedDate+selectedTime,questions.qid)}
-              />
-            </View>
-          )
-        )
-      }
-    </>
-  );
+  	switch (questions.aty) {
+		case 1:
+			return (
+				<ScrollView>
+					<View style={styles.activityParentView}>
+						<Text style={styles.title}>{questions.tiq}</Text>
+						<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+						<TextInput
+							placeholder="Texto aquí"
+							style={styles.inputForm}
+							onChange={(e) => onChange(e)}
+							maxLength={128}
+							value={input}
+						/>
+						<Button
+							containerStyle={styles.btnContainer}
+							buttonStyle={styles.btn} title="Siguiente"
+							disabled={disabledContinue}
+							onPress={() => handleAnswerOptionClick(input,questions.qid)}
+						/>
+					</View>
+				</ScrollView>
+			)
+		
+		case 2: 
+			return (
+				<ScrollView>
+					<Text style={styles.title}>{questions.tiq}</Text>
+					<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+					{questions.alt.map((answerOption) => (
+						<CheckBox
+							title={answerOption.txt}
+							checked={checked[answerOption.aid-1]}
+							onPress={() => updateCheck(answerOption.aid,0)}
+							key={answerOption.aid}
+						/>
+					))}
+					<View style={styles.searchSection}>
+					<Button
+						containerStyle={styles.btnContainer}
+						buttonStyle={styles.btn}
+						disabled={disabledContinue}
+						title='Siguiente'
+						onPress={()=>finalMultiChoice()}
+					/>
+					</View>
+			</ScrollView>
+			)
+		case 3:
+			return (
+				<ScrollView>
+					<Text style={styles.title}>{questions.tiq}</Text>
+					<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+					{ questions.alt.map((answerOption) =>
+					{ return <CheckBox
+						title={answerOption.txt}
+						checked={checked[answerOption.aid-1]}
+						onPress={() => updateCheck(answerOption.aid,1)}
+						key={answerOption.aid}
+						/>
+					}
+					)}
+					<View style={styles.searchSection}>
+						<Button
+							containerStyle={styles.btnContainer}
+							buttonStyle={styles.btn}
+							title="Siguiente"
+							disabled={disabledContinue}
+							onPress={()=>finalMultiChoice()}
+						/>
+					</View>
+				</ScrollView>
+			)
+		case 4:
+			return (
+				<ScrollView>
+					<Text style={styles.title}>{questions.tiq}</Text>
+					<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+					<AirbnbRating
+						count={7}
+						reviews={["1", "2", "3", "4", "5", "6", "7"]}
+						defaultRating={stars}
+						size={30}
+						onFinishRating={ratingFinish}
+					/>
+					<View style={styles.searchSection}>
+						<Button 
+							containerStyle={styles.btnContainer}
+							buttonStyle={styles.btn}
+							title="Siguiente"
+							disabled={disabledContinue}
+							onPress={() => handleAnswerOptionClick(stars,questions.qid)}
+						/>
+					</View>
+				</ScrollView>  
+			)
+		case 5:
+		case 7:
+			return (
+				<ScrollView>
+					<View style={styles.activityParentView}>
+						<Text style={styles.title}>{questions.tiq}</Text>
+						<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+						<Button
+							title={ !image ? "Tomar foto" : "Cambiar Foto"}
+							containerStyle={styles.picContainerBtn}
+							buttonStyle={ !image ? styles.picBtn : styles.checkBtn}
+							onPress={()=>uploadPhoto()}
+						/>
+						<Image
+							source={image ? {uri:image} : noImage}
+							resizeMode="contain"
+							style={styles.logo}
+						/>
+						{ loading ? ( 
+							<View style={styles.loaderTask}>
+								<ActivityIndicator  size="large" color="#0000ff"/>
+								<Text>Subiendo imagen...</Text>
+							</View>
+						):( 
+							<Button
+								containerStyle={styles.btnContainer}
+								buttonStyle={styles.btn}
+								title="Siguiente"
+								disabled={disabledContinue}
+								onPress={() => handleAnswerOptionClickPic(questions.qid)}
+							/>
+						)
+						}
+					</View>
+				</ScrollView>
+			)
+		case 6:
+			if ( Platform.OS === 'ios') {
+				return (
+					<View style={styles.IosDateActivityParentView}>
+						<Text style={styles.title}>{questions.tiq}</Text>
+						<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+						<DateTimePicker
+							testID="dateTimePicker"
+							value={date}
+							is24Hour={true}
+							mode='datetime'
+							onChange={handleConfirm}
+						/>
+						<View style={styles.aux}>
+							<Button 
+							containerStyle={styles.btnContainer}
+							buttonStyle={styles.btn}
+							title="Siguiente"
+							onPress={selectedDate == null ?
+								() => handleAnswerOptionClick(moment(date).format('YYMMDDHHmm'),questions.qid):
+								() => handleAnswerOptionClick(selectedDate,questions.qid)                        
+								}
+							/>
+						</View>
+					</View>
+				)
+			}
+			else {
+				return (
+					<View style={styles.AndroidDateActivityParentView}>
+						<Text style={styles.title}>{questions.tiq}</Text>
+						<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+						<Button 
+							containerStyle={styles.btnContainerDate} 
+							buttonStyle={styles.btnDate}
+							onPress={showDatePicker} 
+							title="Seleccionar fecha"
+						/>
+						<Button 
+							containerStyle={styles.btnContainerDate} 
+							buttonStyle={styles.btnDate}
+							onPress={showTimePicker} 
+							title="Seleccionar hora"
+						/>
+						{ show && ( 
+							<DateTimePicker
+							testID="dateTimePicker"
+							value={date}
+							mode={mode}
+							is24Hour={true}
+							display="default"
+							onChange={handleConfirm}
+							/>)
+						}
+						<Text style={styles.textDate}>Fecha: {displayDate}</Text>
+						<Text style={styles.textDate}>Hora:  {displayTime}</Text>
+						<Button 
+							containerStyle={styles.btnContainer}
+							buttonStyle={styles.btn}
+							title="Siguiente"
+							disabled={displayDate!= null && displayTime != null ? false:true}
+							onPress={() => handleAnswerOptionClick(selectedDate+selectedTime,questions.qid)}
+						/>
+					</View>
+				)
+			}
+		default:
+			return <View></View>
+	}
 }
 
-const styles = StyleSheet.create(
-{ activityParentView:
-  { flexDirection:'column',
+const styles = StyleSheet.create({ 
+	activityParentView:
+	{ flexDirection:'column',
     alignItems: 'center',
     marginRight: 30,
     marginLeft: 30
   },
+	aux: {
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
   title:
   { marginTop:40,
     marginHorizontal:20,

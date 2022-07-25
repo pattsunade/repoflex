@@ -13,6 +13,7 @@ function TaskBody ({location, date, amount, detail, time, id}) {
 		<View style={styles.taskTextView}>
             <View style={styles.topContent}>
             	<Text style={styles.taskElementMiniText}>Local</Text>
+            	{/* <Text style={styles.textId}>id: {id}</Text> */}
 			</View>
 
 			<View style={styles.taskIconTextContainer}>

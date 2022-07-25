@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import taska from 'api/transacciones/taska';
 import abort from 'api/transacciones/abort';
+import FinishTaskMessage from './FinishTaskMessage';
 
 const { width, height } = Dimensions.get('window');
 const isArray = (a) => {
@@ -15,12 +16,11 @@ const isArray = (a) => {
 };
 
 export default function TaskQuestion (props) {
-	console.log(props)
 	const {questions, tid, completed, backAnsFormat, frontAnsFormat, update} = props;
 	const navigation = useNavigation();
 	const [formData, setFormData] = useState([]);
 	const [frontData, setFrontData] = useState([]);
-	const per = Math.round(completed*100/questions.length);
+	const percentageProgress = React.useMemo(() => Math.round(completed*100/questions.length), [completed, questions.length])
 	const compArr = questions.slice(0,completed);
 	const [loading, setLoading] = useState(false);
 	const [loadingText, setLoadingText] = useState('Enviando tarea...');
@@ -191,34 +191,25 @@ export default function TaskQuestion (props) {
 		<ScrollView>
 			<View style={styles.viewContainer}>
 				<Text style={styles.title}>Progreso de la tarea</Text>
-				<Progress.Bar progress={per/100} width={300} borderRadius={20} backgroundColor='#fff' height={25} color={'#6B35E2'} />
-				<Text>{per} %</Text>
+				<Progress.Bar progress={percentageProgress/100} width={300} borderRadius={100} backgroundColor='#fff' height={25} color={'#6B35E2'} />
+				<Text>{percentageProgress} %</Text>
 			</View>
-			{ per==100 &&
-				( <View style={styles.viewContainer2}>
-					<Text style={styles.subtitle}> ¡Ya finalizaste todas las actividades!</Text>
-					<Button
-					title='Finalizar tarea'
-					containerStyle={styles.btnContainer}
-					buttonStyle={styles.btnFinish}
-					onPress={endTask}
-					/>
-				</View>
-				)
-			}
+			{ percentageProgress==100 && <FinishTaskMessage onEndTask={endTask}/>}
+			
 			<View style={styles.viewContainer2}>
 				{ completed<questions.length &&
 				(<>
 					<Text style={styles.subtitle}> Actividad por desarrollar</Text>
-					<TouchableOpacity style={styles.customBtn} onPress={() => 
-					navigation.navigate('quiztask',{questions:questions[completed],tid:tid,completed:completed})
+					<TouchableOpacity 
+						style={styles.customBtn} 
+						onPress={() => navigation.navigate('quiztask',{questions:questions[completed],tid:tid,completed:completed})
 					}>
 					<View style={styles.container}>
 						<Icon
-						type='material-community'
-						name='arrow-right-bold-circle'
-						iconStyle={styles.iconLeft1}
-						size={35}
+							type='material-community'
+							name='arrow-right-bold-circle'
+							iconStyle={styles.iconLeft1}
+							size={35}
 						/>
 						<View style={styles.activityText}>
 						<Text style={styles.customBtnText}>{questions[completed].tiq}</Text>
@@ -332,10 +323,10 @@ const styles = StyleSheet.create({
     paddingTop:15,
     fontSize:20,
   },
-  btnContainer:
-  { marginTop: 1,
-    width: '80%',
-    marginLeft: 40
+  btnContainer: { 
+		marginTop: 1,
+		width: '80%',
+		marginLeft: 40
   },
   btnFinish:{
     marginTop:20,

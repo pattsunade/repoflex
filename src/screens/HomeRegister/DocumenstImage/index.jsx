@@ -24,7 +24,7 @@ const activities =  [
     }
 ];
 export default function DocumentImage({route}) {
-    const {mode} = route.params;
+    const { mode } = route.params;
     const navigation = useNavigation();
     const [image, setImage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -47,15 +47,15 @@ export default function DocumentImage({route}) {
         })
     }
 
-  const compress = async (uri) =>
-  { const manipResult = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize: { width:640 , height:480  } }],
-      { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
-    );
-    setImage(manipResult.base64);
-    onChange(manipResult.base64,"file");
-  };
+    const compress = async (uri) => { 
+        const manipResult = await ImageManipulator.manipulateAsync(
+            uri,
+            [{ resize: { width:640 , height:480  } }],
+            { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
+        );
+        setImage(manipResult.base64);
+        onChange(manipResult.base64,"file");
+    };
 
 	const uploadSelfie = async () => { 
 		const resultPermissions = await ImagePicker.requestCameraPermissionsAsync();

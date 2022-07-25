@@ -15,6 +15,7 @@ const isArray = (a) => {
 };
 
 export default function TaskQuestion (props) {
+	console.log(props)
 	const {questions, tid, completed, backAnsFormat, frontAnsFormat, update} = props;
 	const navigation = useNavigation();
 	const [formData, setFormData] = useState([]);

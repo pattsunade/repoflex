@@ -14,6 +14,7 @@ import taskd from 'api/transacciones/taskd';
 
 export default function Task ({route}) {
     const {quest,tid,backAnsFormat,completed,update,frontAnsFormat} = route.params;
+	console.log(tid)
     const navigation = useNavigation();
     const [error, setError] = useState(false);
     const [questions, setQuestions] = useState(quest);
@@ -23,7 +24,7 @@ export default function Task ({route}) {
 
     React.useEffect(() => { 
         if(questions===undefined || questions === null) { 
-        taskd().then(async (response) => { 
+        taskd({tid: tid}).then(async (response) => { 
             if (response.ans.stx!='ok') { 
                 await AsyncStorage.clear();
                 Toast.show({ 

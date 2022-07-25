@@ -14,6 +14,7 @@ function LocationPermissionsScreen ({
     const [isLoading, setIsLoading] = React.useState(true);
     const enableLocation = async() => {
         const { status } = await Location.requestForegroundPermissionsAsync();
+        console.log("status >", status)
         if (status === 'granted') {
             onPermissionGranted();
         }

@@ -111,17 +111,24 @@ function TaskDetail({route,navigation}) {
             setLoading(false);
         });
     }
-    const startFun = () => { 
+    const startTicket = () => {
         navigation.reset({ 
             index: 0,
             routes: [{ 
                 name: 'task',
-                params: {tid:tid,completed:0,backAnsFormat:null,quest:null,update:null,frontAnsFormat:null}
+                params: { 
+                    tid:tid,
+                    completed:0,
+                    backAnsFormat:null,
+                    quest:null,
+                    update:null,
+                    frontAnsFormat:null
+                }
             }],
         })
     }
 
-    const abortFun = () => { 
+    const abortTicket = () => { 
         setLoadingText('Asignando tarea...')
         setLoading(true);
         taskAbort({tid: tid })
@@ -188,7 +195,7 @@ function TaskDetail({route,navigation}) {
                             title="Abortar"
                             containerStyle={styles.btnContainer}
                             buttonStyle={styles.btn}
-                            onPress={() =>abortFun()}
+                            onPress={() =>abortTicket()}
                         />
                     )}
                     { start && (
@@ -196,7 +203,7 @@ function TaskDetail({route,navigation}) {
                             title='Iniciar'
                             containerStyle={styles.btnContainer}
                             buttonStyle={styles.btn}
-                            onPress={() => startFun()}
+                            onPress={() => startTicket()}
                         />
                     )}
                     </>

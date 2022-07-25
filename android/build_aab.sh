@@ -1,0 +1,1 @@
+sudo ./gradlew :app:bundleRelease

@@ -5,7 +5,6 @@ import LocationPermissionsScreen from "components/General/Permissions/LocationPe
 import Home from "screens/Home/HomeApp/Home";
 
 function HomeApp() {
-    // const [isLoading, setIsLoading] = React.useState(true); // set loading state
 
     React.useEffect(() => {(
         async () => {
@@ -41,17 +40,17 @@ function HomeApp() {
 export default HomeApp
 
 const styles = StyleSheet.create({
-  logo: {
-    width: "100%",
-    height: 150,
-    marginTop: 20
-  },
-  screen: {
-    marginHorizontal: 20
-  },
-  loaderTask: {
-    marginTop:100,
-    marginBottom: 10,
-    alignItems: "center"
-  }
+	logo: {
+		width: "100%",
+		height: 150,
+		marginTop: 20
+	},
+	screen: {
+		marginHorizontal: 20
+	},
+	loaderTask: {
+		marginTop:100,
+		marginBottom: 10,
+		alignItems: "center"
+	}
 });

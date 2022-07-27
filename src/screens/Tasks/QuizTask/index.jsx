@@ -7,7 +7,7 @@ import QuizTaskRun from "./QuizTaskRun";
 
 export default function QuizTask ({route,navigation}) {
   const {questions,tid,completed,prevAns} = route.params;
-  
+  const navigations = useNavigation();
   return(
     <KeyboardAwareScrollView enableOnAndroid={true}
       enableAutomaticScroll={(Platform.OS === 'ios')}

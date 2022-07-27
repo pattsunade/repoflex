@@ -136,8 +136,7 @@ export default function TaskQuestion (props) {
 			});
 		});
 	}
-
-
+	
 	useEffect(async () =>{ 
 		console.log("backAnsFormat->",backAnsFormat);
 		console.log("frontAnsFormat->",frontAnsFormat);

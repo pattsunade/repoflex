@@ -12,8 +12,8 @@ import sndfi from 'api/transacciones/sndfi';
 import { useNavigation } from '@react-navigation/native';
 
 
-function DocumentFront({mode}) {
-
+function DocumentCertificate({mode}) {
+    console.log(mode)
     const navigation = useNavigation();
     const [image, setImage] = React.useState(undefined);
     const [isSubmitingImage, setIsSubmitingImage] = React.useState(false);
@@ -32,7 +32,7 @@ function DocumentFront({mode}) {
             return;
         }
 
-        const result = await ImagePicker.launchCameraAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             quality: 1,
             presentationStyle: 0,
@@ -61,9 +61,10 @@ function DocumentFront({mode}) {
         })
         .then(response => {
             if (response.ans.stx === 'ok') {
-                navigation.replace('documentimage', {
-                    mode: mode +1,
-                }) 
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'homeregister' }]
+                })
             }
         })
         .catch(err => {
@@ -82,22 +83,23 @@ function DocumentFront({mode}) {
     }
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Cédula de identidad frontal</Text>
-            <Text style={styles.description}>Verificaremos que la fotografía coincida con la parte frontal de la cédula de identidad.</Text>
+            <Text style={styles.title}>Certificado de Antecedentes</Text>
+            <Text style={styles.description}>Pide tu certificado en el Registro Civil en línea, toma un pantallazo y subelo aquí.</Text>
             <View style={styles.imageContainer}>
                 {image === undefined? 
-                    <ImagePlaceholder /> : <Image source={image || noImage} style={styles.imageStyle} />}
-                {/* <Image source={image || noImage} style={styles.image} /> */}
+                    <ImagePlaceholder /> : 
+                    <Image source={image || noImage} style={styles.imageStyle} />
+                }
             </View>
 
             <TouchableOpacity 
                 style={styles.touchButtonStyle}
                 onPress={openCamera}
             >
-                <Text style={styles.buttonUploadText}>{image? 'Cambiar foto': 'Subir foto'   }</Text>
+                <Text style={styles.buttonUploadText}>{image? 'Cambiar archivo': 'Subir archivo'   }</Text>
                 <Icon
                     type="material-community"
-                    name='camera-plus'
+                    name='image-plus'
                     iconStyle={styles.buttonIcon}
                 />
             </TouchableOpacity>
@@ -212,4 +214,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default DocumentFront;
+export default DocumentCertificate;

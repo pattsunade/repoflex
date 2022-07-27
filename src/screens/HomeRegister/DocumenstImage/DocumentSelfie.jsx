@@ -12,7 +12,7 @@ import sndfi from 'api/transacciones/sndfi';
 import { useNavigation } from '@react-navigation/native';
 
 
-function DocumentFront({mode}) {
+function DocumentSelfie({mode}) {
 
     const navigation = useNavigation();
     const [image, setImage] = React.useState(undefined);
@@ -82,8 +82,8 @@ function DocumentFront({mode}) {
     }
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Cédula de identidad frontal</Text>
-            <Text style={styles.description}>Verificaremos que la fotografía coincida con la parte frontal de la cédula de identidad.</Text>
+            <Text style={styles.title}>Fotografía frontal</Text>
+            <Text style={styles.description}>Debe ser una foto clara para que podamos identificarte.</Text>
             <View style={styles.imageContainer}>
                 {image === undefined? 
                     <ImagePlaceholder /> : <Image source={image || noImage} style={styles.imageStyle} />}
@@ -212,4 +212,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default DocumentFront;
+export default DocumentSelfie;

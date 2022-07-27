@@ -16,10 +16,7 @@ import taskp from "api/transacciones/taskp";
 
 export default function QuizTaskRun (props) {
 	const {questions,tid,completed,prevAns} = props;
-	// console.log("prevAns->",prevAns);
 	const navigation = useNavigation();
-	// const [showScore, setShowScore] = useState(false);
-	// const [score, setScore] = useState(0);
 	const [input, setInput] = useState(prevAns);
 	const [checked, setChecked] = useState(prevAns ? prevAns:[]);
 	const [stars, setStars] = useState(prevAns ? prevAns:0);
@@ -46,14 +43,6 @@ export default function QuizTaskRun (props) {
 	});
 	const [loading, setLoading] = useState(false);
 
-	const formatoPic = (objeto,qidd) => { 
-		return {
-			tid: tid,
-			qid: qidd,
-			file: objeto.file
-		};
-	}
-
 	const onChange = (e) => { 
 		setInput(e.nativeEvent.text);
 		setDisabledContinue(false);
@@ -61,25 +50,27 @@ export default function QuizTaskRun (props) {
 
 	const handleAnswerOptionClickPic = (qidd) => { 
 		setLoading(true);
-		if(formDataPic.file.length>0)
-		{ setQid(qidd)
+		if(formDataPic.file.length>0) { 
+			setQid(qidd)
 		// if (qid) {
 		//   setScore(score + 1);
 		// }
-		sendimage(qidd).then(() =>
-		{ AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
-			{ if (prevAns)
-			{ navigation.navigate(
-				{ name:'task',
-				params:
-				{ tid:tid,
-					backAnsFormat:{qid:qidd,aid:'pic'},
-					frontAnsFormat:image,
-					update:true
-				},
-				merge: true
-				});
-			}
+			sendimage(qidd)
+			.then(() => {
+				AsyncStorage.setItem('@comp',(completed+1).toString())
+				.then(()=> { 
+					if (prevAns) { 
+						navigation.navigate({ 
+							name:'task',
+							params: { 
+								tid:tid,
+								backAnsFormat:{qid:qidd,aid:'pic'},
+								frontAnsFormat:image,
+								update:true
+							},
+							merge: true
+						});
+					}
 			else
 			{ navigation.navigate(
 				{ name:'task',
@@ -92,19 +83,20 @@ export default function QuizTaskRun (props) {
 				merge: true
 				});
 			}
+				});
+			})
+			.catch((ans) => { 
+					console.log(ans);
 			});
-		}).catch((ans) =>
-			{ console.log(ans);
-			}
-		);
+
 		}
-		else
-		{ Toast.show(
-		{ type: 'error',
-			props: 
-			{ onPress: () => {}, text1: 'Error', text2: "Debes subir una foto."
-			}
-		});
+		else{ 
+			Toast.show({ 
+				type: 'error',
+				props: { 
+					onPress: () => {}, text1: 'Error', text2: "Debes subir una foto."
+				}
+			});
 		}
 	}
 
@@ -121,11 +113,11 @@ export default function QuizTaskRun (props) {
 		})
 	}
 
-  const compress = async (uri) => 
-  { const manipResult = await ImageManipulator.manipulateAsync
-    ( uri,
-      [{ resize: { width:640 , height:480  } }],
-      { compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
+  const compress = async (uri) => { 
+	const manipResult = await ImageManipulator.manipulateAsync( 
+		uri,
+		[{ resize: { width:640 , height:480  } }],
+		{ compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
     );
     // setImage(manipResult.base64);
     onChangePic(manipResult.base64,"file");
@@ -160,7 +152,7 @@ export default function QuizTaskRun (props) {
 		}
 		}
 	}
-
+	
 	const handleAnswerOptionClick = (backAns,qid,frontAns=null,) => { 
 		setLoading(true);
 		if (backAns!=null&&(backAns.length>0||backAns>0))
@@ -179,18 +171,18 @@ export default function QuizTaskRun (props) {
 			merge: true
 			});
 		}
-		else
-		{ AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=>
-			{ navigation.navigate(
-			{ name:'task',
-				params: 
-				{ completed:completed+1,
-				tid:tid,
-				backAnsFormat:{qid:qid,aid:backAns},
-				frontAnsFormat:frontAns ? frontAns:backAns
-				},
-				merge: true
-			});
+		else { 
+			AsyncStorage.setItem('@comp',(completed+1).toString()).then(()=> { 
+				navigation.navigate({ 
+					name:'task',
+					params: { 
+						completed:completed+1,
+						tid:tid,
+						backAnsFormat:{qid:qid,aid:backAns},
+						frontAnsFormat:frontAns ? frontAns:backAns
+					},
+					merge: true
+				});
 			});
 		}
 		setLoading(false);
@@ -279,19 +271,24 @@ export default function QuizTaskRun (props) {
     setDisabledContinue(button);
   }
 
-  function finalMultiChoice()
-  { let altId="";
-    let len=checked.length;
-    for (let i=1;i<=len;i++)
-    { if(checked[i-1])
-        altId = altId+i.toString()+"-";
-      if(i==len)
-        altId = altId.slice(0,-1);
-    }
-    // console.log(altId);
-    handleAnswerOptionClick(altId,questions.qid,checked);
-  }
+	function finalMultiChoice() { 
+		let altId="";
+		let len=checked.length;
+		for (let i=1;i<=len;i++) { 
+			if(checked[i-1])
+				altId = altId+i.toString()+"-";
+			if(i==len)
+				altId = altId.slice(0,-1);
+		}
+		// console.log(altId);
+		handleAnswerOptionClick(altId,questions.qid,checked);
+	}
 
+
+	const handleNext = () => {
+		handleAnswerOptionClick('a', questions.qid)
+		console.log(formData);
+	}
   	switch (questions.aty) {
 		case 1:
 			return (
@@ -326,6 +323,8 @@ export default function QuizTaskRun (props) {
 							title={answerOption.txt}
 							checked={checked[answerOption.aid-1]}
 							onPress={() => updateCheck(answerOption.aid,0)}
+							checkedIcon='dot-circle-o'
+							uncheckedIcon='circle-o'
 							key={answerOption.aid}
 						/>
 					))}
@@ -338,7 +337,7 @@ export default function QuizTaskRun (props) {
 						onPress={()=>finalMultiChoice()}
 					/>
 					</View>
-			</ScrollView>
+				</ScrollView>
 			)
 		case 3:
 			return (
@@ -352,6 +351,7 @@ export default function QuizTaskRun (props) {
 						onPress={() => updateCheck(answerOption.aid,1)}
 						key={answerOption.aid}
 						/>
+
 					}
 					)}
 					<View style={styles.searchSection}>
@@ -389,7 +389,6 @@ export default function QuizTaskRun (props) {
 				</ScrollView>  
 			)
 		case 5:
-		case 7:
 			return (
 				<ScrollView>
 					<View style={styles.activityParentView}>
@@ -423,7 +422,7 @@ export default function QuizTaskRun (props) {
 						}
 					</View>
 				</ScrollView>
-			)
+			)			
 		case 6:
 			if ( Platform.OS === 'ios') {
 				return (
@@ -439,57 +438,73 @@ export default function QuizTaskRun (props) {
 						/>
 						<View style={styles.aux}>
 							<Button 
-							containerStyle={styles.btnContainer}
-							buttonStyle={styles.btn}
-							title="Siguiente"
-							onPress={selectedDate == null ?
-								() => handleAnswerOptionClick(moment(date).format('YYMMDDHHmm'),questions.qid):
-								() => handleAnswerOptionClick(selectedDate,questions.qid)                        
+								containerStyle={styles.btnContainer}
+								buttonStyle={styles.btn}
+								title="Siguiente"
+								onPress={selectedDate == null ?
+									() => handleAnswerOptionClick(moment(date).format('YYMMDDHHmm'),questions.qid):
+									() => handleAnswerOptionClick(selectedDate,questions.qid)                        
 								}
 							/>
 						</View>
 					</View>
 				)
 			}
-			else {
+	
 				return (
-					<View style={styles.AndroidDateActivityParentView}>
-						<Text style={styles.title}>{questions.tiq}</Text>
-						<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
-						<Button 
-							containerStyle={styles.btnContainerDate} 
-							buttonStyle={styles.btnDate}
-							onPress={showDatePicker} 
-							title="Seleccionar fecha"
-						/>
-						<Button 
-							containerStyle={styles.btnContainerDate} 
-							buttonStyle={styles.btnDate}
-							onPress={showTimePicker} 
-							title="Seleccionar hora"
-						/>
-						{ show && ( 
-							<DateTimePicker
-							testID="dateTimePicker"
-							value={date}
-							mode={mode}
-							is24Hour={true}
-							display="default"
-							onChange={handleConfirm}
-							/>)
-						}
-						<Text style={styles.textDate}>Fecha: {displayDate}</Text>
-						<Text style={styles.textDate}>Hora:  {displayTime}</Text>
+				<View style={styles.AndroidDateActivityParentView}>
+					<Text style={styles.title}>{questions.tiq}</Text>
+					<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+					<Button 
+						containerStyle={styles.btnContainerDate} 
+						buttonStyle={styles.btnDate}
+						onPress={showDatePicker} 
+						title="Seleccionar fecha"
+					/>
+					<Button 
+						containerStyle={styles.btnContainerDate} 
+						buttonStyle={styles.btnDate}
+						onPress={showTimePicker} 
+						title="Seleccionar hora"
+					/>
+					{ show && ( 
+						<DateTimePicker
+						testID="dateTimePicker"
+						value={date}
+						mode={mode}
+						is24Hour={true}
+						display="default"
+						onChange={handleConfirm}
+						/>)
+					}
+					<Text style={styles.textDate}>Fecha: {displayDate}</Text>
+					<Text style={styles.textDate}>Hora:  {displayTime}</Text>
+					<Button 
+						containerStyle={styles.btnContainer}
+						buttonStyle={styles.btn}
+						title="Siguiente"
+						disabled={displayDate!= null && displayTime != null ? false:true}
+						onPress={() => handleAnswerOptionClick(selectedDate+selectedTime,questions.qid)}
+					/>
+				</View>
+				)
+
+		case 7:
+			return (
+				<ScrollView>
+					<Text style={styles.title}>{questions.tiq}</Text>
+					<Text style={styles.text}>Pregunta {prevAns ? completed:completed+1}</Text>
+					<View style={styles.aux}>
 						<Button 
 							containerStyle={styles.btnContainer}
 							buttonStyle={styles.btn}
 							title="Siguiente"
-							disabled={displayDate!= null && displayTime != null ? false:true}
-							onPress={() => handleAnswerOptionClick(selectedDate+selectedTime,questions.qid)}
+							onPress={handleNext}
 						/>
 					</View>
-				)
-			}
+				</ScrollView>
+			)
+		
 		default:
 			return <View></View>
 	}

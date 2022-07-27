@@ -60,7 +60,6 @@ function DocumentReverse({mode}) {
             file: image,
         })
         .then(response => {
-            console.log(response)
             if (response.ans.stx === 'ok') {
                 navigation.replace('documentimage', {
                     mode: mode +1,

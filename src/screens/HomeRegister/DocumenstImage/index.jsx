@@ -9,6 +9,8 @@ import Loading from 'components/Loading';
 import Toast from 'react-native-toast-message';
 import sndfi from "api/transacciones/sndfi";
 import noImage from 'assets/no-image.png'
+import DocumentFront from "./DocumentFront.jsx";
+import DocumentReverse from "./DocumentReverse.jsx";
 const activities =  [
     {tit:'Fotografía frontal',
     des:'Debe ser una foto clara para que podamos identificarte.'
@@ -25,6 +27,7 @@ const activities =  [
 ];
 export default function DocumentImage({route}) {
     const { mode } = route.params;
+    console.log(route.params)
     const navigation = useNavigation();
     const [image, setImage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -73,11 +76,8 @@ export default function DocumentImage({route}) {
 			let result = mode < 4 ? (
 			await ImagePicker.launchCameraAsync({          
 				allowsEditing:true,
-				// aspect: [4, 3],
 				quality: 1,
-				presentationStyle: {
-					
-				}
+				// aspect: [4, 3],
 			})):(await ImagePicker.launchImageLibraryAsync({
 			allowsEditing:true,
 			quality: 1,
@@ -98,79 +98,107 @@ export default function DocumentImage({route}) {
 		}
 	};
 
-  const uploadDocuments = () =>{
-    if(!image){
-      Toast.show(
-      { type: 'error',
-        props: {onPress: () => {}, text1: 'Error', text2: "Debes subir una foto para continuar."
+    const uploadDocuments = () =>{
+        if(!image){
+        Toast.show(
+        { type: 'error',
+            props: {onPress: () => {}, text1: 'Error', text2: "Debes subir una foto para continuar."
+            }
+        });
+        } 
+        else{
+        setLoading(true);
+        sendimage()
+        .then(() => {
+            if (mode < 4) {
+                navigation.replace('documentimage', {
+                    mode: mode +1,
+                }) 
+            }
+            else {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'homeregister' }]
+                })
+            }
+            setLoading(false);
+        });
         }
-      });
-    } 
-    else{
-      setLoading(true);
-      sendimage().then(() => {
-        mode < 4 ? (navigation.replace("documentimage",{mode:mode+1})):
-        (navigation.reset(
-          { index: 0,
-            routes: [
-              { name: 'homeregister',
-              }
-            ],
-          }));
-        setLoading(false);
-      });
-    }
-  };
+    };
 
-  return(
-    <>
-    { loading ? (<Loading text="Subiendo imagen..."/>):
-      ( <ScrollView>
-          <View style={styles.viewContainer}>
-            <Text style={styles.title}>{activities[mode-1].tit}</Text>
-            <Text style={styles.text}>{activities[mode-1].des}</Text>
-            <View style={styles.wrapper}>
-              <View style={styles.container}>
-                <View>
-					<Button
-						title={ !image ? "Toma tu foto aquí" : "Cambiar Foto"}
-						containerStyle={styles.btnContainer}
-						buttonStyle={ !image ? styles.btn : styles.btnCheck}
-						onPress={uploadSelfie}
-					/>
-                </View>
-                <View>
-					<Icon
-						type="material-community"
-						name="information-outline"
-						iconStyle={styles.iconLeft}
-						size={25}
-						onPress={() => setIsVisibleInfoSelfie(true)}
-					/>
-                  <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
-                </View>
-              </View>
-            </View>
-            <Image
-              source={image ? {uri:imageDocumentSelfie} : noImage}
-              resizeMode="contain"
-              style={styles.logo}
-            />
-            <Button
-              title="Siguiente"
-              containerStyle={styles.btnContainerNext}
-              buttonStyle={styles.btnNext}
-              onPress={uploadDocuments}
-            />
-            <View style={styles.viewZolbit}>
-              <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
-            </View>
-          </View>
-        </ScrollView>
-      )
+    if (loading === true) {
+        return <Loading text="Subiendo imagen..."/>
     }
-  </>
-  )
+    switch (mode) {
+        case 1:
+            return (
+                <View>
+                    <Text>
+                        {JSON.stringify(activities[0])}
+                    </Text>
+                </View>
+            )
+        case 2:
+            return <DocumentFront mode={mode} /> 
+        case 3:
+            return <DocumentReverse mode={mode} />
+        case 4:
+            return (
+                <View>
+                    <Text>
+                        {JSON.stringify(activities[3])}
+                    </Text>
+                </View>
+            )
+    
+        default:
+            break;
+    }
+    return(
+        
+        <ScrollView>
+            <View style={styles.viewContainer}>
+                <Text style={styles.title}>{activities[mode-1].tit}</Text>
+                <Text style={styles.text}>{activities[mode-1].des}</Text>
+                <View style={styles.wrapper}>
+                    <View style={styles.container}>
+                        <View>
+                            <Button
+                                title={ !image ? "Toma tu foto aquí" : "Cambiar Foto"}
+                                containerStyle={styles.btnContainer}
+                                buttonStyle={ !image ? styles.btn : styles.btnCheck}
+                                onPress={uploadSelfie}
+                            />
+                        </View>
+                        <View>
+                            <Icon
+                                type="material-community"
+                                name="information-outline"
+                                iconStyle={styles.iconLeft}
+                                size={25}
+                                onPress={() => setIsVisibleInfoSelfie(true)}
+                            />
+                        <InfoSelfie isVisibleInfoSelfie={isVisibleInfoSelfie} setIsVisibleInfoSelfie={setIsVisibleInfoSelfie}/>
+                        </View>
+                    </View>
+                </View>
+                <Image
+                    source={image ? {uri:imageDocumentSelfie} : noImage}
+                    resizeMode="contain"
+                    style={styles.logo}
+                />
+                <Button
+                    title="Siguiente"
+                    containerStyle={styles.btnContainerNext}
+                    buttonStyle={styles.btnNext}
+                    onPress={uploadDocuments}
+                />
+                <View style={styles.viewZolbit}>
+                <Text>Un producto de <Text style = {styles.textZolbit}>Zolbit</Text></Text>    
+                </View>
+            </View>
+        </ScrollView>
+    )
 }
 const styles = StyleSheet.create({
   viewContainer:{

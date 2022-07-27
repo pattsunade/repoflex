@@ -10,6 +10,7 @@ import { Button } from 'react-native-elements';
 import { rutRegexDots, validarRut, formatRut } from 'utils/rut';
 import GoToCreateAccount from './GoToCreateAccount';
 import GoToRecoverPassword from './GoToRecoverPassword';
+import { RF_PURPLE, RF_PURPLE_DISABLED } from 'components/colorsConstants';
 
 function Form() {
     // states variables
@@ -195,12 +196,12 @@ const styles = StyleSheet.create({
         // borderWidth: 1
     },
     buttonStyle: {
-        backgroundColor: "#6B35E2",
+        backgroundColor: RF_PURPLE,
         borderRadius: 50,
         // width: "85%"
     },
     buttonDisabled: {
-        backgroundColor: "#bea6f2",
+        backgroundColor: RF_PURPLE_DISABLED
     },
     buttonDisableTitle: {
         color: "#fff"

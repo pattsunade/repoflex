@@ -54,9 +54,9 @@ const uploadSelfie = async () =>{
     else {
         const result = await ImagePicker.launchCameraAsync({          
             allowsEditing:true,
-            // aspect: [4, 3],
             quality: 1,
             presentationStyle: 0
+            // aspect: [4, 3],
         });
         if (result.cancelled) {
             if (!imageSelfie){

@@ -11,74 +11,67 @@ import { useNavigation } from "@react-navigation/native";
 import usdat from "api/transacciones/usdat";
 
 export default function PersonalData({route}) {
-  const [data,setData] = useState({});
-  const [lists,setLists] = useState({});
-  const [comunas, setComunas] = useState({});
-  const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
-  const usr = route.params.usr;
+	const [data,setData] = useState({});
+	const [lists,setLists] = useState({});
+	const [loading, setLoading] = useState(true);
+	const navigation = useNavigation();
+	const usr = route.params.usr;
+	
+	React.useEffect(() => {
+		(() => {
+			console.log('test')
+		})()
+	},[])
 
-  function formato(usr)
-  { return{
-      usr: usr
-    };
-  }
-
-  function gecomFormat(regi)
-  { return{
-      reg:regi
-    }
-  }
-
-  useEffect(
-    useCallback(() => { 
-      usdat({user: usr})
-      .then(async (response) => { 
-        if(response.ans.stx != 'ok')
-        { Toast.show(
-            { type: 'error',
-              props: 
-              { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
-              }
-            }
-          );
-          navigation.goBack();
-        }
-        else
-        { setData(response.ans);
-          BackEndConnect("POST","regi0").then(async (response2) =>
-          { setLists(response2.ans);
-            setLoading(false);
-            // BackEndConnect("POST","gecom",gecomFormat(response.ans.regi)).then((response3)=>
-            // { setComunas(response3.ans);
-            //   setLoading(false);
-            // })
-          })
-          .catch((ans) => 
-          { console.log(ans);
-            Toast.show(
-              { type: 'error',
-                props: 
-                { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
-                }
-              }
-            );
-            navigation.goback();
-          })
-        }
-      }).catch((ans) => 
-        { console.log(ans);
-          Toast.show(
-            { type: 'error',
-              props: 
-              { onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
-              }
-            }
-          );
-          navigation.goback();
-        });
-    })
-  ,[usr]);
+	useEffect(
+		useCallback(() => { 
+		usdat({user: usr})
+		.then(async (response) => { 
+			if(response.ans.stx != 'ok')
+			{ Toast.show(
+				{ type: 'error',
+				props: 
+				{ onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
+				}
+				}
+			);
+			navigation.goBack();
+			}
+			else
+			{ setData(response.ans);
+			BackEndConnect("POST","regi0").then(async (response2) =>
+			{ setLists(response2.ans);
+				setLoading(false);
+				// BackEndConnect("POST","gecom",gecomFormat(response.ans.regi)).then((response3)=>
+				// { setComunas(response3.ans);
+				//   setLoading(false);
+				// })
+			})
+			.catch((ans) => 
+			{ console.log(ans);
+				Toast.show(
+				{ type: 'error',
+					props: 
+					{ onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
+					}
+				}
+				);
+				navigation.goback();
+			})
+			}
+		}).catch((ans) => 
+			{ console.log(ans);
+			Toast.show(
+				{ type: 'error',
+				props: 
+				{ onPress: () => {}, text1: 'Error', text2: "Error conexión. Porfavor intenta más tarde"
+				}
+				}
+			);
+			navigation.goback();
+			});
+		})
+	,[usr]);
   
 
   return (

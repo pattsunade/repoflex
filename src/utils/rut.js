@@ -1,10 +1,18 @@
 export const rutRegex = /^[0-9]{0,8}[-|‐]{0,1}[0-9kK]{0,1}$/
 export const rutBasicRgex = /^[0-9]{0,8}[0-9kK]{0,1}$/
 export const rutRegexDots = /^[0-9]{0,2}[\.]?[0-9]{0,3}[\.]?[0-9]{0,3}[-|‐]{0,1}[0-9kK]{0,1}$/
+export const documentNumberRegex = /^[aA]?[0-9]{0,11}$/
+export const validNdocRegex = /^[aA]?[0-9]{9,11}$/
+
 
 export function clean (rut) {
     return typeof rut === 'string'
         ? rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase()
+        : ''
+}
+export function cleanNumberDoc (number) {
+    return typeof number === 'string'
+        ? number.replace(/\./g, '').toUpperCase()
         : ''
 }
 

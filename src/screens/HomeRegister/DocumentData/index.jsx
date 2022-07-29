@@ -5,58 +5,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import Loading from "../../../components/Loading";
 import DocumentDataForm from "./DocumentDataForm";
 import Toast from 'react-native-toast-message';
-import regi0 from "api/transacciones/regi0";
 
-export default function DocumentData (props) { 
-	const {navigation} = props;
-	const [loading, setLoading] = useState(true);
-	const [lists, setLists] = useState({})
 
-	useFocusEffect(
-		useCallback(() => { 
-			regi0()
-			.then(async (response) => { 
-				if(response.ans.stx != 'ok'){ 
-					Toast.show({ 
-						type: 'error',
-						props: { 
-							onPress: () => {}, 
-							text1: 'Error', 
-							text2: "Error conexión. Porfavor intenta más tarde"
-						}
-					});
-					navigation.goBack();
-				}
-				setLists(response.ans);
-				setLoading(false);
-			})
-			.catch((ans) => { 
-				console.log(ans);
-				Toast.show({ 
-					type: 'error',
-					props:{ 
-						onPress: () => {}, 
-						text1: 'Error', 
-						text2: "Error conexión. Porfavor intenta más tarde"
-					}
-				});
-				navigation.goback();
-			});
-		}, [])
-	);
-
-	if (loading === true) {
-		return (
-			<View style={styles.viewForm}>
-				<Loading isVisible={loading} text="Cargando..." />
-			</View>
-		)
-	}
+export default function DocumentData () { 
 
 	return (
 		<KeyboardAwareScrollView enableOnAndroid={true} enableAutomaticScroll={(Platform.OS === 'ios')} >
 			<View style={styles.viewForm}>
-				<DocumentDataForm  navigation={navigation} lists={lists}/>
+				<DocumentDataForm/>
 			</View>
 		</KeyboardAwareScrollView>
 	)

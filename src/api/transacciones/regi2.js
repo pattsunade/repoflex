@@ -6,7 +6,7 @@ const regi2 = async({name, snam, ndoc, addr, comu, pais, usr, bank, acty, acnu})
     return await backendRequest('POST','regi2',{
         name : name,
         snam : snam,
-        ndoc : ndoc,
+        ndoc : ndoc.toUpperCase(),
         addr : addr,
         comu : comu,
         pais : pais,

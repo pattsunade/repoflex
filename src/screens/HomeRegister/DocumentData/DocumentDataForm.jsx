@@ -1,457 +1,405 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, View, Text, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-elements';
 import Loading from '../../../components/Loading';
 import { isEmpty, isInteger } from 'lodash';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import Toast from 'react-native-toast-message';
+import regi0 from "api/transacciones/regi0";
 import regi2 from 'api/transacciones/regi2';
 import gecom from 'api/transacciones/gecom';
+import TextFormInput from 'components/General/Inputs/TextFormInput';
+import Select2 from "react-native-select-two"
+import { RF_PURPLE, RF_PURPLE_DISABLED } from 'components/colorsConstants';
+import { cleanNumberDoc, documentNumberRegex, rutRegex, validNdocRegex } from 'utils/rut';
 
-const clean = (ndoc) => { 
-    return ndoc.replace(/^0+|[^0-9aA]+/g, '')
-}
 
-export default function DocumentDataForm(props) {
-    const { lists } = props;
+export default function DocumentDataForm() {
     const [formData, setFormData] = React.useState({
         name: '',
         snam: '',
         ndoc: '',
         addr: '',
-        comu: '',
-        pais : '',
-        bank : '',
-        acty : '',
-        acnu : ''
+        regi: undefined,
+        comu: undefined,
+        pais: undefined,
+        bank: undefined,
+        acty: undefined,
+        acnu: ''
     });
-    const [nameCorrect, setNameCorrect] = useState(2);
-    const [snamCorrect, setSnamCorrect] = useState(2);
-    const [ndocCorrect, setNdocCorrect] = useState(2);
-    const [addrCorrect, setAddrCorrect] = useState(2);
-    const [acnuCorrect, setAcnuCorrect] = useState(2);
-    const [changedNdoc, setChangedNdoc] = useState('');
-    const [loadingText, setLoadingText] = useState('Cargando...');
-    const [loading, setLoading] = useState(false);
-    const [loading2, setLoading2] = useState(false);
-    const [selectValueRegion, setSelectValueRegion] = useState('Region');
-    const [selectValueComuna, setSelectValueComuna] = useState('Comuna');
-    const [selectValueBanks, setSelectValueBanks] = useState('Banco');
-    // const [selectValueCountry, setSelectValueCountry] = useState('País');
-    const [regiCod, setRegiCod] = useState(null);
-    const [districtObj, setDistrictObj] = useState(null);
-    const [selectValueAccountType, setSelectValueAccountType] = useState('Tipo de cuenta');
+    const [isSubmiting, setIsSubmiting] = React.useState(false)
+
+
     const navigation = useNavigation();
-    const [bankList, setBankList] = useState([]);
-    const [regionList, setRegionList] = useState([]);
-    const [acctypeList, setAcctypeList] = useState([]);
     const ref_input2 = useRef();
     const ref_input3 = useRef();
-    const ref_input4 = useRef();
-    const ref_input5 = useRef();
-    const ref_input6 = useRef();
-    const ref_input7 = useRef();
-    const ref_input8 = useRef();
-    const ref_input9 = useRef();
 
-    React.useEffect(()=>{ 
-        if (regiCod !== null) {
-            getcom(regiCod);
+    const [regionOptions, setRegionOptions] = React.useState([]);
+    const [comunaOptions, setComunaOptions] = React.useState([]);
+    const [bankOptions, setBankOptions] = React.useState([]);
+    const [accountOptions, setAccountOptions] = React.useState([]);
+
+    const [isFetchingComunaOptions, setIsFetchingComunaOptions] = React.useState(false);
+
+    // Derived States
+    const isNameValid = React.useMemo(() => {
+        return formData.name === ''? undefined: true 
+    },[formData.name])
+
+    const isSnamValid = React.useMemo(() => {
+        return formData.snam === ''? undefined: true 
+    },[formData.snam])
+
+    const isNdocValid = React.useMemo(() => {
+        const numberClean = cleanNumberDoc(formData.ndoc)
+        return validNdocRegex.test(numberClean)
+    } ,[formData.ndoc])
+
+    const isRegionComunaValid = React.useMemo(() => {
+        return (formData.comu === undefined || formData.regi === undefined)? undefined: true 
+    },[formData.regi, formData.comu])
+
+    const isAddrValid = React.useMemo(() => {
+        return formData.addr === ''? undefined: true 
+    },[formData.addr])
+
+    const isBankAccountValid = React.useMemo(() => {
+        return (formData.bank === undefined || formData.acty === undefined)? undefined: true 
+    },[formData.bank, formData.acty])
+    
+    const isAccountNumberValid = React.useMemo(() => {
+        return formData.acnu === ''? undefined: true 
+    },[formData.acnu])
+    // Effects
+    // Update regions/ bancks/ acount types
+    React.useEffect(() => { 
+        const run = async() => {
+            await regi0()
+            .then( response => {
+                console.log(response)
+                if(response.ans.stx === 'ok'){
+                    setRegionOptions(response.ans.regiones || []);
+                    setBankOptions(response.ans.bancos || []);
+                    setAccountOptions(response.ans.actypes || []);
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally();
         }
-    },[regiCod])
+        console.log('run')
+        run();
+    },[]) 
 
-    React.useEffect(()=> { 
-        setLists();
-    },[lists])
+    
 
-    const setLists = () => { 
-        let bankList = [];
-        let regionList = [];
-        let acctypeList = [];
-        let num;
-        let b=lists.bancos.length;
-        let r=lists.regiones.length;
-        let a=lists.actypes.length;
-        num=r;
-        if(num<b) num=b;
-        if(num<a) num=a;
-        for(let i=0;i<num;i++) { 
-            if(lists.regiones[i]!=null) regionList.push(<Picker.Item label={lists.regiones[i]['name']} value={lists.regiones[i]['cod']} key={lists.regiones[i]['cod']} />)
-            if(lists.bancos[i]!=null) bankList.push(<Picker.Item label={lists.bancos[i]['name']} value={lists.bancos[i]['cod']} key={lists.bancos[i]['cod']} />)
-            if(lists.actypes[i]!=null) acctypeList.push( <Picker.Item label={lists.actypes[i]['name']} value={lists.actypes[i]['cod']} key={lists.actypes[i]['cod']} />)
-        }
-        setBankList(bankList);
-        setRegionList(regionList);
-        setAcctypeList(acctypeList);
+
+    // Form Handlers
+
+    const handleOnChangeName = (value) => setFormData(data => ({
+        ...data, 
+        name:value
+    })) 
+    const handleOnChangeSnam = (value) => setFormData(data => ({
+        ...data, 
+        snam:value
+    })) 
+
+    const handleOnChangeNdoc = (number) => {
+        const isNumerValid = documentNumberRegex.test(number)
+        if (isNumerValid === true) {
+            setFormData(data => ({
+                ...data, 
+                ndoc:number
+            })) 
+        }       
+    }
+
+    const handleOnChangeAddr = (value) => setFormData(data => ({
+        ...data, 
+        addr:value
+    })) 
+
+    const handleOnChangeAcnu = (value) => setFormData(data => ({
+        ...data, 
+        acnu:value
+    })) 
+
+
+    const handleSelectRegion = async(data) => {
+        const regionCode = data[0] || null;
+        
+        setFormData(prevData => ({
+            ...prevData,
+            regi: regionCode,
+            comu: undefined,
+        }));
+        if (regionCode !== null) {
+            setComunaOptions([]);
+            setIsFetchingComunaOptions(true);
+            await gecom({regi: regionCode})
+            .then(response => {
+                if(response.ans.stx === 'ok'){
+                    setComunaOptions(response.ans.com || []);
+                }
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+            .finally(() => {
+                setIsFetchingComunaOptions(false)
+            })
+        } 
+    }
+
+
+    const handleSelectComuna = (data) => {
+        const comunaCode = data[0] || null;
+        setFormData(prevData => ({
+            ...prevData,
+            comu: comunaCode
+        }))     
+    }
+
+    const handleSelectBank = (data) => {
+        const bankCode = data[0] || null;
+        setFormData(prevData => ({
+            ...prevData,
+            bank: bankCode
+        }))       
+    }
+
+    const handleSelectBankAccount = (data) => {
+        const bankAccountCode = data[0] || null;
+        setFormData(prevData => ({
+            ...prevData,
+            acty: bankAccountCode
+        }))       
     }
 
     
-    const onChangeNdoc = (ndoc) => { 
-        if ( ndoc.length > 0) { 
-            ndoc = clean(ndoc);
-            let result = null;
-            if (ndoc[0]!='a' && ndoc[0]!='A' && ndoc.length>3) { 
-                result = ndoc.slice(-3);
-                console.log(result);
-                for (let i=3; i<ndoc.length; i+=3)
-                result = ndoc.slice(-3-i,-i) + '.' + result;
-            }
+
+    
+
+
+    
+
+    
+
+   
+    // On select region chet comunas and clear selected comuna
+    
+
+    const onSubmit = async() => { 
+        setIsSubmiting(true)
+        await regi2({
+            name : formData.name,
+            snam : formData.snam,
+            ndoc : formData.ndoc,
+            addr : formData.addr,
+            comu : formData.comu,
+            pais : 56,
+            usr  : 'null',
+            bank : formData.bank,
+            acty : formData.acty,
+            acnu : formData.acnu
+        })
+        .then((response) => {
+            if (response.ans.stx === 'ok') {
+                navigation.replace('documentimage',{mode:1})
+            } 
             else {
-                result = ndoc;
+                Toast.show({ 
+                    type: 'error',
+                    props: {
+                        onPress: () => {}, 
+                        text1: 'Error', 
+                        text2: ans.ans.msg
+                    }
+                });
             }
-            setChangedNdoc(result);
-            }
-        else {
-            setChangedNdoc('');
-        }
-    }
-
- 
-  
-  function regi2Format(object)
-  { return{
-      name : object.name,
-      snam : object.snam,
-      ndoc : object.ndoc,
-      addr : object.addr,
-      comu : object.comu,
-      pais : 56,
-      usr  : 'null',
-      bank : object.bank,
-      acty : object.acty,
-      acnu : object.acnu
-    };
-  }
-
-  function gecomFormat(regi)
-  { return{
-      reg:regi
-    }
-  }
-
-    const getcom = (cod) => { 
-        setLoadingText('Obteniendo comunas...');
-        setLoading2(true);
-        gecom({ regi: cod })
-        .then((response)=> { 
-            setDistrictObj(response.ans);
-            setLoading2(false);
+            
         })
-        .catch((error) => { 
-            console.log(error);
-            Toast.show({ 
-                type: 'error',
-                props: { 
-                    onPress: () => {}, 
-                    text1: 'Error', 
-                    text2: 'Error conexión. Porfavor intenta más tarde'
-                }
-            });
-            setLoading2(false);
-            navigation.goBack();
-        });
-    }
-
-    const onSubmit = () => { 
-        setLoadingText('Enviando datos');
-        setLoading(true);
-        if ( isEmpty(formData.name) || isEmpty(formData.snam) || isEmpty(formData.ndoc) ||
-            isEmpty(formData.addr) || !isInteger(formData.comu) || !isInteger(formData.bank) ||
-            !isInteger(formData.acty) || isEmpty(formData.acnu))
-        { Toast.show(
-        { type: 'error',
-            props: {onPress: () => {}, text1: 'Error', text2: 'Hay campos vacíos.'
-            }
+        .catch(err => {
+            console.log(err)
         })
-        setLoading(false);
-        }
-        else if (!nameCorrect || !snamCorrect || !ndocCorrect || !addrCorrect || !acnuCorrect) { 
-            Toast.show({ 
-                type: 'error',
-                props: {
-                    onPress: () => {}, 
-                    text1: 'Error', 
-                    text2: 'Revisa los campos erroneos.'
-                }
-            })
-            setLoading(false);
-        }
-        else { 
-            regi2({
-                name : formData.name,
-                snam : formData.snam,
-                ndoc : formData.ndoc,
-                addr : formData.addr,
-                comu : formData.comu,
-                pais : 56,
-                usr  : 'null',
-                bank : formData.bank,
-                acty : formData.acty,
-                acnu : formData.acnu
-            }) 
-            .then((ans) => { 
-                if (ans.ans.stx != 'ok') { 
-                    Toast.show({ 
-                        type: 'error',
-                        props: {
-                            onPress: () => {}, 
-                            text1: 'Error', 
-                            text2: ans.ans.msg
-                        }
-                    });
-                } 
-                else { 
-                    navigation.replace('documentimage',{mode:1});
-                }
-                setLoading(false);
-            })
-            .catch((ans)=> { 
-                console.log(ans);
-                setLoading(false);
-            });
-        }
+        .then(() => {
+            setIsSubmiting(true)
+        })
     };
-
-    const onChange = (e, type) => { 
-        setFormData({ 
-            ...formData, 
-            [type]: e 
-        });
-    if(type=='region')
-    { if(e!=='0')
-        setRegiCod(e);
-      // else
-      //   setDistrictList([]);
-    }
-  }
-
-    const onEnd = (e,type) => { 
-        if(type=='ndoc') { 
-            if(e.nativeEvent.text.length<=20) { 
-                setNdocCorrect(1);
-            }
-            else if(e.nativeEvent.text.length === 0) { 
-                setNdocCorrect(2); 
-            }
-            else { 
-                setNdocCorrect(0);
-            }
-        }
-        else if(type=='name') { 
-            if(e.nativeEvent.text.length<=50) { 
-                setNameCorrect(1);
-            }
-            else if(e.nativeEvent.text.length === 0) { 
-                setNameCorrect(2); 
-            }
-            else { 
-                setNameCorrect(0);
-            }
-        }
-        else if(type=='snam') { 
-            if(e.nativeEvent.text.length<=50) { 
-                setSnamCorrect(1);
-            }
-            else if(e.nativeEvent.text.length==0) { 
-                setSnamCorrect(2); 
-            }
-            else { 
-                setSnamCorrect(0);
-            }
-        }
-        else if(type=='addr')
-        { if(e.nativeEvent.text.length<=128)
-        { setAddrCorrect(1);
-        }
-        else if(e.nativeEvent.text.length==0)
-        { setAddrCorrect(2); 
-        }
-        else
-        { setAddrCorrect(0);
-        }
-        }
-        else if(type=='acnu')
-        { if(e.nativeEvent.text.length<=20)
-        { setAcnuCorrect(1);
-        }
-        else if(e.nativeEvent.text.length==0)
-        { setAcnuCorrect(2); 
-        }
-        else
-        { setAcnuCorrect(0);
-        }
-        }
-        setFormData({ ...formData, [type]: e.nativeEvent.text });
-    }
-
-    const renderDistrictList = () => { 
-        let districtList = [];
-        if(districtObj!=null) { 
-            for(let i=0;i<parseInt(districtObj.knt);i++) { 
-                districtList.push(<Picker.Item label={districtObj.com[i]['nam']} value={districtObj.com[i]['cod']} key={districtObj.com[i]['cod']} />)
-            }
-        }
-        return districtList
-    }
-
-    if (loading === true) {
-        return (
-            <View>
-                <Loading text={loadingText} />
-            </View>
-        )
-    }
     return(
         <ScrollView style={styles.formContainer}>
             <Text style={styles.textDescription}>{' '}Nombres</Text>
             <View style={styles.searchSection}>
-            <TextInput
-                placeholder='John'
-                placeholderTextColor='#AC9DC9'
-                style={styles.inputForm}
-                inputContainerStyle={{borderBottomWidth:0}}
-                onEndEditing={(e) => onEnd(e, 'name')}
-                maxLength={50}
-                returnKeyType='next'
-                onSubmitEditing={() => { ref_input2.current.focus()}}
-                blurOnSubmit={false}
-            />
-            </View>
-            { nameCorrect == 0 ?
-            (<Text style={styles.textDescriptionError}>{' '}Su nombre debe ser menor a 50 caracteres.</Text>):
-            (<></>)
-            }
-            <Text style={styles.textDescription}>{' '}Apellidos</Text>
-            <View style={styles.searchSection}>
-            <TextInput
-                placeholder='Doe'
-                placeholderTextColor='#AC9DC9'
-                style={styles.inputForm}
-                inputContainerStyle={{borderBottomWidth:0}}
-                errorStyle={styles.errorStyle}
-                onEndEditing={(e) => onEnd(e, 'snam')}
-                maxLength={50}
-                returnKeyType='next'
-                onSubmitEditing={() => { ref_input3.current.focus()}}
-                blurOnSubmit={false}
-                ref={ref_input2}
-            />
-            </View>
-            { snamCorrect == 0 ?
-            (<Text style={styles.textDescriptionError}>{' '}Su apellido debe ser menor a 50 caracteres.</Text>):
-            (<></>)
-            }
-            <Text style={styles.textDescription}>{' '}Número de documento</Text>
-            <View style={styles.searchSection}>
-            <TextInput
-                placeholder='123.456.789'
-                placeholderTextColor='#AC9DC9'
-                onChangeText={onChangeNdoc}
-                style={styles.inputForm}
-                onEndEditing={(e) => onEnd(e, 'ndoc')}
-                maxLength={11}
-                value={changedNdoc}
-                secureTextEntry={Platform.OS === 'ios' ? false : true}
-                keyboardType={Platform.OS === 'ios' ? null : 'visible-password'}
-                autoCapitalize="none"
-                ref={ref_input3}
+                <TextFormInput
+                    placeholder='Ingresar nombre(s)'
+                    onChangeText={handleOnChangeName}
+                    value={formData.name}
+                    maxLength={50}
+                    returnKeyType='next'
+                    onSubmitEditing={() => { ref_input2.current.focus()}}
                 />
             </View>
-            { ndocCorrect == 0 ?
-            (<Text style={styles.textDescriptionError}>{' '}El número de documento debe ser menor a 20.</Text>):
-            (<></>)
-            }
+
+
+            <Text style={styles.textDescription}>{' '}Apellidos</Text>
+            <View style={styles.searchSection}>
+                <TextFormInput
+                    placeholder='Ingresar apellidos'
+                    onChangeText={handleOnChangeSnam}
+                    value={formData.snam}
+                    maxLength={50}
+                    returnKeyType='next'
+                    onSubmitEditing={() => { ref_input3.current.focus()}}
+                    ref={ref_input2}
+                />
+            </View>
+
+
+            <Text style={styles.textDescription}>{' '}Número de documento </Text>
+            <View style={styles.searchSection}>
+                <TextFormInput
+                    placeholder='123.456.789'
+                    onChangeText={handleOnChangeNdoc}
+                    maxLength={11}
+                    value={formData.ndoc}
+                    ref={ref_input3}
+                />
+            </View>
+
             <Text style={styles.textDescription}>{' '}Región</Text>
             <View style={styles.card}>
-            <Picker
-                selectedValue={selectValueRegion}
-                style={styles.inputForm}  
-                onValueChange={(itemValue,itemIndex) => {setSelectValueRegion(itemValue);onChange(itemValue, 'region') }}
-            >
-                <Picker.Item label='Seleccionar región' value='0'/>
-                {regionList}
-            </Picker>
+                <Select2
+                    isSelectSingle
+                    popupTitle={'Seleccionar Región'}
+                    selectButtonText={'Seleccionar'}
+                    cancelButtonText={'Cancelar'}
+                    listEmptyTitle={'Región'}
+                    style={styles.selectStyle}
+                    colorTheme={RF_PURPLE}
+                    searchPlaceHolderText={'Buscar Región'}
+                    title={'Seleccionar Región'}
+                    data={regionOptions.map(region => ({
+                        id: region.cod, 
+                        name: region.name, 
+                        checked: formData.regi === region.cod
+                    }))}
+                    onSelect={handleSelectRegion}
+                />
             </View>
+
             <Text style={styles.textDescription}>{' '}Comuna</Text>
-            { loading2 ? 
-            (<View style={styles.loaderTask}>
-                <ActivityIndicator  size="large" color="#0000ff"/>
-                <Text>Cargando comunas...</Text>
-            </View>):
-            (<View style={styles.card}>
-                <Picker
-                selectedValue={selectValueComuna}
-                style={styles.inputForm}
-                onValueChange={(itemValue,itemIndex) => {setSelectValueComuna(itemValue);onChange(itemValue, 'comu') }}
-                enabled={districtObj!=null? (true):(false)}
-                >
-                <Picker.Item label='Seleccionar Comuna'  value='x' />
-                {renderDistrictList()}
-                </Picker>
+            <View style={styles.card}>
+                    <Select2
+                        isSelectSingle
+                        popupTitle={'Seleccionar Comuna'}
+                        selectButtonText={'Seleccionar'}
+                        cancelButtonText={'Cancelar'}
+                        listEmptyTitle={
+                            isFetchingComunaOptions === true? 
+                            <ActivityIndicator size="large" color="#0000ff"/>: 
+                            'Primero debes seleccionar una Región'
+                        }
+                        style={styles.selectStyle}
+                        colorTheme={RF_PURPLE}
+                        searchPlaceHolderText={'Buscar Comuna'}
+                        title={'Seleccionar Comuna'}
+                        data={comunaOptions.map(comuna => ({
+                            id: comuna.cod, 
+                            name: comuna.nam,
+                            checked: comuna.cod === formData.comu
+                        }))}
+                        onSelect={handleSelectComuna}
+                    />
             </View>
-            )
-            }
+
             <Text style={styles.textDescription}>{' '}Dirección</Text>
             <View style={styles.searchSection}>
-            <TextInput
-                placeholder='Moneda 1202'
-                placeholderTextColor='#AC9DC9'
-                style={styles.inputForm}
-                inputContainerStyle={{borderBottomWidth:0}}
-                errorStyle={styles.errorStyle}
-                onEndEditing={(e) => onEnd(e, 'addr')}
-                maxLength={128}
-            />
+                <TextFormInput
+                    placeholder='Moneda 1202'
+                    onChangeText={handleOnChangeAddr}
+                    value={formData.addr}
+                    maxLength={128}
+                />
             </View>
-            { addrCorrect == 0 ?
-            (<Text style={styles.textDescriptionError}>{' '}Su dirección debe ser menor a 128 caracteres.</Text>):
-            (<></>)
-            }
+          
             <Text style={styles.textDescription}>{' '}Banco</Text>
             <View style={styles.card}>
-            <Picker
-                selectedValue={selectValueBanks}
-                style={styles.inputForm}  
-                onValueChange={(itemValue,itemIndex) => {setSelectValueBanks(itemValue);onChange(itemValue, 'bank') }}
-                > 
-                <Picker.Item label='Seleccionar banco' value='x'/>
-                {bankList}
-            </Picker>
+                <Select2
+                    isSelectSingle
+                    popupTitle={'Seleccionar Banco'}
+                    selectButtonText={'Seleccionar'}
+                    cancelButtonText={'Cancelar'}
+                    listEmptyTitle={'Banco'}
+                    style={styles.selectStyle}
+                    colorTheme={RF_PURPLE}
+                    searchPlaceHolderText={'Buscar Banco'}
+                    title={'Seleccionar Banco'}
+                    data={bankOptions.map(bank => ({
+                        id: bank.cod, 
+                        name: bank.name, 
+                        checked: formData.bank === bank.cod
+                    }))}
+                    onSelect={handleSelectBank}
+                />
             </View>
+
+
             <Text style={styles.textDescription}>{' '}Tipo de cuenta</Text>
             <View style={styles.card}>
-            <Picker
-                selectedValue={selectValueAccountType}
-                style={styles.inputForm}  
-                onValueChange={(itemValue,itemIndex) => {setSelectValueAccountType(itemValue);onChange(itemValue, 'acty') }}
-                // onValueChange={(itemValue,itemIndex) => onChangee(itemValue, 'acty')}
-                >
-                <Picker.Item label='Seleccionar tipo de cuenta' value='x'/>
-                {acctypeList}
-            </Picker>
+                <Select2
+                    isSelectSingle
+                    popupTitle={'Seleccionar Tipo de cuenta'}
+                    selectButtonText={'Seleccionar'}
+                    cancelButtonText={'Cancelar'}
+                    listEmptyTitle={'Tipo de cuenta'}
+                    style={styles.selectStyle}
+                    colorTheme={RF_PURPLE}
+                    searchPlaceHolderText={'Buscar Tipo de cuenta'}
+                    title={'Seleccionar Tipo de cuenta'}
+                    data={accountOptions.map(account => ({
+                        id: account.cod, 
+                        name: account.name, 
+                        checked: formData.acty === account.cod
+                    }))}
+                    onSelect={handleSelectBankAccount}
+                />     
             </View>
+
             <Text style={styles.textDescription}>{' '}Número de cuenta</Text>
             <View style={styles.searchSection}>
-            <TextInput
-                placeholder='1-234-56-78910-2'
-                placeholderTextColor='#AC9DC9'
-                style={styles.inputForm}
-                inputContainerStyle={{borderBottomWidth:0}}
-                errorStyle={styles.errorStyle}
-                onEndEditing={(e) => onEnd(e, 'acnu')}
-                keyboardType='numeric'
-            />
+                <TextFormInput
+                    placeholder='0000123456789'
+                    keyboardType='numeric'
+                    maxLength={20}
+                    onChangeText={handleOnChangeAcnu}
+                    value={formData.acnu}
+                    // errorText={'Su número de cuenta debe ser menor a 9 caracteres.'}
+                    // showError={}
+                />
             </View>
-            { acnuCorrect == 0 ?
-            (<Text style={styles.textDescriptionError}>{' '}Su número de cuenta debe ser menor a 9 caracteres.</Text>):
-            (<></>)
-            }
+          
+            {/* <Text>{JSON.stringify(formData)}</Text> */}
+
             <Button
-            title='Enviar'
-            containerStyle={styles.btnContainerRegister}
-            buttonStyle={styles.btnRegister}
-            onPress={onSubmit}
+                title='Siguiente'
+                containerStyle={styles.btnContainerRegister}
+                buttonStyle={styles.btnRegister}
+                disabledStyle={styles.buttonDisabled}
+                disabledTitleStyle={styles.buttonDisableTitle}
+                onPress={onSubmit}
+                loading={isSubmiting}
+                disabled={isSubmiting || !(
+                    isNameValid && 
+                    isSnamValid &&
+                    isNdocValid && 
+                    isRegionComunaValid && 
+                    isAddrValid && 
+                    isBankAccountValid && 
+                    isAccountNumberValid 
+                )}
             />
         </ScrollView>
     );
@@ -479,17 +427,18 @@ const styles = StyleSheet.create({
     fontSize:16
   },
   searchSection: {
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    // marginTop: 10,
+    // flexDirection: 'row',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   card:{
     backgroundColor: '#fff',
-    marginTop: 10,
+    // marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 5,
   },
   inputForm2:{
     height: 40,
@@ -511,7 +460,7 @@ const styles = StyleSheet.create({
     justifyContent:'center',
   },
   btnRegister: {
-    backgroundColor:'#6B35E2',
+    backgroundColor:RF_PURPLE,
   },
   iconRight: {
     color:'#AC9DC9',
@@ -520,8 +469,9 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     fontSize:15,
     marginTop:10,
+    marginBottom: 3,
     justifyContent:'flex-start',
-    color:'#5300eb'
+    color:RF_PURPLE
   },
   textDescription2:{
     fontWeight:'normal',
@@ -534,8 +484,18 @@ const styles = StyleSheet.create({
     justifyContent:'flex-start',
     color:'#ff0000'
   },
+  selectStyle : {
+    borderWidth: 0,
+    borderRadius: 5,
+  },
   divider:{
-    backgroundColor: '#6B35E2',
+    backgroundColor: RF_PURPLE,
     margin: 10,
   },
+    buttonDisabled: {
+        backgroundColor: RF_PURPLE_DISABLED
+    },
+    buttonDisableTitle: {
+        color: "#fff"
+    }
 });

@@ -63,13 +63,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: "100%",
         backgroundColor: '#fff',
-        borderRadius: 100,
+        borderRadius: 5,
         // paddingVertical: 10,
         paddingHorizontal: 10,
         alignItems: 'flex-end'
     },
     textInput: {
-        fontSize:18,
+        fontSize:16,
         width: "90%",
         paddingVertical: 10,
         margin: 0

@@ -216,7 +216,7 @@ export default function DocumentDataForm() {
                     props: {
                         onPress: () => {}, 
                         text1: 'Error', 
-                        text2: ans.ans.msg
+                        text2: response.ans.msg
                     }
                 });
             }

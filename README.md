@@ -58,7 +58,7 @@ If gradle throws 'kotlin could not find the required jdk tools in the java insta
 
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)
 
-- Cocoapods by using brew: `$ brew install cocoapods`
+- Install cocoapods by using brew: `$ brew install cocoapods`.
 
 Open Repoflex.xcodeproj and Repoflex.xcworkspace. This will open Xcode.
 
@@ -68,11 +68,13 @@ Go into Xcode >Preferences->Accounts->Manage certificates and click on the '+' i
 
 In Preferences->Locations, check that Command Line Tools has something selected.
 
-Go into the ios folder from the repository and run `$ pod install`.
+Go into the ios folder from the repository and run `$ pod install`. DON'T use `sudo` comand here, it can break the xcode related files. If you are facing some permissions problems use the comand `sudo chown -R zolbit:staff .` on the root folder .
 
 Connect an Ios device, go into Window->Devices and Simulators and click on the '+' icon on the bottom left to add the connected device.
 
 Finally click on Product->Run to run the application.
+
+### In case of  
 
 ## Compiling and publishing updates
 

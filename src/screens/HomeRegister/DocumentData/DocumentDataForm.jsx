@@ -179,18 +179,7 @@ export default function DocumentDataForm() {
         }))       
     }
 
-    
-
-    
-
-
-    
-
-    
-
-   
-    // On select region chet comunas and clear selected comuna
-    
+      
 
     const onSubmit = async() => { 
         setIsSubmiting(true)

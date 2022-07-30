@@ -10,7 +10,8 @@ function About() {
       <Text style={styles.textStyle}> 2022 Zolbit </Text>
       <Text style={styles.textStyle}> Todos los derechos </Text>
       <Text style={styles.textStyle}> reservados </Text>
-      <Text style={styles.link} onPress={() => Linking.openURL('http://google.com')}>
+      <Text style={styles.link} 
+        onPress={() => Linking.openURL('https://retailpro.atlassian.net/wiki/spaces/SRP/pages/2293432331/Pol+ticas+de+Privacidad+Repoflex')}>
         Políticas de Privacidad
       </Text>
     </View>

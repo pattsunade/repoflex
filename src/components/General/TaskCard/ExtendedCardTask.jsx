@@ -48,10 +48,13 @@ function TaskBody ({location, date, amount, detail, time, id}) {
                     {detail.replace(/\^/gi,'\n')}
                 </Text>
             </View>
-			<Text style={styles.taskText}>
-				A pagar: <Text style={styles.boldTaskDetail}>${formatNumberDots(amount)}</Text>
-			</Text>
-            
+
+            {amount !== '-' &&
+                <Text style={styles.taskText}>
+                    A pagar: <Text style={styles.boldTaskDetail}>${formatNumberDots(amount)}</Text>
+                </Text>
+            }
+			            
             { parseInt(time) > 0 && (
                 <Text style={styles.taskText}>
                     Tiempo de resolución: <Text style={styles.taskDetail}>{tim} min</Text>

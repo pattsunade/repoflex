@@ -36,7 +36,7 @@ export default function Home() {
     const [lati, setLati] = useState();
     const [long, setLong] = useState();
     const [location, setLocation] = React.useState(undefined);
-    const [userLocation, setUserLocation] = React.useState("...")
+    const [userLocation, setUserLocation] = React.useState("-")
 
     const [loading, setLoading] = useState(true);
     // const [isEnabled, setIsEnabled] = useState(false);
@@ -155,9 +155,10 @@ export default function Home() {
                 latitude,
                 longitude,
             })
-            setUserLocation(`${reverse[0].street} ${reverse[0].streetNumber}, ${reverse[0].city}`)
+            setUserLocation(`${reverse[0].street}${' ' +reverse[0].streetNumber || ''}, ${reverse[0].city}`)
         }
         console.log("location > ", location)
+
         if(location !== undefined) {
             updateLocation({
                 latitude: location.coords.latitude,

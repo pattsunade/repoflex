@@ -40,9 +40,12 @@ function TaskBody ({location, date, amount, id}) {
                 </View>
 			</View>
 
-			<Text style={styles.taskText}>
-				A pagar: <Text style={styles.boldTaskDetail}>${formatNumberDots(amount)}</Text>
-			</Text>
+			{amount !== '-' &&
+                <Text style={styles.taskText}>
+                    A pagar: <Text style={styles.boldTaskDetail}>${formatNumberDots(amount)}</Text>
+                </Text>
+            }
+
 		</View>
 	)	
 }

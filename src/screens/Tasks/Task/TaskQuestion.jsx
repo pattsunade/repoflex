@@ -255,16 +255,16 @@ export default function TaskQuestion (props) {
 							navigation.navigate('quiztask',{questions:questions[index],tid:tid,completed:index+1,prevAns:frontData[index]})
 						}>
 							<View style={styles.container}>
-							<Icon
-								type='material-community'
-								name='check-circle'
-								iconStyle={styles.iconLeft2}
-								size={35}
-							/>
-							<View style={styles.activityText}>
-								<Text style={styles.customBtnText}>{arr.tiq}</Text>
-								<Text style={styles.customBtnText}>Actividad completada {index+1}.</Text>
-							</View>
+								<Icon
+									type='material-community'
+									name='check-circle'
+									iconStyle={styles.iconLeft2}
+									size={35}
+								/>
+								<View style={styles.activityText}>
+									<Text style={styles.customBtnText}>{arr.tiq}</Text>
+									<Text style={styles.customBtnText}>Actividad completada {index+1}.</Text>
+								</View>
 							</View>
 						</TouchableOpacity>
 					)
@@ -273,10 +273,10 @@ export default function TaskQuestion (props) {
 			</View>
 			<View style={styles.wrapper}>
 				<Button
-				title='Abortar tarea'
-				containerStyle={styles.btnContainer}
-				buttonStyle={styles.btnAbort}
-				onPress={abortTask}
+					title='Abortar tarea'
+					containerStyle={styles.btnContainer}
+					buttonStyle={styles.btnAbort}
+					onPress={abortTask}
 				/>
 			</View>
 		</ScrollView>

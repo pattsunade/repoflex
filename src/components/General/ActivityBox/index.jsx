@@ -1,10 +1,29 @@
+import { RF_PURPLE } from 'components/colorsConstants';
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import { Icon } from 'react-native-elements';
 
+const TYPE_CONFIG = {
+    next: {
+        iconType: 'material-community',
+        name:'arrow-right-bold-circle'
+    },
+    wait: {
+        iconType: 'material-community',
+        name:'circle'
+    },
+    done: {
+        iconType: 'material-community',
+        name:'check-circle'
+    },
+    error: {
+
+    }
+}
+
 const ActivityBox = ({
     onPress = () => {},
-    type,
+    type='next',
     title,
     subtitle
 }) => {
@@ -15,9 +34,9 @@ const ActivityBox = ({
         >
             <View style={styles.viewContainer} >
                 <Icon
-                    type='material-community'
-                    name='arrow-right-bold-circle'
-                    iconStyle={styles.iconLeft1}
+                    type={TYPE_CONFIG[type].iconType}
+                    name={TYPE_CONFIG[type].name}
+                    iconStyle={styles[type]}
                     size={35}
                 />
                 <View style={styles.activityText}>
@@ -46,10 +65,19 @@ const styles = StyleSheet.create({
         justifyContent:'flex-start',
         alignItems:'center'
     },
-    iconLeft1:{
-        color: '#6B35E2',
+    next: {
         marginRight: 15,
+        color: RF_PURPLE,
     },
+    wait: {
+        marginRight: 15,
+        color:'#DEDCF2',
+    },
+    done:{
+        marginRight: 15,
+        color:'#5cb85c',
+    },
+
     customBtnText:{
         fontSize: 15,
         fontWeight: '400',

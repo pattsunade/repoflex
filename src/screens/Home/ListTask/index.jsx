@@ -7,6 +7,9 @@ import tasks from 'api/transacciones/tasks';
 import SimpleTaskCard from 'components/General/TaskCard/SimpleTaskCard';
 import useMountedComponent from 'utils/hooks/useMountedComponent';
 import * as Location from 'expo-location';
+import InputSearchBar from 'components/General/InputSearchBar';
+import { Icon } from 'react-native-elements';
+import { sleep } from 'utils/time';
 
 export default function ListTask({route}){ 
 	const {start,abort,assign,type} = route.params; // route params
@@ -33,21 +36,23 @@ export default function ListTask({route}){
 	// reset some screens parameters
 	const resetScreenParameters = async() => {
 		pageList.current = 1; // reset page
-		
-		// isMounted && setTaskList([])
+		isMounted && setCanFetchMore(true);
+		isMounted && setTaskList([])
 		const location = await Location.getCurrentPositionAsync({}); // location values
 		userLocation.current.latitude = location.coords.latitude.toString()
 		userLocation.current.longitude = location.coords.longitude.toString()
 
 	}
 	// Fetch task function
-	const fetchTasks = async(page,type, latitude, longitude) => {
+	const fetchTasks = async(page,type, latitude, longitude, search = undefined) => {
 		// console.log("number page", page);
 		await tasks({
 			page: page, 
 			type: type, 
 			latitude: latitude, 
-			longitude: longitude})
+			longitude: longitude,
+			search: search
+		})
 		.then(async (response) => {
 			if (response.ans.stx === 'ok') { 
 				isMounted && setBackendMessage(response.ans.msg);
@@ -95,6 +100,7 @@ export default function ListTask({route}){
 		});
 	}
 	
+	
 	// initial/on screen fetch
 	useFocusEffect(
 		React.useCallback(() => {
@@ -131,8 +137,17 @@ export default function ListTask({route}){
 		}
 	}
 	// Searchbar
-	// const [searchValue, setSearchValue] = React.useState('')
-	const [isFetching, setIsFetching] = React.useState(false)
+	const [searchValue, setSearchValue] = React.useState('')
+	const [isFetchingNewList, setIsFetchingNewList] = React.useState(false)
+
+
+	const handleOnChangeSearch = (text) => setSearchValue(text);
+	const handleOnSubmitEditing = async() => {
+		setIsFetchingNewList(true)
+		await resetScreenParameters();
+		await fetchTasks(pageList.current, type, userLocation.current.latitude, userLocation.current.longitude,searchValue)
+		setIsFetchingNewList(false)
+	}
 
 	if (isScreenLoading) {
 		return (
@@ -142,7 +157,7 @@ export default function ListTask({route}){
 			</View>
 		)
 	}
-	if (taskList.length==0) {
+	if (taskList.length==0 && setIsFetchingNewList === false) {
 		return (
 			<View>
 				<Text style={styles.title}>{backendMessage}</Text>
@@ -152,13 +167,6 @@ export default function ListTask({route}){
 	return(
 		<>
 			<View style={styles.listView}>		
-			{isFetching?(
-				<View style={styles.fetchingContainer}>
-					<ActivityIndicator color={"#7B53AE"} size="large" />
-				</View>
-
-			):(<>
-
 				<FlatList 
 					data={taskList}
 					renderItem={data => <SimpleTaskCard lista={data} start={start} assign={assign} abort={abort}/>}
@@ -167,18 +175,27 @@ export default function ListTask({route}){
 					onEndReached={fetchOnEnd}
 					refreshing={refreshLoading}
 					onRefresh={()=>refreshTaskList()}
+	
+					ListHeaderComponent={
+						<View style={styles.searchBarContainer}>
+							<InputSearchBar 
+								label={<Icon type='material-community' name='store-outline'/>}
+								placeHolder={'Ingresar local'}
+								value={searchValue}
+								onChangeText={handleOnChangeSearch}
+								onSubmitEditing={handleOnSubmitEditing}
+							/>
+						</View>
+					}
 					ListFooterComponent={
 						<View style={styles.fetchMoreContainer}>
-							{canFetchMore? (
+							{(canFetchMore || isFetchingNewList)? (
 								<ActivityIndicator color={"#7B53AE"} size="large"/>
 							):(null)}
 						</View>
 					}
 			
 				/>
-				
-			</>)} 
-
 
 			</View>
 		</>
@@ -190,7 +207,7 @@ const styles = StyleSheet.create({
 	listView: {
 	},
 	fetchMoreContainer: {
-		marginBottom: 10,
+		marginVertical: 10,
 	},
 	searchBarContainer: {
 		marginHorizontal: 20,

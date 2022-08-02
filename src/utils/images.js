@@ -1,7 +1,7 @@
 import * as ImageManipulator from 'expo-image-manipulator';
 
 export const compressImageByUri = async (image) => { 
-    console.log(image)
+
     const manipResult = await ImageManipulator.manipulateAsync(
         image.uri,
         [{ resize: { [image.width > image.height? 'width': 'height']: 1000 } }],

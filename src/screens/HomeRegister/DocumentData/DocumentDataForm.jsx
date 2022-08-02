@@ -1,10 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { StyleSheet, View, Text, ScrollView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { Button } from 'react-native-elements';
-import Loading from '../../../components/Loading';
-import { isEmpty, isInteger } from 'lodash';
 import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
 import Toast from 'react-native-toast-message';
 import regi0 from "api/transacciones/regi0";
 import regi2 from 'api/transacciones/regi2';
@@ -74,7 +71,7 @@ export default function DocumentDataForm() {
     // Effects
     // Update regions/ bancks/ acount types
     React.useEffect(() => { 
-        const run = async() => {
+        const fetchFormOptions = async() => {
             await regi0()
             .then( response => {
                 console.log(response)
@@ -89,8 +86,7 @@ export default function DocumentDataForm() {
             })
             .finally();
         }
-        console.log('run')
-        run();
+        fetchFormOptions();
     },[]) 
 
     
@@ -215,7 +211,7 @@ export default function DocumentDataForm() {
             console.log(err)
         })
         .then(() => {
-            setIsSubmiting(true)
+            setIsSubmiting(false)
         })
     };
     return(

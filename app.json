@@ -4,7 +4,7 @@
     "slug": "repoflex",
     "version": "0.72.0",
     "orientation": "portrait",
-    "icon": "./assets/iconrepo.png",
+    "icon": "./assets/1024.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
@@ -37,7 +37,7 @@
         "USER_FACING_NOTIFICATIONS"
      ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/iconrepo.png",
+        "foregroundImage": "./assets/1024.png",
         "backgroundColor": "#000000"
       },
       "package": "com.electronico.repoflex",

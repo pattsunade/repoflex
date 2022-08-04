@@ -35,7 +35,7 @@ const connect = async(method, req, body, ott, txi, phid) => {
 	}
 }
 
-// Esta parte del codigo es un asco, pero funciona llamandao una callback
+// Esta parte del codigo no lo entiendo, pero funciona llamando una callback function
 // No entiendo como funciona lo de la matriz
 const handleRequest =  async(cb,method=null, req=null, body=null) => {
 	let ret1 = await AsyncStorage.multiGet(['@ott','@txi']).then(async (ans) => {
@@ -88,7 +88,6 @@ const throttleRequest = async(cb, method=null, req=null, body=null) => {
 const backendRequest = async(...args) => { 
     let fetchedData;
     await throttleRequest((request) => {fetchedData = request}, ...args)
-	// console.log("fetchedData", fetchedData)
     return fetchedData
 }
 

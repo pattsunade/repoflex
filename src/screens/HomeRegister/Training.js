@@ -1,5 +1,5 @@
 import React, { useRef,useState,useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, Alert, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Alert, Dimensions, Linking} from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { Button, Divider, Card } from "react-native-elements";
 import { setStatusBarHidden } from 'expo-status-bar'
@@ -7,6 +7,7 @@ import { Video } from 'expo-av';
 import VideoPlayer from 'expo-video-player';
 import Loading from "components/Loading";
 import cours from "api/transacciones/cours";
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -17,6 +18,7 @@ export default function Training ({ navigation, route }) {
   const [inFullScreen, setInFullScreen] = useState(false);
   const refVideo = useRef(null);
   const refScrollView = useRef(null);
+  const videoPrueba="https://youtu.be/UyyNXeO9-gw";
 
   useEffect(() => { 
     setLoading(true)
@@ -70,16 +72,21 @@ export default function Training ({ navigation, route }) {
             <Card.Title style={styles.cardTitleText}>Video</Card.Title>
             <Card.Divider/>
             <Text style={styles.cardText}>
-              Video introductorio, se te realizará un test terminado el video.
+            Seleccione el siguiente link para ver el video:
             </Text>
-            <View style={styles.player}>
+            
+            <Text style={{ color: 'blue' }} onPress={() => Linking.openURL(videoPrueba)}>
+            {videoPrueba}
+            </Text>
+            {/* { <View style={styles.player}>
               <VideoPlayer
                 videoProps={{
                   shouldPlay: false,
                   resizeMode: Video.RESIZE_MODE_CONTAIN,
-                  source: {
-                    uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                  },
+                  backgroundColor: '#f9f9f9',
+                  source: 
+                    require('./comoReponer.mp4'),
+                  
                   ref: refVideo,
                 }}
                 fullscreen={{
@@ -100,7 +107,7 @@ export default function Training ({ navigation, route }) {
                   width:320
                 }}
               />
-            </View>
+            </View> } */}
             <Button
               title="Empezar Prueba"
               containerStyle={styles.btnContainer}
@@ -114,28 +121,28 @@ export default function Training ({ navigation, route }) {
         </>
           ) :(
           <VideoPlayer
-            videoProps={{
-              shouldPlay: false,
-              resizeMode: Video.RESIZE_MODE_CONTAIN,
-              source: {
-                uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-              },
-              ref: refVideo,
-            }}
-            fullscreen={{
-              inFullscreen: inFullScreen,
-              exitFullscreen: async () => {
-                setStatusBarHidden(false, 'fade')
-                setValue(true)
-                setInFullsreen(!inFullScreen)
-                await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT)
-              },
-            }}
-            style={{
-              videoBackgroundColor: 'black',
-              height: Dimensions.get('window').width,
-              width: Dimensions.get('window').height
-            }}
+            // videoProps={{
+            //   shouldPlay: false,
+            //   resizeMode: Video.RESIZE_MODE_CONTAIN,
+            //   backgroundColor: '#f9f9f9',
+            //   source:  require('./comoReponer.mp4'),
+
+            //   ref: refVideo,
+            // }}
+            // fullscreen={{
+            //   inFullscreen: inFullScreen,
+            //   exitFullscreen: async () => {
+            //     setStatusBarHidden(false, 'fade')
+            //     setValue(true)
+            //     setInFullScreen(!inFullScreen)
+            //     await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT)
+            //   },
+            // }}
+            // style={{
+            //   videoBackgroundColor: 'black',
+            //   height: Dimensions.get('window').width,
+            //   width: Dimensions.get('window').height
+            // }}
           />
           )}
       </ScrollView>

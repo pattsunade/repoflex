@@ -42,7 +42,7 @@
       },
       "package": "com.electronico.repoflex",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 20
+      "versionCode": 23
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -119,7 +119,7 @@ export default function QuizTaskRun (props) {
 		[{ resize: { width:640 , height:480  } }],
 		{ compress: 0.5,base64: true, format: ImageManipulator.SaveFormat.JPEG }
     );
-    // setImage(manipResult.base64);
+    setImage(manipResult.base64);
     onChangePic(manipResult.base64,"file");
   }
 
